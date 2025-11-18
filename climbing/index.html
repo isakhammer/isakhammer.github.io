@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stetind – Normalveien 1. Aug 2025</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <h1 class="site-title">Stetind – Normalveien</h1>
+            <p class="site-subtitle">
+                Trip report and photo gallery from a classic Norwegian alpine climb 
+            </p>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-image-wrap">
+                <!-- Use one of your best images here -->
+                <img src="stetind_normalveien/IMG_9098.jpg" alt="Stetind seen from the approach">
+            </div>
+            <div class="hero-text">
+                <h2>Climbing Stetind</h2>
+                <p>
+                    Some photos! We spent first approximately 2 hours hiking to the so-called "Halls fortopp". We then tied ourself into to the rope and simul-climbed a few pitces off difficulty N3, before entering the crux as "Mysosten", which is a 15m climb of grade N4+. After this we basically scrambled with no rope to the top. Good day! 8 hours car2car.
+                </p>
+            </div>
+        </section>
+
+        <section class="gallery-section">
+            <h2>Photo gallery</h2>
+            <p class="gallery-intro">
+                Use the arrows or dots to move through the slideshow.  
+                Update the image files in the HTML to match your own photos.
+            </p>
+
+            <div class="slideshow">
+                <div class="slides" id="slides-container"></div>
+
+                <button class="nav-button prev" aria-label="Previous image">&#10094;</button>
+                <button class="nav-button next" aria-label="Next image">&#10095;</button>
+
+                <div class="dots" id="dots-container"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="site-footer">
+        <p>
+            Photos and trip report by Isak Hammer
+        </p>
+        </footer>
+
+    <script>
+        const basePath = "stetind_normalveien/";
+
+        // All your images
+        const imageFiles = [
+            "IMG_2982.jpg",
+            "IMG_2991.jpg",
+            "IMG_2995.jpg",
+            "IMG_7541.jpg",
+            "IMG_7549.jpg",
+            "IMG_7615.JPG",
+            "IMG_9098.jpg"
+        ];
+
+        const slidesContainer = document.getElementById("slides-container");
+        const dotsContainer = document.getElementById("dots-container");
+
+        // Build slides and dots from imageFiles
+        imageFiles.forEach((file, index) => {
+            const slide = document.createElement("div");
+            slide.className = "slide";
+            if (index === 0) {
+                slide.classList.add("active");
+            }
+
+            const img = document.createElement("img");
+            img.src = basePath + file;
+            img.alt = "Stetind photo " + (index + 1);
+
+            slide.appendChild(img);
+            slidesContainer.appendChild(slide);
+
+            const dot = document.createElement("button");
+            dot.className = "dot";
+            dot.dataset.index = index;
+            dot.setAttribute("aria-label", "Go to slide " + (index + 1));
+            if (index === 0) {
+                dot.classList.add("active");
+            }
+            dotsContainer.appendChild(dot);
+        });
+
+        const slides = document.querySelectorAll(".slide");
+        const dots = document.querySelectorAll(".dot");
+        const prevBtn = document.querySelector(".prev");
+        const nextBtn = document.querySelector(".next");
+
+        let currentIndex = 0;
+        let autoSlideTimer = null;
+
+        function showSlide(index) {
+            if (index < 0) {
+                index = slides.length - 1;
+            }
+            if (index >= slides.length) {
+                index = 0;
+            }
+            slides.forEach((slide, i) => {
+                slide.classList.toggle("active", i === index);
+            });
+            dots.forEach((dot, i) => {
+                dot.classList.toggle("active", i === index);
+            });
+            currentIndex = index;
+        }
+
+        function nextSlide() {
+            showSlide(currentIndex + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentIndex - 1);
+        }
+
+        function resetAutoSlide() {
+            if (autoSlideTimer) {
+                clearInterval(autoSlideTimer);
+            }
+            autoSlideTimer = setInterval(nextSlide, 6000);
+        }
+
+        nextBtn.addEventListener("click", () => {
+            nextSlide();
+            resetAutoSlide();
+        });
+
+        prevBtn.addEventListener("click", () => {
+            prevSlide();
+            resetAutoSlide();
+        });
+
+        dots.forEach(dot => {
+            dot.addEventListener("click", () => {
+                const index = parseInt(dot.dataset.index, 10);
+                showSlide(index);
+                resetAutoSlide();
+            });
+        });
+
+        resetAutoSlide();
+    </script>
+
+</body>
+</html>
