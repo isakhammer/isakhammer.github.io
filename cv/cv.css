@@ -1,0 +1,66 @@
+/* CV specific overrides */
+
+.cv-page {
+  max-width: 900px;
+  padding: 2.5rem 1.5rem;
+}
+
+.cv-card {
+  text-align: left;
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.3);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.cv-title {
+  text-align: left;
+  font-size: 2rem;
+  letter-spacing: 0;
+}
+
+.cv-subtitle {
+  text-align: left;
+  text-transform: none;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.cv-meta {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+.cv-card h2 {
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #4b5563;
+}
+
+.cv-card p {
+  font-size: 0.95rem;
+}
+
+.cv-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0 0 0.75rem;
+}
+
+.cv-list li {
+  margin-bottom: 0.9rem;
+  font-size: 0.95rem;
+}
+
+.cv-list-inline li + li {
+  margin-top: 0.4rem;
+}
+
+.cv-links {
+  margin-top: 2rem;
+  justify-content: flex-start;
+}
