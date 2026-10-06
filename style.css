@@ -121,3 +121,16 @@ p {
     padding: 1.75rem 1.25rem;
   }
 }
+
+.btn-primary {
+  background: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+.btn-primary:hover {
+  background: #000000;
+  border-color: #000000;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+}
