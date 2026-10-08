@@ -1,4 +1,9 @@
-# Bølger
+---
+layout: lesson
+title: Bølger
+description: Oppgaver og eksempler om fart, frekvens og bølgelengde.
+permalink: /education/naturfag/oppgavesett/bolger/
+---
 
 Denne siden kan brukes til forklaringer, regneeksempler, formler og bilder fra forsøk eller tavle.
 

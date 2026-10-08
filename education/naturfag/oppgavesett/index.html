@@ -1,3 +1,6 @@
+---
+layout: null
+---
 <!DOCTYPE html>
 <html lang="no">
 <head>
@@ -117,11 +120,14 @@
     </header>
 
     <section class="resources" aria-label="Naturfagoppgaver">
-      <a class="resource" href="bolger.md">
+      {% assign lessons = site.pages | where: "layout", "lesson" | where: "dir", page.dir %}
+      {% for lesson in lessons %}
+      <a class="resource" href="{{ lesson.url | relative_url }}">
         <span>Markdown</span>
-        <h2>Bølger</h2>
-        <p>Oppgaver om sammenhengen mellom fart, frekvens og bølgelengde.</p>
+        <h2>{{ lesson.title | escape }}</h2>
+        <p>{{ lesson.description | escape }}</p>
       </a>
+      {% endfor %}
     </section>
   </main>
 </body>
