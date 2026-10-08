@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matematikk</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+      color: #111827;
+      background: #f4f6f8;
+    }
+
+    main {
+      width: min(760px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 48px 0;
+    }
+
+    .back-link {
+      color: #4b5563;
+      font-size: 0.95rem;
+      text-decoration: none;
+    }
+
+    .back-link:hover {
+      color: #111827;
+      text-decoration: underline;
+    }
+
+    h1 {
+      margin: 16px 0 8px;
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      line-height: 1.1;
+    }
+
+    p {
+      max-width: 62ch;
+      margin: 0;
+      color: #4b5563;
+    }
+
+    .empty-state {
+      margin-top: 32px;
+      padding: 24px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      background: #ffffff;
+    }
+
+    .empty-state h2 {
+      margin: 0 0 8px;
+      font-size: 1.25rem;
+    }
+
+    @media (max-width: 680px) {
+      main {
+        padding: 32px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back-link" href="../">Tilbake til skole</a>
+    <h1>Matematikk</h1>
+    <p>Undervisningsressurser for matematikk.</p>
+
+    <section class="empty-state" aria-label="Matematikkressurser">
+      <h2>Klar for innhold</h2>
+      <p>Denne mappen er satt opp for nye matematikkressurser.</p>
+    </section>
+  </main>
+</body>
+</html>
