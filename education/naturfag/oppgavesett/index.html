@@ -120,13 +120,15 @@ layout: null
     </header>
 
     <section class="resources" aria-label="Naturfagoppgaver">
-      {% assign lessons = site.pages | where: "layout", "lesson" | where: "dir", page.dir %}
+      {% assign lessons = site.pages | where: "layout", "lesson" | sort: "title" %}
       {% for lesson in lessons %}
+      {% if lesson.path contains "education/naturfag/oppgavesett/" %}
       <a class="resource" href="{{ lesson.url | relative_url }}">
         <span>Markdown</span>
         <h2>{{ lesson.title | escape }}</h2>
         <p>{{ lesson.description | escape }}</p>
       </a>
+      {% endif %}
       {% endfor %}
     </section>
   </main>
