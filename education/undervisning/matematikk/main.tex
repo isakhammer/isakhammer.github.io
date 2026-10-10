@@ -1,0 +1,170 @@
+\documentclass[aspectratio=119,12pt]{beamer}
+
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfpages}
+% \usepackage{svg}
+
+\pgfplotsset{compat=1.18}
+
+\usetheme{default}
+
+\setbeamertemplate{navigation symbols}{}
+
+\pgfpagesuselayout{8 on 1}[
+    a4paper,
+    border shrink=2mm
+]
+
+\setbeamertemplate{background}{
+    \begin{tikzpicture}[remember picture,overlay]
+        \draw[gray, line width=0.5pt]
+            ([xshift=3pt,yshift=-3pt]current page.north west)
+            rectangle
+            ([xshift=-3pt,yshift=3pt]current page.south east);
+    \end{tikzpicture}
+}
+
+\begin{document}
+
+%------------------------------------------------
+\begin{frame}
+    \centering
+     \textbf{Tallmengder}
+
+     \begin{itemize}
+         \item $ \mathbb{N} $ være naturlige tall 
+             \begin{itemize}
+                 \item $1,2,3,4,5 \ldots$
+                 \item $\mathbb{N}_0 = 0,1,2,3,4 \ldots $
+             \end{itemize}
+         \item $ \mathbb{Z} $ alle hele negative og positive tall 
+             \begin{itemize}
+                 \item $-3,-2,-1,0,1,2,3,4$
+             \end{itemize}
+                 
+         \item $ \mathbb{Q}  $ rasjonelle tall: Alle brøker 
+             \begin{itemize}
+                 \item  $\frac{1}{3} , \frac{1}{5}, \frac{10}{150} , \ldots$ 
+             \end{itemize}
+
+         \item $ \mathbb{R} $ være relle tall. 
+             \begin{itemize}
+                 \item Alle tall på tall-linjen. 
+                 \item $1.01, \frac{1}{2} , \pi, 99,99 $ . 
+             \end{itemize}
+     \end{itemize}
+
+
+
+
+\end{frame}
+
+%------------------------------------------------
+\begin{frame}{Vertikal tavle: Oppgave 1}
+
+    La $a,b,c$ og $d$ være tilfeldige tall. Vis at \begin{equation}
+ \frac{a}{b} :  \frac{c}{d} = \frac{a}{b} \cdot \frac{d}{c}         
+    \end{equation}  
+
+\end{frame}
+
+
+
+\begin{frame}{Vertikal tavle: Oppgave 2}
+
+    La $a,b,c$ og $d$ være tilfeldige tall.
+
+    Vis at  \begin{equation}
+        (a +b)^{2} = a^2 + b^2 + 2ab
+    \end{equation}
+
+    Bruk forrige resultat til å vise at
+    \begin{equation}
+        (a +b)(a-b) = a^2 - b^2 
+    \end{equation}
+
+
+\end{frame}
+
+
+\begin{frame}{Vertikal tavle: Oppgave 3}
+
+
+    La $x$ være et ukjent tall. 
+    Prøv å skrive \begin{equation}
+        x^2 - 4    
+    \end{equation}
+    i "parantesform". Hint: $(a+b)(a-b) = a^2 - b^2$.  
+
+
+\vskip 0.4cm
+    \begin{itemize}
+        \item Husker dere faktorisering? $18 = 3\cdot 3\cdot 2$? Det kalles å skrive et utrykk som produkt (altså ganging) av faktorer (feks et tall eller noe i en parantes).   
+    \end{itemize}
+
+
+
+
+\end{frame}
+
+
+
+\begin{frame}{Sykepleierlønn og boligpriser}
+
+    \begin{columns}[T]
+
+        % Sykepleierlønn
+        \begin{column}{0.48\textwidth}
+            \centering
+            \textbf{Sykepleierlønn i Norge}
+
+            \vspace{0.4cm}
+
+            \begin{tabular}{lr}
+                \hline
+                \textbf{År} & \textbf{Kr/mnd} \\
+                \hline
+                2020 & 47\,020 \\
+                2021 & 49\,440 \\
+                2022 & 51\,020 \\
+                2023 & 53\,880 \\
+                2024 & 56\,710 \\
+                2025 & 58\,290 \\
+                \hline
+            \end{tabular}
+        \end{column}
+
+        % Boligpriser
+        \begin{column}{0.48\textwidth}
+            \centering
+            \textbf{Eneboliger i Vestvågøy}
+
+            \vspace{0.4cm}
+
+            \begin{tabular}{lr}
+                \hline
+                \textbf{År} & \textbf{Kr/m$^2$} \\
+                \hline
+                2020 & 20\,705 \\
+                2021 & 22\,460 \\
+                2022 & 21\,823 \\
+                2023 & 23\,483 \\
+                2024 & 25\,301 \\
+                \hline
+            \end{tabular}
+        \end{column}
+
+    \end{columns}
+
+    \vspace{0.6cm}
+
+    \begin{center}
+        \footnotesize Kilde: Statistisk sentralbyrå (SSB)
+    \end{center}
+
+\end{frame}
+
+
+\end{document}

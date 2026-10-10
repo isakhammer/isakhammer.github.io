@@ -1,4 +1,4 @@
-# isakhammer.io
+# isakhammer.github.io
 
 Personal website deployed to GitHub Pages. Pushing to `master` builds and publishes the site automatically.
 
@@ -21,7 +21,7 @@ permalink: /education/naturfag/oppgavesett/lyd/
 Skriv innholdet her. MathJax støtter formler som $v = f \cdot \lambda$.
 ```
 
-The page will be available at `https://isakhammer.io/education/naturfag/oppgavesett/lyd/` after the Pages workflow finishes. Keep simulations as HTML pages in the relevant subject folder.
+The page will be available at `https://isakhammer.github.io/education/naturfag/oppgavesett/lyd/` after the Pages workflow finishes. Keep simulations as HTML pages in the relevant subject folder.
 
 ## Open the site locally
 
@@ -41,5 +41,5 @@ Opening `index.html` directly or using a plain static file server does not build
 Markdown pages or process the assignment list.
 
 If the published site fails to open, check the latest run under GitHub Actions
-and ensure Settings → Pages uses GitHub Actions. The custom domain
-`isakhammer.io` also needs working DNS pointing to GitHub Pages.
+and ensure Settings → Pages uses GitHub Actions and the Custom domain field is
+empty. The site is hosted at `https://isakhammer.github.io/`.
