@@ -141,8 +141,27 @@
         .interference li { line-height: 1.6; margin: 8px 0; }
         .interference-challenges { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 8px 20px 8px 48px; margin: 20px 0; }
         .interference .interference-challenges li { font-size: 1.25rem; font-weight: 600; line-height: 1.5; margin: 12px 0; }
-        #interferenceCanvas { height: 620px; }
-        #reflectionCanvas { height: 300px; }
+        .interference-canvas { height: 620px; }
+        #interferenceCanvas-2 { height: 1300px; }
+        .container:has(#panel-interference-2:not([hidden])) { max-width: 1480px; }
+        .radio-workspace { display: grid; gap: 24px; align-items: start; }
+        .radio-tuning, .radio-graphs { min-width: 0; }
+        .radio-plots { position: relative; }
+        .radio-comparison { position: absolute; left: 62px; top: 680px; width: calc(100% - 80px); background: #faf5ff; border: 2px solid #c4b5fd; border-radius: 8px; padding: 12px; }
+        .radio-plots[data-layout="grid"] .radio-comparison { top: 560px; width: calc((100% - 24px) / 2 - 80px); }
+        .radio-comparison .visualization-toggle { margin: 0; font-size: 1.125rem; }
+        .radio-comparison p { margin: 6px 0 0; font-size: 0.875rem; line-height: 1.4; }
+        .radio-comparison:has(input:checked) { border-color: #7c3aed; }
+        .radio-tuning .counter-controls { margin-top: 0; }
+        .radio-tuning .wavelength-marks { font-size: 1rem; }
+        .radio-tuning .shift-readout { font-size: 1rem; }
+        .radio-tuning p { margin: 10px 0; }
+        .radio-tuning .interference-buttons { margin-top: 12px; }
+        @media (min-width: 1200px) {
+            .radio-workspace { grid-template-columns: 280px minmax(0, 1fr); }
+            .radio-tuning { position: sticky; top: 16px; }
+            .radio-tuning .counter-fields { grid-template-columns: 1fr; gap: 8px; }
+        }
         .interference label { display: block; font-weight: bold; margin: 20px 0 12px; }
         .phase-ends { display: flex; justify-content: space-between; gap: 16px; color: #555; font-size: 0.9rem; }
         .interference-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
@@ -195,23 +214,20 @@
         .wave-one { color: #2563eb; }
         .wave-two { color: #dc2626; }
         .wave-three { color: #15803d; }
+        .counter-controls { border: 1px solid #ddd6fe; border-radius: 10px; background: #faf5ff; padding: 16px; margin: 20px 0; }
+        .counter-controls legend { color: #6d28d9; font-size: 1.125rem; font-weight: bold; }
+        .counter-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .counter-controls label { margin: 8px 0; }
+        .counter-controls input[type="number"] { box-sizing: border-box; width: 100%; font: inherit; padding: 10px; border: 1px solid #c4b5fd; border-radius: 6px; }
+        #counterShift-2 { accent-color: #7c3aed; }
+        @media (max-width: 500px) { .counter-fields { grid-template-columns: 1fr; } }
         .interference .visualization-toggle { display: flex; align-items: center; gap: 10px; margin: 12px 0; cursor: pointer; }
         .visualization-toggle input { width: 18px; height: 18px; margin: 0; accent-color: #2563eb; }
-        .wavelength-experiment { min-width: 0; background: #f8fafc; border: 1px solid #dbe3ed; border-radius: 10px; padding: 10px 12px; margin: 8px 0; }
-        .wavelength-experiment label { margin: 0 0 8px; }
-        #amplitude2, #waveShift, #wavelengthRatio { accent-color: #dc2626; }
+        #amplitude2, #waveShift { accent-color: #dc2626; }
         .wavelength-marks { display: flex; justify-content: space-between; color: #475569; font-size: 1.25rem; line-height: 1.5; }
         .shift-readout { display: block; margin: 12px 0; font-weight: bold; font-size: 1.125rem; }
-        .reflection { background: white; padding: 25px; border-radius: 15px; }
-        .reflection h2 { margin-top: 0; }
-        .reflection p { line-height: 1.6; }
-        .reflection button { font: inherit; padding: 12px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f5f7fa; cursor: pointer; }
-        .reflection button[aria-pressed="true"] { background: #e0e7ff; border-color: #4338ca; }
-        .reflection button:focus-visible, .reflection input:focus-visible { outline: 3px solid #4338ca; outline-offset: 4px; }
-        .reflection label { display: block; font-weight: bold; margin: 18px 0 12px; }
         @media (max-width: 500px) {
             .amplitude-controls { grid-template-columns: 1fr; gap: 4px; }
-            .reflection { padding: 18px 12px; }
         }
 
     </style>
@@ -232,7 +248,7 @@
     <div class="wave-tabs" role="tablist" aria-label="Utforsk bølger">
         <button type="button" id="tab-single" role="tab" aria-selected="true" aria-controls="panel-single" tabindex="0">Én bølge</button>
         <button type="button" id="tab-interference" role="tab" aria-selected="false" aria-controls="panel-interference" tabindex="-1">Interferens</button>
-        <button type="button" id="tab-reflection" role="tab" aria-selected="false" aria-controls="panel-reflection" tabindex="-1">Refleksjon</button>
+        <button type="button" id="tab-interference-2" role="tab" aria-selected="false" aria-controls="panel-interference-2" tabindex="-1">Interferens 2</button>
     </div>
     <div id="panel-single" role="tabpanel" aria-labelledby="tab-single" tabindex="0">
     <div class="wave-container">
@@ -418,12 +434,6 @@
                 <input id="amplitude2" type="range" min="0" max="1" step="0.01" value="1">
                 <div class="phase-ends"><span>0</span><span>1</span></div></div>
         </div>
-        <label class="visualization-toggle" for="wavelengthExperimentToggle"><input id="wavelengthExperimentToggle" type="checkbox" autocomplete="off" aria-controls="wavelengthExperiment">Ulik bølgelengde</label>
-        <fieldset id="wavelengthExperiment" class="wavelength-experiment" aria-label="Bølgelengde for bølge 2" disabled hidden>
-            <label class="wave-two" for="wavelengthRatio">Bølgelengde – bølge 2 (rød): <output id="wavelengthRatioValue" for="wavelengthRatio">1</output> × λ<sub>blå</sub></label>
-            <input id="wavelengthRatio" type="range" min="0.1" max="2" step="0.01" value="1" autocomplete="off">
-            <div class="phase-ends"><span>0,1 λ</span><span>2 λ</span></div>
-        </fieldset>
         <label class="wave-two" for="waveShift">Forskyv bølge 2 (rød)</label>
         <input id="waveShift" title="Forskyvningen måles i bølge 1s bølgelengde." type="range" min="0" max="100" value="25" autocomplete="off" aria-valuetext="En kvart bølgelengde">
         <div class="wavelength-marks" aria-hidden="true"><span>0</span><span>¼ λ</span><span>½ λ</span><span>¾ λ</span><span>1 λ</span></div>
@@ -432,7 +442,7 @@
             <button type="button" id="interferencePlay" aria-pressed="false">Start bevegelse</button>
         </div>
         <label class="visualization-toggle" for="showResult"><input id="showResult" type="checkbox" checked autocomplete="off" aria-controls="interferenceCanvas interferenceStatus interferenceExplanation">Vis bølge 3</label>
-        <canvas id="interferenceCanvas" role="img" aria-label="Tre rader: blå bølge 1 pluss rød bølge 2 er lik grønn bølge 3. Piler viser amplitudene." aria-describedby="interferenceScale interferenceStatus"></canvas>
+        <canvas id="interferenceCanvas" class="interference-canvas" role="img" aria-label="Tre rader: blå bølge 1 pluss rød bølge 2 er lik grønn bølge 3. Piler viser amplitudene." aria-describedby="interferenceScale interferenceStatus"></canvas>
         <p id="interferenceStatus" class="interference-status" aria-live="polite"></p>
         <p id="interferenceExplanation">På hvert sted legges utslagene sammen: To utslag oppover gir et større utslag.
             Like store utslag i motsatt retning opphever hverandre.
@@ -441,29 +451,57 @@
     </section>
 
     </div>
-    <div id="panel-reflection" role="tabpanel" aria-labelledby="tab-reflection" tabindex="0" hidden>
-        <section class="reflection" aria-labelledby="reflection-title">
-            <h2 id="reflection-title">Når en bølge kommer tilbake</h2>
-            <p>En liten bølge beveger seg langs en snor og møter enden.
-                Når bølgen kommer tilbake, kalles det <b>refleksjon</b>.</p>
-            <canvas id="reflectionCanvas" role="img" aria-label="En bølgepuls langs en snor møter en ende på høyre side og reflekteres." aria-describedby="reflectionStatus"></canvas>
-            <div class="interference-buttons">
-                <button type="button" data-end="fixed" aria-pressed="true">Fast ende</button>
-                <button type="button" data-end="free" aria-pressed="false">Fri ende</button>
-                <button type="button" id="reflectionPlay" aria-pressed="false">Start bevegelse</button>
-                <button type="button" id="reflectionReset">Tilbake til start</button>
+    <div id="panel-interference-2" role="tabpanel" aria-labelledby="tab-interference-2" tabindex="0" hidden>
+    <section class="interference" aria-labelledby="interferenceTitle-2">
+        <h2 id="interferenceTitle-2">Interferens 2 – Radiosignal som blir forstyrret</h2>
+        <p id="interferenceScale-2">Du er i krig, og en kompis bruker en walkie-talkie til å sende deg et viktig radiosignal som du må dekode.
+            Signalet er <b>bølge 1 (blå)</b> og har en enkel form med én ekstra svingning. Fienden oppdager sendingen og begynner å jamme:
+            sende støy i form av <b>bølge 2 (rød)</b>. Støyen gjør signalet vanskelig å tyde.</p>
+        <p>Lag et motsignal, <b>bølge 3 (lilla)</b>, som opphever støyen. Det <b>mottatte radiosignalet (grønt)</b>
+            viser summen av alle tre bølgene. Klarer du å få det til å bli lik det rene radiosignalet i bølge 1?</p>
+        <ol class="interference-challenges">
+            <li>Undersøk hvordan bølge 2 forstyrrer radiosignalet fra bølge 1.</li>
+            <li>Lag bølge 3 slik at den kansellerer bølge 2. Skriv inn amplitude og bølgelengde, og juster forskyvningen.</li>
+        </ol>
+        <p id="radioAmplitudeHelp"><b>Les av grafene:</b> Amplituden er avstanden fra 0 til en bølgetopp.
+            For støyen og motsignalet er bølgelengden avstanden mellom to nabotopper. Sett bevegelsen på pause og bruk aksene til å anslå begge deler.</p>
+        <div class="radio-workspace">
+        <div class="radio-tuning">
+        <fieldset class="counter-controls">
+            <legend>Bølge 3 – Motsignal</legend>
+            <div class="counter-fields">
+                <div><label for="counterAmplitude-2">Amplitude (0–1)</label>
+                    <input id="counterAmplitude-2" type="number" min="0" max="1" step="0.01" value="0" required aria-describedby="radioAmplitudeHelp"></div>
+                <div><label for="counterWavelength-2">Bølgelengde (m)</label>
+                    <input id="counterWavelength-2" type="number" min="0.1" max="25" step="0.01" value="1" required aria-describedby="radioAmplitudeHelp"></div>
             </div>
-            <label for="reflectionProgress">Følg bølgen fra start til retur</label>
-            <input id="reflectionProgress" type="range" min="0" max="100" value="15" aria-valuetext="På vei mot enden">
-            <div class="phase-ends"><span>Mot enden</span><span>Møter enden</span><span>Tilbake</span></div>
-            <p id="reflectionStatus" class="interference-status" aria-live="polite"></p>
-            <p><b>Fast ende:</b> Snora er festet og kan ikke bevege seg ved enden. Bølgen snus opp ned ved refleksjonen.</p>
-            <p><b>Fri ende:</b> Enden kan bevege seg opp og ned. Bølgen kommer tilbake uten å snus opp ned.</p>
-        </section>
-        <section class="tasks" aria-labelledby="reflection-tasks-title">
-            <h2 id="reflection-tasks-title">Utforsk refleksjon</h2>
-            <div id="reflectionTasks" class="task-list" data-tasks="oppgaver-refleksjon.md" aria-busy="true"><p>Laster oppgaver …</p></div>
-        </section>
+            <label for="counterShift-2">Forskyv bølge 3 (lilla)</label>
+            <input id="counterShift-2" type="range" min="0" max="100" step="1" value="0" autocomplete="off" aria-describedby="counterShiftHelp">
+            <div class="wavelength-marks" aria-hidden="true"><span>0</span><span>¼ λ₃</span><span>½ λ₃</span><span>¾ λ₃</span><span>1 λ₃</span></div>
+            <output id="counterShiftReadout-2" class="shift-readout" for="counterShift-2"></output>
+            <p id="counterShiftHelp">Forskyvningen måles i bølge 3s egen bølgelengde. Amplitude 0 betyr at motsignalet er av.</p>
+        </fieldset>
+        <div class="interference-buttons">
+            <button type="button" id="interferencePlay-2" aria-pressed="true">Sett på pause</button>
+        </div>
+
+        </div>
+        <div class="radio-graphs">
+        <div id="radioPlots-2" class="radio-plots" data-layout="stacked">
+        <canvas id="interferenceCanvas-2" class="interference-canvas" role="img" aria-label="Radiosignal (blå) pluss støy (rød) pluss motsignal (lilla) gir mottatt radiosignal (grønt). Alle grafene har samme skala." aria-describedby="interferenceScale-2 radioAmplitudeHelp"></canvas>
+        <div class="radio-comparison">
+        <label class="visualization-toggle" for="useCounter-2"><input id="useCounter-2" type="checkbox" checked autocomplete="off" aria-describedby="counterComparisonHelp" aria-controls="interferenceCanvas-2 interferenceExplanation-2">Med motsignal</label>
+        <p id="counterComparisonHelp">Fjern haken for å sammenligne uten motsignal. Verdiene beholdes.</p>
+        </div>
+        </div>
+        <p id="interferenceExplanation-2">På hvert sted legges utslagene sammen: To utslag oppover gir et større utslag.
+            Like store utslag i motsatt retning opphever hverandre.
+            De to bølgene har samme bølgelengde. Når toppene ligger sammen, legges amplitudene sammen.
+            Når en topp møter en bunn, motvirker utslagene hverandre.</p>
+        </div>
+        </div>
+    </section>
+
     </div>
 
 </div>
@@ -988,7 +1026,6 @@
 
 
 <script src="interferens.js"></script>
-<script src="refleksjon.js"></script>
 
 
 <script src="faner.js"></script>

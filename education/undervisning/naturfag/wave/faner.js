@@ -1,6 +1,6 @@
 (() => {
     const tabs = [...document.querySelectorAll('[role="tab"]')];
-    const hashes = ["#en-bolge", "#interferens", "#refleksjon"];
+    const hashes = ["#en-bolge", "#interferens", "#interferens-2"];
     function selectTab(tab, updateUrl = true) {
         tabs.forEach(item => {
             const selected = item === tab;
