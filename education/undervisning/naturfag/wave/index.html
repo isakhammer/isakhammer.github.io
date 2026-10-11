@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="no">
 <head>
@@ -129,12 +128,90 @@
             line-height: 1.6;
         }
 
+
+        .interference {
+            margin: 25px 0;
+            padding: 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+        }
+        .interference h2 { margin-top: 0; }
+        .interference p { line-height: 1.6; }
+        .interference li { line-height: 1.6; margin: 8px 0; }
+        .interference-challenges { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 8px 20px 8px 48px; margin: 20px 0; }
+        .interference .interference-challenges li { font-size: 1.25rem; font-weight: 600; line-height: 1.5; margin: 12px 0; }
+        #interferenceCanvas { height: 620px; }
+        #reflectionCanvas { height: 300px; }
+        .interference label { display: block; font-weight: bold; margin: 20px 0 12px; }
+        .phase-ends { display: flex; justify-content: space-between; gap: 16px; color: #555; font-size: 0.9rem; }
+        .interference-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+        .interference button {
+            font: inherit; border: 1px solid #cbd5e1; border-radius: 8px;
+            background: #f5f7fa; color: #222; padding: 12px 16px; cursor: pointer;
+        }
+        .interference button[aria-pressed="true"] { background: #e0e7ff; border-color: #4338ca; }
+        .interference button:hover { border-color: #4338ca; }
+        .interference button:focus-visible, .interference input:focus-visible { outline: 3px solid #4338ca; outline-offset: 4px; }
+        .interference-status { background: #f0fdf4; padding: 14px 18px; border-radius: 8px; min-height: 78px; }
+        @media (max-width: 500px) {
+            .interference { padding: 18px 12px; }
+            .container { padding: 20px 12px; }
+        }
+
         @media (max-width: 800px) {
 
             .controls {
                 grid-template-columns: 1fr;
             }
 
+        }
+
+
+        [hidden] { display: none !important; }
+        .wave-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 25px; }
+        .wave-tabs button {
+            font: inherit; font-weight: bold; padding: 14px 20px;
+            border: 1px solid #cbd5e1; border-radius: 10px;
+            background: white; color: #334155; cursor: pointer;
+        }
+        .wave-tabs button[aria-selected="true"] { background: #2563eb; border-color: #2563eb; color: white; }
+        .wave-tabs button:focus-visible, .task-list a:focus-visible { outline: 3px solid #4338ca; outline-offset: 4px; }
+        .tasks { background: white; border-radius: 15px; padding: 25px; margin-top: 25px; }
+        .tasks > h2 { margin-top: 0; }
+        .task-list { display: grid; gap: 15px; }
+        .task { border: 1px solid #dbe3ed; border-radius: 10px; padding: 18px; }
+        .task h3 { margin-top: 0; color: #1e3a8a; }
+        .task p, .task li { line-height: 1.6; }
+        .task > :last-child { margin-bottom: 0; }
+        @media (max-width: 500px) {
+            .wave-tabs button { flex: 1; padding: 12px; }
+            .tasks { padding: 18px 12px; }
+        }
+
+
+        .amplitude-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .amplitude-controls label { margin-top: 12px; }
+        .wave-one { color: #2563eb; }
+        .wave-two { color: #dc2626; }
+        .wave-three { color: #15803d; }
+        .interference .visualization-toggle { display: flex; align-items: center; gap: 10px; margin: 12px 0; cursor: pointer; }
+        .visualization-toggle input { width: 18px; height: 18px; margin: 0; accent-color: #2563eb; }
+        .wavelength-experiment { min-width: 0; background: #f8fafc; border: 1px solid #dbe3ed; border-radius: 10px; padding: 10px 12px; margin: 8px 0; }
+        .wavelength-experiment label { margin: 0 0 8px; }
+        #amplitude2, #waveShift, #wavelengthRatio { accent-color: #dc2626; }
+        .wavelength-marks { display: flex; justify-content: space-between; color: #475569; font-size: 1.25rem; line-height: 1.5; }
+        .shift-readout { display: block; margin: 12px 0; font-weight: bold; font-size: 1.125rem; }
+        .reflection { background: white; padding: 25px; border-radius: 15px; }
+        .reflection h2 { margin-top: 0; }
+        .reflection p { line-height: 1.6; }
+        .reflection button { font: inherit; padding: 12px 16px; border-radius: 8px; border: 1px solid #cbd5e1; background: #f5f7fa; cursor: pointer; }
+        .reflection button[aria-pressed="true"] { background: #e0e7ff; border-color: #4338ca; }
+        .reflection button:focus-visible, .reflection input:focus-visible { outline: 3px solid #4338ca; outline-offset: 4px; }
+        .reflection label { display: block; font-weight: bold; margin: 18px 0 12px; }
+        @media (max-width: 500px) {
+            .amplitude-controls { grid-template-columns: 1fr; gap: 4px; }
+            .reflection { padding: 18px 12px; }
         }
 
     </style>
@@ -152,6 +229,12 @@
     </div>
 
 
+    <div class="wave-tabs" role="tablist" aria-label="Utforsk bølger">
+        <button type="button" id="tab-single" role="tab" aria-selected="true" aria-controls="panel-single" tabindex="0">Én bølge</button>
+        <button type="button" id="tab-interference" role="tab" aria-selected="false" aria-controls="panel-interference" tabindex="-1">Interferens</button>
+        <button type="button" id="tab-reflection" role="tab" aria-selected="false" aria-controls="panel-reflection" tabindex="-1">Refleksjon</button>
+    </div>
+    <div id="panel-single" role="tabpanel" aria-labelledby="tab-single" tabindex="0">
     <div class="wave-container">
 
         <canvas id="waveCanvas"></canvas>
@@ -166,7 +249,7 @@
 
         <div class="control">
 
-            <h2>Amplitude</h2>
+            <h2>Amplitude <i>A</i></h2>
 
             <div class="description">
                 Hvor stort er utslaget fra likevektsposisjonen?
@@ -191,7 +274,7 @@
 
         <div class="control">
 
-            <h2>Bølgelengde</h2>
+            <h2>Bølgelengde <i>λ</i></h2>
 
             <div class="description">
                 Avstanden mellom to bølgetopper.
@@ -216,7 +299,7 @@
 
         <div class="control">
 
-            <h2>Bølgehastighet</h2>
+            <h2>Bølgehastighet <i>v</i></h2>
 
             <div class="description">
                 Hvor raskt beveger bølgen seg?
@@ -237,6 +320,7 @@
         </div>
 
     </div>
+
 
 
     <!-- Sammenhengen -->
@@ -308,6 +392,78 @@
             <b>f = v / λ</b>.
         </p>
 
+    </div>
+    <section class="tasks" aria-labelledby="basic-tasks-title">
+        <h2 id="basic-tasks-title">Kontrollspørsmål</h2>
+        <div id="basicTasks" class="task-list" data-tasks="oppgaver-en-bolge.md" aria-busy="true"><p>Laster oppgaver …</p></div>
+    </section>
+    </div>
+    <div id="panel-interference" role="tabpanel" aria-labelledby="tab-interference" tabindex="0" hidden>
+    <section class="interference" aria-labelledby="interferenceTitle">
+        <h2 id="interferenceTitle">Når to bølger møtes</h2>
+        <p id="interferenceScale">Bølger kan legges sammen: bølge 1 + bølge 2 = bølge 3.
+            På hvert sted er utslaget i bølge 3 summen av utslagene i bølge 1 og 2.
+            Alle tre grafer har samme skala. Y-aksen viser utslaget, og amplituden er den største avstanden fra 0.</p>
+        <p>Bølge 1 og 2 starter med samme bølgelengde λ og amplitude A.
+            Hold amplitudene like. Skjul bølge 3, gjett resultatet og vis den for å sjekke:</p>
+        <ol class="interference-challenges">
+            <li>Kan du få bølge 3 til å ha dobbelt så stor amplitude som hver av de to andre?</li>
+            <li>Kan du få bølge 3 til å bli helt flat, selv om bølge 1 og 2 fortsatt svinger?</li>
+        </ol>
+        <div class="amplitude-controls">
+            <div><label class="wave-one" for="amplitude1">Amplitude – bølge 1 (blå): <output id="amplitude1Value" for="amplitude1">1</output></label>
+                <input id="amplitude1" type="range" min="0" max="1" step="0.01" value="1">
+                <div class="phase-ends"><span>0</span><span>1</span></div></div>
+            <div><label class="wave-two" for="amplitude2">Amplitude – bølge 2 (rød): <output id="amplitude2Value" for="amplitude2">1</output></label>
+                <input id="amplitude2" type="range" min="0" max="1" step="0.01" value="1">
+                <div class="phase-ends"><span>0</span><span>1</span></div></div>
+        </div>
+        <label class="visualization-toggle" for="wavelengthExperimentToggle"><input id="wavelengthExperimentToggle" type="checkbox" autocomplete="off" aria-controls="wavelengthExperiment">Ulik bølgelengde</label>
+        <fieldset id="wavelengthExperiment" class="wavelength-experiment" aria-label="Bølgelengde for bølge 2" disabled hidden>
+            <label class="wave-two" for="wavelengthRatio">Bølgelengde – bølge 2 (rød): <output id="wavelengthRatioValue" for="wavelengthRatio">1</output> × λ<sub>blå</sub></label>
+            <input id="wavelengthRatio" type="range" min="0.1" max="2" step="0.01" value="1" autocomplete="off">
+            <div class="phase-ends"><span>0,1 λ</span><span>2 λ</span></div>
+        </fieldset>
+        <label class="wave-two" for="waveShift">Forskyv bølge 2 (rød)</label>
+        <input id="waveShift" title="Forskyvningen måles i bølge 1s bølgelengde." type="range" min="0" max="100" value="25" autocomplete="off" aria-valuetext="En kvart bølgelengde">
+        <div class="wavelength-marks" aria-hidden="true"><span>0</span><span>¼ λ</span><span>½ λ</span><span>¾ λ</span><span>1 λ</span></div>
+        <output id="shiftReadout" class="shift-readout" for="waveShift"></output>
+        <div class="interference-buttons">
+            <button type="button" id="interferencePlay" aria-pressed="false">Start bevegelse</button>
+        </div>
+        <label class="visualization-toggle" for="showResult"><input id="showResult" type="checkbox" checked autocomplete="off" aria-controls="interferenceCanvas interferenceStatus interferenceExplanation">Vis bølge 3</label>
+        <canvas id="interferenceCanvas" role="img" aria-label="Tre rader: blå bølge 1 pluss rød bølge 2 er lik grønn bølge 3. Piler viser amplitudene." aria-describedby="interferenceScale interferenceStatus"></canvas>
+        <p id="interferenceStatus" class="interference-status" aria-live="polite"></p>
+        <p id="interferenceExplanation">På hvert sted legges utslagene sammen: To utslag oppover gir et større utslag.
+            Like store utslag i motsatt retning opphever hverandre.
+            De to bølgene har samme bølgelengde. Når toppene ligger sammen, legges amplitudene sammen.
+            Når en topp møter en bunn, motvirker utslagene hverandre.</p>
+    </section>
+
+    </div>
+    <div id="panel-reflection" role="tabpanel" aria-labelledby="tab-reflection" tabindex="0" hidden>
+        <section class="reflection" aria-labelledby="reflection-title">
+            <h2 id="reflection-title">Når en bølge kommer tilbake</h2>
+            <p>En liten bølge beveger seg langs en snor og møter enden.
+                Når bølgen kommer tilbake, kalles det <b>refleksjon</b>.</p>
+            <canvas id="reflectionCanvas" role="img" aria-label="En bølgepuls langs en snor møter en ende på høyre side og reflekteres." aria-describedby="reflectionStatus"></canvas>
+            <div class="interference-buttons">
+                <button type="button" data-end="fixed" aria-pressed="true">Fast ende</button>
+                <button type="button" data-end="free" aria-pressed="false">Fri ende</button>
+                <button type="button" id="reflectionPlay" aria-pressed="false">Start bevegelse</button>
+                <button type="button" id="reflectionReset">Tilbake til start</button>
+            </div>
+            <label for="reflectionProgress">Følg bølgen fra start til retur</label>
+            <input id="reflectionProgress" type="range" min="0" max="100" value="15" aria-valuetext="På vei mot enden">
+            <div class="phase-ends"><span>Mot enden</span><span>Møter enden</span><span>Tilbake</span></div>
+            <p id="reflectionStatus" class="interference-status" aria-live="polite"></p>
+            <p><b>Fast ende:</b> Snora er festet og kan ikke bevege seg ved enden. Bølgen snus opp ned ved refleksjonen.</p>
+            <p><b>Fri ende:</b> Enden kan bevege seg opp og ned. Bølgen kommer tilbake uten å snus opp ned.</p>
+        </section>
+        <section class="tasks" aria-labelledby="reflection-tasks-title">
+            <h2 id="reflection-tasks-title">Utforsk refleksjon</h2>
+            <div id="reflectionTasks" class="task-list" data-tasks="oppgaver-refleksjon.md" aria-busy="true"><p>Laster oppgaver …</p></div>
+        </section>
     </div>
 
 </div>
@@ -400,6 +556,7 @@
     );
 
 
+    new ResizeObserver(resizeCanvas).observe(canvas);
     resizeCanvas();
 
 
@@ -522,6 +679,11 @@
     */
 
     function drawWave() {
+        if (document.getElementById("panel-single").hidden) {
+            requestAnimationFrame(drawWave);
+            return;
+        }
+
 
         const width =
             canvas.clientWidth;
@@ -788,10 +950,10 @@
 
 
             ctx.fillText(
-                "Bølgelengde",
+                "λ",
                 wavelengthStart
                 + waveLengthPixels / 2
-                - 55,
+                - ctx.measureText("λ").width / 2,
                 height - 60
             );
 
@@ -824,6 +986,13 @@
 
 </script>
 
+
+<script src="interferens.js"></script>
+<script src="refleksjon.js"></script>
+
+
+<script src="faner.js"></script>
+<script src="oppgaver.js"></script>
+
 </body>
 </html>
-```
