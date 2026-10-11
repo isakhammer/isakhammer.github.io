@@ -219,7 +219,6 @@
                 }
                 counter.shift = Number(counterShift.value) / 100;
                 const description = `${format(counter.shift)} λ₃ · ${format(counter.shift * counter.wavelength)} m`;
-                element("counterShiftReadout").textContent = description;
                 counterShift.setAttribute("aria-valuetext", description);
             }
             const value = shiftValue();
@@ -251,7 +250,8 @@
                 : "En halv bølgelengde: Topp møter bunn. Bølgene svekker hverandre. Fordi amplitudene er ulike, blir det et utslag igjen i bølge 3.";
             else text = "Bølgene er forskjøvet: Utslagene på samme sted legges sammen.";
             if (status) status.textContent = reveal ? text : "";
-            element("interferenceExplanation").textContent = isRadioSignal
+            const explanation = element("interferenceExplanation");
+            if (explanation) explanation.textContent = isRadioSignal
                 ? resultToggle.checked
                     ? "Med motsignal: Utslagene fra bølge 1, 2 og 3 legges sammen i det mottatte signalet. Alle bølgene beveger seg med samme hastighet."
                     : "Uten motsignal: Bare utslagene fra bølge 1 og 2 legges sammen. Innstillingene for bølge 3 beholdes når du slår motsignalet av."

@@ -31,6 +31,8 @@
             margin-bottom: 10px;
         }
 
+        .ai-credit { margin: 12px 0 0; text-align: right; color: #64748b; font-size: 11px; font-weight: normal; }
+
         .subtitle {
             text-align: center;
             font-size: 1.2rem;
@@ -394,6 +396,12 @@
         </p>
 
         <p>
+            <b>Periode T</b> er tiden én hel svingning tar, målt i sekunder (s).
+            Frekvens og periode henger sammen: <b>f = 1 / T</b>.
+            Kortere periode gir høyere frekvens.
+        </p>
+
+        <p>
             <b>Bølgehastighet</b> forteller hvor raskt selve bølgeformen
             beveger seg gjennom rommet.
         </p>
@@ -409,10 +417,6 @@
         </p>
 
     </div>
-    <section class="tasks" aria-labelledby="basic-tasks-title">
-        <h2 id="basic-tasks-title">Kontrollspørsmål</h2>
-        <div id="basicTasks" class="task-list" data-tasks="oppgaver-en-bolge.md" aria-busy="true"><p>Laster oppgaver …</p></div>
-    </section>
     </div>
     <div id="panel-interference" role="tabpanel" aria-labelledby="tab-interference" tabindex="0" hidden>
     <section class="interference" aria-labelledby="interferenceTitle">
@@ -441,13 +445,9 @@
         <div class="interference-buttons">
             <button type="button" id="interferencePlay" aria-pressed="false">Start bevegelse</button>
         </div>
-        <label class="visualization-toggle" for="showResult"><input id="showResult" type="checkbox" checked autocomplete="off" aria-controls="interferenceCanvas interferenceStatus interferenceExplanation">Vis bølge 3</label>
+        <label class="visualization-toggle" for="showResult"><input id="showResult" type="checkbox" checked autocomplete="off" aria-controls="interferenceCanvas interferenceStatus">Vis bølge 3</label>
         <canvas id="interferenceCanvas" class="interference-canvas" role="img" aria-label="Tre rader: blå bølge 1 pluss rød bølge 2 er lik grønn bølge 3. Piler viser amplitudene." aria-describedby="interferenceScale interferenceStatus"></canvas>
         <p id="interferenceStatus" class="interference-status" aria-live="polite"></p>
-        <p id="interferenceExplanation">På hvert sted legges utslagene sammen: To utslag oppover gir et større utslag.
-            Like store utslag i motsatt retning opphever hverandre.
-            De to bølgene har samme bølgelengde. Når toppene ligger sammen, legges amplitudene sammen.
-            Når en topp møter en bunn, motvirker utslagene hverandre.</p>
     </section>
 
     </div>
@@ -476,10 +476,8 @@
                     <input id="counterWavelength-2" type="number" min="0.1" max="25" step="0.01" value="1" required aria-describedby="radioAmplitudeHelp"></div>
             </div>
             <label for="counterShift-2">Forskyv bølge 3 (lilla)</label>
-            <input id="counterShift-2" type="range" min="0" max="100" step="1" value="0" autocomplete="off" aria-describedby="counterShiftHelp">
+            <input id="counterShift-2" type="range" min="0" max="100" step="1" value="0" autocomplete="off" title="Forskyvningen måles i bølge 3s egen bølgelengde.">
             <div class="wavelength-marks" aria-hidden="true"><span>0</span><span>¼ λ₃</span><span>½ λ₃</span><span>¾ λ₃</span><span>1 λ₃</span></div>
-            <output id="counterShiftReadout-2" class="shift-readout" for="counterShift-2"></output>
-            <p id="counterShiftHelp">Forskyvningen måles i bølge 3s egen bølgelengde. Amplitude 0 betyr at motsignalet er av.</p>
         </fieldset>
         <div class="interference-buttons">
             <button type="button" id="interferencePlay-2" aria-pressed="true">Sett på pause</button>
@@ -504,6 +502,7 @@
 
     </div>
 
+    <footer class="ai-credit">@laget ved hjelp av KI</footer>
 </div>
 
 
@@ -1029,7 +1028,6 @@
 
 
 <script src="faner.js"></script>
-<script src="oppgaver.js"></script>
 
 </body>
 </html>

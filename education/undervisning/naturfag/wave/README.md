@@ -6,22 +6,9 @@ Verktøyet har tre faner: «Én bølge», «Interferens» og «Interferens 2», 
 
 ## Legg til eller endre oppgaver
 
-Interferensoppgavene står øverst i begge interferensfanene. Rediger dem i `index.html` og i kopien på `education/index.html`. For «Én bølge», rediger oppgavefilen:
+Interferensoppgavene står øverst i begge interferensfanene. Rediger dem i `index.html` og i kopien på `education/index.html`. «Én bølge» viser simulering og forklaring uten kontrollspørsmål.
 
-- `oppgaver-en-bolge.md`: amplitude, bølgelengde og hastighet.
-
-Hver overskrift med `##` blir en egen oppgave. Skriv vanlig tekst og spørsmål som punktliste under overskriften:
-
-```markdown
-## 5. Min nye oppgave
-
-Prøv en innstilling i simuleringen.
-
-- Hva ser du?
-- Forklar med egne ord hvorfor det skjer.
-```
-
-Flytt avsnittene for å endre rekkefølgen. For disse oppgavefilene trenger du ikke å endre HTML eller JavaScript. Formatet støtter oppgaveoverskrifter, vanlige avsnitt og punktlister; øvrig Markdown-formatering vises som vanlig tekst.
+Alle fanene viser en liten KI-kreditering nederst til høyre.
 
 ## Forhåndsvis lokalt
 
@@ -31,8 +18,8 @@ Kjør fra prosjektets rotmappe:
 python3 -m http.server 8000
 ```
 
-Åpne `http://localhost:8000/education/`. Oppgavefilene lastes av nettleseren, så bruk webserveren når du forhåndsviser.
+Åpne `http://localhost:8000/education/` for å forhåndsvise siden.
 
 Lenk direkte til en fane med `#en-bolge`, `#interferens` eller `#interferens-2`, for eksempel `http://localhost:8000/education/#interferens`.
 
-Ved publisering følger Markdown- og JavaScript-filene med de øvrige statiske filene.
+Ved publisering følger JavaScript-filene med de øvrige statiske filene.
