@@ -228,8 +228,40 @@
         #amplitude2, #waveShift { accent-color: #dc2626; }
         .wavelength-marks { display: flex; justify-content: space-between; color: #475569; font-size: 1.25rem; line-height: 1.5; }
         .shift-readout { display: block; margin: 12px 0; font-weight: bold; font-size: 1.125rem; }
+        .click-game { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08); }
+        .click-game h2 { margin-top: 0; }
+        .click-game p { line-height: 1.6; }
+        .click-measures { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+        .click-measure { background: #f8fafc; border: 1px solid #dbe3ed; border-radius: 10px; padding: 18px; }
+        .click-measure h3 { margin: 0 0 8px; font-size: 1.1rem; }
+        .click-measure p { margin: 8px 0 0; }
+        .click-measure output { display: block; font-size: 2rem; font-weight: bold; color: #1d4ed8; font-variant-numeric: tabular-nums; }
+        .click-measure #clickPeriod { color: #6d28d9; }
+        .click-intervals { display: flex; flex-wrap: wrap; gap: 12px 32px; padding: 14px 18px; background: #faf5ff; border: 1px solid #ddd6fe; border-radius: 10px; margin: 0 0 16px; }
+        .click-intervals p { margin: 0; }
+        .click-intervals output { font-weight: bold; font-variant-numeric: tabular-nums; }
+        #clickShortest { color: #6d28d9; }
+        #clickLongest { color: #b45309; }
+        .click-intervals .click-interval-note { flex-basis: 100%; font-size: 0.9rem; color: #475569; }
+        .click-arena { text-align: center; }
+        .click-arena button { font: inherit; cursor: pointer; border-radius: 10px; }
+        .click-start { background: white; border: 1px solid #cbd5e1; padding: 12px 20px; }
+        .click-start:disabled { cursor: default; opacity: 0.6; }
+        .click-timer { margin: 16px 0 10px; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
+        .click-pad { display: block; width: 100%; min-height: 155px; border: 2px solid #2563eb; background: #2563eb; color: white; font-size: 1.6rem !important; font-weight: bold !important; touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+        .click-pad:disabled { background: #eff6ff; color: #475569; border-color: #bfdbfe; cursor: default; }
+        .click-pad:active:enabled { background: #1d4ed8; }
+        .click-game button:focus-visible { outline: 3px solid #4338ca; outline-offset: 4px; }
+        .click-game .click-count { display: block; margin-top: 10px; font-size: 1rem; }
+        .click-timeline { width: 100%; height: auto; display: block; }
+        .click-history { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+        .click-history th, .click-history td { text-align: right; padding: 10px 8px; border-bottom: 1px solid #e2e8f0; }
+        .click-history th:first-child, .click-history td:first-child { text-align: left; }
+        .click-history caption { text-align: left; font-weight: bold; margin: 20px 0 8px; }
         @media (max-width: 500px) {
             .amplitude-controls { grid-template-columns: 1fr; gap: 4px; }
+            .click-game { padding: 18px 12px; }
+            .click-measures { grid-template-columns: 1fr; }
         }
 
     </style>
@@ -249,6 +281,7 @@
 
     <div class="wave-tabs" role="tablist" aria-label="Utforsk bølger">
         <button type="button" id="tab-single" role="tab" aria-selected="true" aria-controls="panel-single" tabindex="0">Én bølge</button>
+        <button type="button" id="tab-click" role="tab" aria-selected="false" aria-controls="panel-click" tabindex="-1">Klikkekonkurranse</button>
         <button type="button" id="tab-interference" role="tab" aria-selected="false" aria-controls="panel-interference" tabindex="-1">Interferens</button>
         <button type="button" id="tab-interference-2" role="tab" aria-selected="false" aria-controls="panel-interference-2" tabindex="-1">Interferens 2</button>
     </div>
@@ -500,6 +533,58 @@
         </div>
     </section>
 
+    </div>
+
+    <div id="panel-click" role="tabpanel" aria-labelledby="tab-click" tabindex="0" hidden>
+        <section class="click-game" aria-labelledby="clickTitle">
+            <h2 id="clickTitle">Klikkekonkurranse</h2>
+            <p>Klikk så raskt og jevnt du kan i 10 sekunder. Hvert klikk tilsvarer én svingning.
+                Trykk «Start runde», vent på nedtellingen, og klikk i det blå feltet. Du kan også bruke mellomrom eller Enter når feltet har fokus.</p>
+            <div class="click-arena">
+                <button type="button" id="clickStart" class="click-start">Start runde</button>
+                <div id="clickTimer" class="click-timer">Måletid: 10 sekunder</div>
+                <button type="button" id="clickPad" class="click-pad" disabled>
+                    <span id="clickPrompt">Klar til å klikke?</span>
+                    <span id="clickCount" class="click-count">0 klikk</span>
+                </button>
+                <p id="clickStatus" role="status">Start en runde for å måle frekvens og periodetid.</p>
+            </div>
+            <div class="click-measures">
+                <div class="click-measure">
+                    <h3>Gjennomsnittlig periodetid <i>T</i></h3>
+                    <output id="clickPeriod">– s</output>
+                    <p>Hvor lang tid per klikk?<br><b>T = total tid / antall klikk</b><br><span id="clickPeriodFormula">T = 10 s / antall klikk</span></p>
+                </div>
+                <div class="click-measure">
+                    <h3>Gjennomsnittlig frekvens <i>f</i></h3>
+                    <output id="clickFrequency">– Hz</output>
+                    <p>Hvor mange klikk per sekund?<br><span id="clickFrequencyFormula">f = 1 / T</span></p>
+                </div>
+            </div>
+            <div class="click-intervals">
+                <p>Korteste periodetid: <output id="clickShortest">– s</output></p>
+                <p>Lengste periodetid: <output id="clickLongest">– s</output></p>
+                <p id="clickIntervalNote" class="click-interval-note">Måles mellom to påfølgende klikk. Minst to klikk trengs.</p>
+            </div>
+            <svg id="clickTimeline" class="click-timeline" viewBox="0 0 900 180" role="img" aria-label="Tidslinje fra 0 til 10 sekunder. Hvert klikk vises som en prikk.">
+                <line x1="25" y1="110" x2="875" y2="110" stroke="#94a3b8" stroke-width="2" />
+                <g id="clickMarks" fill="#2563eb"></g>
+                <g id="clickIntervalMarks" aria-hidden="true"></g>
+                <g fill="#475569" font-size="18" text-anchor="middle">
+                    <text x="25" y="145">0</text><text x="195" y="145">2</text><text x="365" y="145">4</text>
+                    <text x="535" y="145">6</text><text x="705" y="145">8</text><text x="875" y="145">10</text>
+                    <text x="450" y="175">Tid (s)</text>
+                </g>
+            </svg>
+            <p>Hver prikk er ett klikk. Tettere prikker betyr flere klikk per sekund og kortere tid mellom klikkene.
+                Vi anslår <b>gjennomsnittlig periodetid ved å dele 10 sekunder på antall klikk</b>.
+                Deretter finner vi frekvensen med <b>f = 1 / T</b>. Kort periodetid gir høy frekvens.</p>
+            <table id="clickHistory" class="click-history" hidden>
+                <caption>Siste runder – sammenlign resultatene</caption>
+                <thead><tr><th scope="col">Runde</th><th scope="col">Klikk</th><th scope="col">f (Hz)</th><th scope="col">T (s)</th></tr></thead>
+                <tbody id="clickRounds"></tbody>
+            </table>
+        </section>
     </div>
 
     <footer class="ai-credit">@laget ved hjelp av KI</footer>
@@ -1028,6 +1113,7 @@
 
 
 <script src="faner.js"></script>
+<script src="klikkekonkurranse.js"></script>
 
 </body>
 </html>
