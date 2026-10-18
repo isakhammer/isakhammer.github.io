@@ -1,6 +1,6 @@
 (() => {
     const tabs = [...document.querySelectorAll('[role="tab"]')];
-    const hashes = ["#en-bolge", "#klikkekonkurranse", "#interferens", "#interferens-2"];
+    const hashes = ["#en-bolge", "#klikkekonkurranse", "#interferens", "#interferens-2", "#elektromagnetiske-bolger-1", "#elektromagnetiske-bolger-2", "#elektromagnetiske-bolger-3"];
     function selectTab(tab, updateUrl = true) {
         tabs.forEach(item => {
             const selected = item === tab;
@@ -24,7 +24,7 @@
             tabs[next].focus();
         });
     });
-    function readHash() { selectTab(tabs[Math.max(0, hashes.indexOf(location.hash))], false); }
+    function readHash() { const hash = location.hash === "#elektromagnetiske-bolger" ? "#elektromagnetiske-bolger-3" : location.hash; selectTab(tabs[Math.max(0, hashes.indexOf(hash))], false); }
     window.addEventListener("hashchange", readHash);
     readHash();
 })();

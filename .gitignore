@@ -1,0 +1,9 @@
+
+# Jekyll and Ruby generated files
+.bundle/
+.tmp/
+_site/
+vendor/
+.jekyll-cache/
+.jekyll-metadata
+.sass-cache/

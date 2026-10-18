@@ -265,6 +265,7 @@
         }
 
     </style>
+    <link rel="stylesheet" href="elektromagnetisme.css">
 </head>
 
 
@@ -284,6 +285,10 @@
         <button type="button" id="tab-click" role="tab" aria-selected="false" aria-controls="panel-click" tabindex="-1">Klikkekonkurranse</button>
         <button type="button" id="tab-interference" role="tab" aria-selected="false" aria-controls="panel-interference" tabindex="-1">Interferens</button>
         <button type="button" id="tab-interference-2" role="tab" aria-selected="false" aria-controls="panel-interference-2" tabindex="-1">Interferens 2</button>
+        <span class="wave-tabs-break" aria-hidden="true"></span>
+        <button type="button" id="tab-em-1" class="em-tab" role="tab" aria-selected="false" aria-controls="panel-em-1" tabindex="-1">Elektromagnetiske bølger 1</button>
+        <button type="button" id="tab-em-2" class="em-tab" role="tab" aria-selected="false" aria-controls="panel-em-2" tabindex="-1">Elektromagnetiske bølger 2</button>
+        <button type="button" id="tab-em-3" class="em-tab" role="tab" aria-selected="false" aria-controls="panel-em-3" tabindex="-1">Elektromagnetiske bølger 3</button>
     </div>
     <div id="panel-single" role="tabpanel" aria-labelledby="tab-single" tabindex="0">
     <div class="wave-container">
@@ -584,6 +589,154 @@
                 <thead><tr><th scope="col">Runde</th><th scope="col">Klikk</th><th scope="col">f (Hz)</th><th scope="col">T (s)</th></tr></thead>
                 <tbody id="clickRounds"></tbody>
             </table>
+        </section>
+    </div>
+
+    <div id="panel-em-1" role="tabpanel" aria-labelledby="tab-em-1" tabindex="0" hidden>
+        <section class="em-lesson em-simple" aria-labelledby="em1-heading">
+            <p class="em-eyebrow">UTFORSK LADNINGER</p>
+            <h2 id="em1-heading">Flytt én ladning. Hva skjer med de andre?</h2>
+            <p class="em-intro">Dra den røde ladningen. Prøv nært, langt unna, sakte og raskt.</p>
+            <figure class="em-figure">
+                <canvas id="em1Canvas" class="em-canvas em-many-canvas" tabindex="0" role="img" aria-label="Tre negative ladninger: en stor rød med ladning minus 2q og to små lilla med ladning minus q hver. Dra den røde ladningen med mus eller finger, eller bruk piltastene når figuren er valgt." aria-describedby="em1-help"></canvas>
+            </figure>
+            <div class="em-simple-controls">
+                <button type="button" id="em1-reset">Tilbakestill</button>
+                <label><input type="checkbox" id="em1-field"> Vis elektrisk felt</label>
+            </div>
+            <p id="em1-help" class="em-drag-help">Du kan også velge figuren og bruke piltastene.</p>
+            <details class="em-details"><summary>Hva viser modellen?</summary>
+                <p>Alle tre ladningene er negative. Den store er merket −2q og har dobbelt så stor negativ ladning som hver av de små, som er merket −q. De skyver på hverandre gjennom det elektriske feltet. Når du flytter én, endres kreftene på de andre.</p>
+                <p>Et elektrisk felt finnes også rundt en ladning i ro, litt som gravitasjonsfeltet rundt en masse. Pilene peker i retningen en positiv prøveladning ville blitt dyttet. Negative ladninger påvirkes motsatt vei.</p>
+                <p class="em-model-note">Dette er en enkel modell av elektriske krefter. Svake fjærer holder ladningene i området. Her oppdateres feltet uten synlig forsinkelse. De neste fanene utforsker feltendringer som brer seg utover.</p>
+            </details>
+        </section>
+    </div>
+
+    <div id="panel-em-2" role="tabpanel" aria-labelledby="tab-em-2" tabindex="0" hidden>
+        <section class="em-lesson" aria-labelledby="em2-heading">
+            <p class="em-eyebrow">UTFORSK SVINGNINGER</p>
+            <h2 id="em2-heading">Kan én ladning sette en annen i bevegelse?</h2>
+            <p class="em-intro">Flytt senderen, eller la den svinge. Hva legger du merke til hos mottakeren?</p>
+            <figure class="em-figure">
+                <div class="em-scene-heading"><span>Sender <b>−</b></span><span id="em2-clock" class="em-clock">Tid: 0,00 s</span><span>Mottaker <b>−</b></span></div>
+                <canvas id="em2Canvas" class="em-canvas" tabindex="0" role="img" aria-label="En negativ senderladning til venstre og en negativ mottakerladning i en isolerende føring til høyre. Blå feltlinjer viser feltet, og en oransje pil viser den elektriske kraften på mottakeren." aria-describedby="em2-drag-help"></canvas>
+                <figcaption><span class="em-key em-key-field">Elektrisk felt E</span><span class="em-key em-key-force">Kraft på mottakeren</span><span class="em-key em-key-front">Første feltendring</span><span class="em-field-scope">Vi viser bare den elektriske delen.</span></figcaption>
+            </figure>
+            <p id="em2-drag-help" class="em-drag-help">Dra senderen ved 0 Hz, eller bruk piltastene.</p>
+            <div class="em-toolbar">
+                <div class="em-actions">
+                    <button type="button" id="em2-play" class="em-primary">Pause</button>
+                    <button type="button" id="em2-reset">Tilbakestill</button>
+                    <label class="em-slow"><input type="checkbox" id="em2-slow"> Sakte film (¼ fart)</label>
+                </div>
+                <div class="em-settings">
+                <div id="em2-frequency-control">
+                    <label for="em2-frequency">Frekvens <output id="em2-frequency-value">1 Hz</output></label>
+                    <input id="em2-frequency" type="range" min="0" max="2" step="0.5" value="1">
+                    <p id="em2-period">1 hel svingning per sekund · T = 1 s</p>
+                </div>
+                <div id="em2-amplitude-control">
+                    <label for="em2-amplitude">Utslag ved svingning <output id="em2-amplitude-value">50 %</output></label>
+                    <input id="em2-amplitude" type="range" min="4" max="28" step="1" value="14" aria-describedby="em2-amplitude-help">
+                    <p id="em2-amplitude-help">Prøv små og store svingninger.</p>
+                </div>
+                <div id="em2-distance-control">
+                    <label for="em2-distance">Avstand til mottakeren <output id="em2-distance-value">1,6×</output></label>
+                    <input id="em2-distance" type="range" min="1" max="1.8" step="0.1" value="1.6" aria-describedby="em2-distance-help">
+                    <p id="em2-distance-help">Hva endrer seg når du flytter mottakeren?</p>
+                </div>
+                </div>
+            </div>
+            <p id="em2-receiver-status" class="em-observation" role="status">Prøv å flytte senderen.</p>
+            <details class="em-details"><summary>Hva viser modellen?</summary>
+                <p>Senderen lager et elektrisk felt. Når den flyttes eller svinger, endres feltet. Mottakeren påvirkes av feltet der den er, etter at endringen har nådd fram.</p>
+                <p>Ved 1 Hz gjør senderen én hel svingning per sekund. En svingende ladning akselererer og kan sende ut elektromagnetiske bølger. Her undersøker vi bare den elektriske delen av bølgen.</p>
+                <p>En isolerende føring holder mottakeren i fast avstand, mens en svak fjær lar den bevege seg opp og ned. Den oransje pilen viser bare den elektriske kraften. Et lukket metallbur ville skjerme feltet.</p>
+                <p class="em-model-note">Forplantningsfarten er gjort synlig, og utslagene er forstørret. Figuren er ikke i fysisk målestokk. Mottakerens eget felt og tilbakevirkning på senderen er utelatt.</p>
+            </details>
+        </section>
+    </div>
+
+    <div id="panel-em-3" role="tabpanel" aria-labelledby="tab-em-3" tabindex="0" hidden>
+        <section class="em-lesson" aria-labelledby="em-heading">
+            <p class="em-eyebrow">FRA LADNING TIL RADIOBØLGE</p>
+            <h2 id="em-heading">Kan du få en gnist i ringen?</h2>
+            <p class="em-intro">Kan du få en gnist med minst mulig risting? Utforsk frekvens, avstand og avstemming av ringen.</p>
+            <figure class="em-figure">
+                <div class="em-scene-heading"><span>Sender <b>−</b></span><span id="em-clock" class="em-clock">Tid: 0,00 s</span><span>Mottakerring</span></div>
+                <canvas id="emCanvas" class="em-canvas" tabindex="0" role="img" aria-label="Et rødt senderelektron og en mottakerring med faste positive ioner og bevegelige elektroner. Ved 0 Hz kan du dra senderen eller bruke piltastene. Opphopning av elektroner ved ringens åpning kan utløse en gnist." aria-describedby="em-drag-help"></canvas>
+                <figcaption><span class="em-key em-key-field">Elektrisk felt E</span><span class="em-key em-key-ion">Faste positive ioner</span><span class="em-key em-key-electron">Bevegelige elektroner</span><span class="em-key em-key-front">Første feltendring</span><span class="em-field-scope">Vi viser bare den elektriske delen.</span></figcaption>
+            </figure>
+            <p id="em-drag-help" class="em-drag-help">Dra det røde elektronet med mus eller finger ved 0 Hz. Du kan også velge figuren og bruke piltastene.</p>
+            <div class="em-toolbar">
+                <div class="em-actions">
+                    <button type="button" id="em-play" class="em-primary">Pause</button>
+                    <button type="button" id="em-reset">Tilbakestill</button>
+                    <label class="em-slow"><input type="checkbox" id="em-slow"> Sakte film (¼ fart)</label>
+                </div>
+                <div class="em-settings">
+                <div id="em-frequency-control">
+                    <label for="em-frequency">Frekvens <output id="em-frequency-value">0 Hz</output></label>
+                    <input id="em-frequency" type="range" min="0" max="2" step="0.1" value="0">
+                    <p id="em-period">Ingen automatisk svingning · flytt elektronet selv</p>
+                    <label class="em-resonance-lock" for="em-resonance-lock"><input id="em-resonance-lock" type="checkbox" aria-describedby="em-resonance-lock-help"> Perfekt egenfrekvens</label>
+                    <p id="em-resonance-lock-help">Senderen følger ringens egenfrekvens. Se om svingningene bygger seg opp.</p>
+                </div>
+                <div id="em-amplitude-control">
+                    <label for="em-amplitude">Utslag ved svingning <output id="em-amplitude-value">50 %</output></label>
+                    <input id="em-amplitude" type="range" min="4" max="28" step="1" value="14" aria-describedby="em-amplitude-help">
+                    <p id="em-amplitude-help">Øk utslaget for å riste kraftigere.</p>
+                </div>
+                <div id="em-distance-control">
+                    <label for="em-distance">Avstand til ringen <output id="em-distance-value">1,6×</output></label>
+                    <input id="em-distance" type="range" min="1" max="1.8" step="0.1" value="1.6" aria-describedby="em-distance-help">
+                    <p id="em-distance-help">Relativ avstand. Sammenlign nært og langt unna med samme risting.</p>
+                </div>
+                </div>
+            </div>
+            <details class="em-details em-receiver-tuning">
+                <summary>Endre mottakerringen</summary>
+                <div class="em-settings">
+                    <label for="em-resonance">Avstemming <output id="em-resonance-value">1,1 Hz</output></label>
+                    <input id="em-resonance" type="range" min="0.6" max="1.4" step="0.1" value="1.1" aria-describedby="em-resonance-help">
+                    <p id="em-resonance-help">Prøv en annen avstemming. Må du endre noe hos senderen?</p>
+                </div>
+            </details>
+            <p id="em-receiver-status" class="em-observation" role="status">Senderen står i ro. Elektronene i ringen er i likevekt. Flytt senderen eller øk frekvensen.</p>
+            <details class="em-details"><summary>Hva viser modellen?</summary>
+            <p class="em-model-note">Forenklet modell: Lysets gang er gjort synlig, og elektronenes bevegelse er forstørret. Ringen er en forenklet resonanskrets med en valgt grense for spenningen over gapet. Prikkene viser ladningsforskyvning skjematisk, og gnisten viser en utladning; dette er ikke en beregning av luftas ionisering. I virkeligheten sprer feltendringer seg med lyshastigheten i vakuum, omtrent 300 000 km/s. Feltlinjene viser retning, ikke baner for ladninger.</p>
+            <div class="em-notes">
+                <article><h3>Litt som gravitasjon</h3><p>En masse har et gravitasjonsfelt rundt seg. På samme måte har en ladning et elektrisk felt. Feltet finnes også når ingenting annet er der for å merke det. Gravitasjon trekker masser sammen; elektriske krefter kan både trekke og skyve.</p></article>
+                <article><h3>Hva beveger seg i ringen?</h3><p>De positive ionene står på faste plasser. Protonene er bundet i atomkjernene. Ledningselektronene kan bevege seg langs metallet, men holdes bundet til lederen. Figuren viser et lite utvalg av dem.</p></article>
+            </div>
+            <article class="em-distance-note"><h3>Hvordan reagerer ringen?</h3><p>Ringen har en egenfrekvens. Den kan bygge opp større spenning når senderen svinger nær denne frekvensen. Derfor gir ikke høyest senderfrekvens nødvendigvis best mottak. Avstemmingen endrer hvilken rytme ringen reagerer best på.</p><h3>Nær eller langt unna?</h3><p>Endre avstanden til ringen, eller dra senderen mot eller fra ringen ved 0 Hz. På kortere avstand kommer feltendringen tidligere fram, og påvirkningen er vanligvis sterkere. Lengre unna kommer endringen senere og svakere. Nær senderen er det vanlige elektriske feltet viktig; langt unna dominerer bølgedelen når senderen svinger.</p></article>
+            <div class="em-wave-explanation">
+                <h3>Fra svingende ladning til bølge</h3>
+                <p>En ladning som svinger, endrer fart og retning: den <b>akselererer</b>. Da kan den sende ut elektromagnetiske bølger. Her viser vi bare den elektriske delen av bølgen. Feltendringen brer seg utover.</p>
+                <p>Elektronene i ringen påvirkes av feltet der de er. Når feltendringen når fram, kan elektroner forskyves langs lederen. Da får vi overskudd av elektroner ved den ene siden av åpningen og underskudd ved den andre. Det gir en spenningsforskjell. Blir den stor nok, kan lufta i gapet bli ledende: en gnist overfører ladning over åpningen og reduserer opphopningen.</p>
+                <p class="em-takeaway">Ladningen svinger på stedet. Feltendringen brer seg utover.</p>
+                <p class="em-model-note">En ladning som beveger seg med konstant fart i en rett linje, sender ikke ut stråling i denne modellen. Det er akselerasjonen som er avgjørende. Ringen er en forenklet modell av en leder med et gnistgap. Elektronenes samlede bevegelse og spenningsoppbygging er skjematisk; dette er ikke en simulering av enkeltatomer eller luftas ionisering.</p>
+            </div>
+            <section class="em-hertz" aria-labelledby="em-hertz-heading">
+                <p class="em-eyebrow">SLIK HENGER DET SAMMEN MED EN ANTENNE</p>
+                <h3 id="em-hertz-heading">Hertz fikk en gnist til å lage en ny gnist</h3>
+                <svg viewBox="0 0 800 240" role="img" aria-labelledby="em-hertz-svg-title" class="em-hertz-diagram">
+                    <title id="em-hertz-svg-title">Forenklet Hertz-forsøk: En gnist mellom to senderstaver setter ladninger i svingning. Elektromagnetiske bølger når en mottakerring og kan gi en liten gnist i ringens åpning.</title>
+                    <g stroke="#64748b" stroke-width="9" stroke-linecap="round"><path d="M145 50V100M145 138V190"/><circle cx="145" cy="48" r="16" fill="#cbd5e1"/><circle cx="145" cy="192" r="16" fill="#cbd5e1"/></g>
+                    <path d="M145 104l-9 12 17 4-8 15" fill="none" stroke="#d97706" stroke-width="4"/>
+                    <g fill="none" stroke="#2563eb" stroke-width="3"><path d="M270 76Q310 120 270 164M330 61Q385 120 330 179M397 46Q470 120 397 194"/></g>
+                    <path d="M533 120h38m-10-7 10 7-10 7" fill="none" stroke="#2563eb" stroke-width="3"/>
+                    <path d="M673 69a57 57 0 1 0 20 0" fill="none" stroke="#64748b" stroke-width="7"/>
+                    <path d="M674 69l5 9 5-15 7 7" fill="none" stroke="#d97706" stroke-width="3"/>
+                    <g font-family="Arial, sans-serif" font-size="19" fill="#334155" text-anchor="middle"><text x="145" y="234">Sender med gnistgap</text><text x="395" y="234">Elektromagnetisk bølge</text><text x="683" y="234">Mottakerring</text></g>
+                </svg>
+                <ol><li><b>Sender:</b> En gnist setter elektriske ladninger i rask svingning i en leder.</li><li><b>Underveis:</b> Svingningene sender ut en elektromagnetisk bølge gjennom rommet.</li><li><b>Mottaker:</b> Bølgen påvirker ladningene i en metallring. Det kan oppstå en liten gnist i ringens åpning.</li></ol>
+                <p>I en antenne svinger mange ladninger fram og tilbake. Det ene senderelektronet og mottakerringen over gjør prinsippet enklere å se.</p>
+                <p><b>Prøv 1 Hz: én hel svingning per sekund.</b> Hertz’ sender svingte mye raskere. Ved 1 Hz er bølgelengden i vakuum omtrent 300 000 km, så figuren er ikke i virkelig målestokk.</p>
+                <p class="em-source">Faglig bakgrunn: <a href="https://openstax.org/books/university-physics-volume-2/pages/16-2-plane-electromagnetic-waves">OpenStax: utsending og mottak av elektromagnetiske bølger</a>, <a href="https://openstax.org/books/university-physics-volume-2/pages/16-1-maxwells-equations-and-electromagnetic-waves">Hertz’ forsøk</a> og <a href="https://www.feynmanlectures.caltech.edu/I_28.html">Feynman: felt nær og langt fra senderen</a>.</p>
+            </section>
+            </details>
         </section>
     </div>
 
@@ -1114,6 +1267,8 @@
 
 <script src="faner.js"></script>
 <script src="klikkekonkurranse.js"></script>
+<script src="elektromagnetisme.js"></script>
+<script src="ladninger.js"></script>
 
 </body>
 </html>

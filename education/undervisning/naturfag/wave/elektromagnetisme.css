@@ -1,0 +1,81 @@
+.em-lesson { background: #fff; border-radius: 15px; padding: 28px; box-shadow: 0 3px 15px rgb(0 0 0 / 8%); }
+.em-eyebrow { margin: 0 0 10px; color: #1d4ed8; font-size: .75rem; font-weight: 700; letter-spacing: .09em; }
+.em-lesson h2 { margin: 0 0 12px; font-size: 1.8rem; line-height: 1.25; }
+.em-lesson h3 { margin: 0 0 8px; line-height: 1.35; }
+.em-lesson p, .em-lesson li { line-height: 1.65; }
+.em-intro { max-width: 720px; color: #475569; margin-top: 0; }
+.em-lesson button { font: inherit; cursor: pointer; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; color: #334155; padding: 11px 14px; }
+.em-lesson button:focus-visible, .em-lesson input:focus-visible, .em-lesson a:focus-visible { outline: 3px solid #4338ca; outline-offset: 4px; }
+.em-lesson button:hover:not(:disabled) { border-color: #2563eb; }
+.em-lesson button:disabled { opacity: .5; cursor: default; }
+.em-figure { margin: 0; border: 1px solid #dbe3ed; border-radius: 12px; overflow: hidden; background: #f8fafc; }
+.em-scene-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 16px 20px 0; font-size: .9rem; font-weight: bold; color: #475569; }
+.em-scene-heading b { display: inline-grid; place-items: center; width: 25px; height: 25px; border-radius: 50%; background: #dc2626; color: white; }
+.em-scene-heading span:last-child b { background: #6d28d9; }
+.em-drag-help { margin: 10px 0 0; color: #475569; font-size: .85rem; }
+.em-figure figcaption { display: flex; flex-wrap: wrap; gap: 12px 24px; padding: 12px 18px; border-top: 1px solid #dbe3ed; background: #fff; font-size: .8rem; color: #475569; }
+.em-key { display: inline-flex; align-items: center; gap: 8px; }
+.em-key::before { content: ''; width: 22px; border-top: 3px solid #2563eb; }
+.em-key-ion::before { width: 9px; height: 9px; border: 0; border-radius: 50%; background: #b45309; }
+.em-key-electron::before { width: 9px; height: 9px; border: 0; border-radius: 50%; background: #6d28d9; }
+.em-key-front::before { border-top: 2px dashed #64748b; }
+.em-toolbar { display: grid; grid-template-columns: 1fr 240px; gap: 24px; align-items: start; padding: 18px 0; }
+.em-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.em-slow { display: flex; align-items: center; gap: 7px; font-size: .9rem; padding: 8px 0; cursor: pointer; }
+.em-slow input { width: 18px; height: 18px; accent-color: #2563eb; }
+.em-settings label { display: flex; justify-content: space-between; gap: 12px; font-weight: bold; }
+.em-settings output { color: #1d4ed8; }
+.em-settings p { margin: 5px 0 0; font-size: .85rem; color: #475569; }
+.em-settings input[type="range"] { accent-color: #2563eb; }
+.em-model-note { font-size: .85rem; color: #475569; }
+.em-notes { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin: 28px 0; padding-top: 24px; border-top: 1px solid #e2e8f0; }
+.em-notes p { margin-bottom: 0; }
+.em-wave-explanation { background: #f8fafc; border: 1px solid #dbe3ed; border-radius: 10px; padding: 22px; }
+.em-takeaway { font-weight: bold; color: #1e40af; }
+.em-hertz { margin-top: 32px; }
+.em-hertz-diagram { display: block; width: 100%; height: auto; margin: 18px 0; background: #f8fafc; border-radius: 10px; }
+.em-hertz li { margin: 8px 0; }
+.em-source { font-size: .8rem; color: #475569; }
+.em-source a { color: #1d4ed8; }
+@media (max-width: 650px) {
+    .em-lesson { padding: 20px 14px; }
+    .em-lesson h2 { font-size: 1.5rem; }
+    .em-toolbar, .em-notes { grid-template-columns: 1fr; gap: 18px; }
+    .em-scene-heading { padding: 14px 10px 0; font-size: .78rem; gap: 6px; }
+    .em-wave-explanation { padding: 16px; }
+}
+
+.em-settings { display: grid; gap: 16px; }
+#em-amplitude, #em2-amplitude { accent-color: #dc2626; }
+.em-distance-note { margin: 0 0 24px; }
+
+#em-distance, #em2-distance { accent-color: #6d28d9; }
+
+.wave-tabs-break { flex-basis: 100%; height: 0; }
+.wave-tabs .em-tab { flex: 1 1 240px; padding: 12px 10px; font-size: .95rem; }
+.em-canvas { height: 360px; touch-action: none; }
+.em-canvas:focus-visible { outline: 3px solid #4338ca; outline-offset: -3px; }
+.em-many-canvas { height: 420px; }
+.em-clock { font-variant-numeric: tabular-nums; font-weight: normal; }
+.em-lesson .em-primary { background: #2563eb; color: #fff; border-color: #2563eb; min-width: 94px; }
+.em-simple-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; margin: 18px 0 0; }
+.em-simple-controls label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: .9rem; color: #475569; }
+.em-simple-controls input { width: 18px; height: 18px; accent-color: #2563eb; }
+.em-details { margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 16px; }
+.em-details summary { cursor: pointer; color: #475569; font-weight: bold; padding: 6px 0; }
+.em-details summary:focus-visible { outline: 3px solid #4338ca; outline-offset: 4px; }
+.em-observation { font-size: .9rem; color: #475569; margin: 0; min-height: 24px; }
+.em-key-force::before { border-color: #c2410c; }
+@media (max-width: 650px) {
+    .em-canvas { height: 310px; }
+    .em-many-canvas { height: 320px; }
+}
+
+.em-receiver-tuning { margin: 0 0 8px; }
+.em-receiver-tuning .em-settings { max-width: 360px; padding: 14px 0; }
+
+.em-field-scope { color: #64748b; }
+
+.em-settings .em-resonance-lock { justify-content: flex-start; align-items: center; margin-top: 14px; font-size: .9rem; cursor: pointer; }
+.em-resonance-lock input { width: 18px; height: 18px; margin: 0; accent-color: #2563eb; flex-shrink: 0; }
+.em-settings input[type="range"]:disabled { opacity: .5; }
