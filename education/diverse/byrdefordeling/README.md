@@ -37,3 +37,5 @@ Skriptet leser den lokale originalfilen og oppdaterer dataene inne i
 kildereferanser og dokumentasjon samlet når en ny dataversjon tas i bruk.
 
 Årlig befolkningsvekst beregnes som (folketall i året / folketall året før − 1) × 100. Verdien for 1980 bruker folketallet fra 1979. For EU + UK beregnes veksten fra gruppens samlede folketall. Vekstfanen bruker lineær skala slik at negative verdier vises.
+
+Fanen «Hvor kommer CO₂-utslippene fra?» bruker coal_co2, oil_co2, gas_co2, cement_co2, flaring_co2 og other_industry_co2. EU + UK summerer tilgjengelige kildeverdier fra de samme 28 landene. Tomme kildefelt beholdes som manglende og tegnes ikke. Summen av registrerte kilder kontrolleres mot årlig total (maksimalt 0,05 millioner tonn avrundingsavvik). Prosentfordelingen beregnes fra summen av de registrerte kildeverdiene, slik at hver søyle summerer til 100 prosent. Fornybar energi er ingen kategori i dette regnskapet.

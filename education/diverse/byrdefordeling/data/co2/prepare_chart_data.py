@@ -87,6 +87,18 @@ def main():
         for row in country["values"]:
             row.append((row[5] / previous - 1) * 100)
             previous = row[5]
+    source_keys = ["coal_co2", "oil_co2", "gas_co2", "cement_co2", "flaring_co2", "other_industry_co2"]
+    for country in data:
+        names = MEMBERS if country["name"] == "EU + UK" else ["World" if country["name"] == "Verden" else COUNTRIES[country["name"]]]
+        country["sources"] = []
+        for year in range(1980, 2025):
+            parts = []
+            for key in source_keys:
+                available = [Decimal(lookup[(name, year)][key]) for name in names if lookup[(name, year)][key]]
+                parts.append(float(sum(available)) if available else None)
+            total = next(row[1] for row in country["values"] if row[0] == year)
+            assert abs(sum(value for value in parts if value is not None) - total) < .05
+            country["sources"].append([year, *parts])
     html = CHART.read_text()
     pattern = r'(<script id="chart-data" type="application/json">)(.*?)(</script>)'
     match = re.search(pattern, html, re.S)
