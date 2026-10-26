@@ -35,3 +35,5 @@ python3 data/co2/prepare_chart_data.py
 Skriptet leser den lokale originalfilen og oppdaterer dataene inne i
 `index.html`. Det laster ikke ned nyere data. Oppdater originalfil,
 kildereferanser og dokumentasjon samlet når en ny dataversjon tas i bruk.
+
+Årlig befolkningsvekst beregnes som (folketall i året / folketall året før − 1) × 100. Verdien for 1980 bruker folketallet fra 1979. For EU + UK beregnes veksten fra gruppens samlede folketall. Vekstfanen bruker lineær skala slik at negative verdier vises.

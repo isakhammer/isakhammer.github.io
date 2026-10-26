@@ -80,6 +80,13 @@ def main():
     assert sum(row[6] is not None for row in world) == 12
     # Store BNP-hull: behold originaltallene, men utelat serien i BNP-fanen.
     data.append({"name": "Verden", "values": world, "omitMetrics": ["gdp"]})
+    # Prosentvis vekst fra året før; 1980 bruker faktisk folketall fra 1979.
+    for country in data:
+        names = MEMBERS if country["name"] == "EU + UK" else ["World" if country["name"] == "Verden" else COUNTRIES[country["name"]]]
+        previous = sum(int(lookup[(name, 1979)]["population"]) for name in names)
+        for row in country["values"]:
+            row.append((row[5] / previous - 1) * 100)
+            previous = row[5]
     html = CHART.read_text()
     pattern = r'(<script id="chart-data" type="application/json">)(.*?)(</script>)'
     match = re.search(pattern, html, re.S)
