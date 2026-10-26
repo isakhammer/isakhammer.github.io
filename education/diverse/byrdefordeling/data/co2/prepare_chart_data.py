@@ -29,7 +29,7 @@ def main():
     data = []
     for label, source_name in COUNTRIES.items():
         values = []
-        for year in range(1980, 2025):
+        for year in range(1940, 2025):
             row = lookup[(source_name, year)]
             pop = int(row["population"])
             gdp = float(row["gdp"]) if row["gdp"] else None
@@ -43,11 +43,13 @@ def main():
         data.append({"name": label, "values": values})
 
     values = []
-    for year in range(1980, 2025):
+    for year in range(1940, 2025):
         rows = [lookup[(name, year)] for name in MEMBERS]
-        pop = sum(int(row["population"]) for row in rows)
-        annual = float(sum(Decimal(row["co2"]) for row in rows))
-        cumulative = float(sum(Decimal(row["cumulative_co2"]) for row in rows))
+        published = [lookup[(name, year)] for name in ["European Union (27)", "United Kingdom"]]
+        emissions_rows = rows if year >= 1980 else published
+        pop = sum(int(row["population"]) for row in published)
+        annual = float(sum(Decimal(row["co2"]) for row in emissions_rows))
+        cumulative = float(sum(Decimal(row["cumulative_co2"]) for row in emissions_rows))
         components, estimated = [], False
         for name, row in zip(MEMBERS, rows):
             if row["gdp"]:
@@ -66,7 +68,7 @@ def main():
     data.append({"name": "EU + UK", "values": values})
     assert sum(row[7] for row in values) == 5
     world = []
-    for year in range(1980, 2025):
+    for year in range(1940, 2025):
         row = lookup[("World", year)]
         pop = int(row["population"])
         gdp = float(row["gdp"]) if row["gdp"] else None
@@ -77,27 +79,30 @@ def main():
                       float(row["cumulative_co2"]), per_capita, pop,
                       gdp / pop if gdp is not None else None, False])
     assert all(row[i] is not None for row in world for i in [1, 3, 4])
-    assert sum(row[6] is not None for row in world) == 12
+    assert sum(row[6] is not None for row in world) == 16
     # Store BNP-hull: behold originaltallene, men utelat serien i BNP-fanen.
     data.append({"name": "Verden", "values": world, "omitMetrics": ["gdp"]})
-    # Prosentvis vekst fra året før; 1980 bruker faktisk folketall fra 1979.
+    # Prosentvis vekst fra året før; 1940 bruker faktisk folketall fra 1939.
     for country in data:
-        names = MEMBERS if country["name"] == "EU + UK" else ["World" if country["name"] == "Verden" else COUNTRIES[country["name"]]]
-        previous = sum(int(lookup[(name, 1979)]["population"]) for name in names)
+        names = ["European Union (27)", "United Kingdom"] if country["name"] == "EU + UK" else ["World" if country["name"] == "Verden" else COUNTRIES[country["name"]]]
+        previous = sum(int(lookup[(name, 1939)]["population"]) for name in names)
         for row in country["values"]:
             row.append((row[5] / previous - 1) * 100)
             previous = row[5]
     source_keys = ["coal_co2", "oil_co2", "gas_co2", "cement_co2", "flaring_co2", "other_industry_co2"]
     for country in data:
-        names = MEMBERS if country["name"] == "EU + UK" else ["World" if country["name"] == "Verden" else COUNTRIES[country["name"]]]
+        names = ["European Union (27)", "United Kingdom"] if country["name"] == "EU + UK" else ["World" if country["name"] == "Verden" else COUNTRIES[country["name"]]]
         country["sources"] = []
-        for year in range(1980, 2025):
+        for year in range(1940, 2025):
+            if country["name"] == "EU + UK":
+                names = MEMBERS if year >= 1980 else ["European Union (27)", "United Kingdom"]
             parts = []
             for key in source_keys:
                 available = [Decimal(lookup[(name, year)][key]) for name in names if lookup[(name, year)][key]]
                 parts.append(float(sum(available)) if available else None)
             total = next(row[1] for row in country["values"] if row[0] == year)
-            assert abs(sum(value for value in parts if value is not None) - total) < .05
+            if total is not None:
+                assert abs(sum(value for value in parts if value is not None) - total) < .05
             country["sources"].append([year, *parts])
     html = CHART.read_text()
     pattern = r'(<script id="chart-data" type="application/json">)(.*?)(</script>)'
@@ -105,7 +110,7 @@ def main():
     assert match
     payload = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
     CHART.write_text(html[:match.start(2)] + payload + html[match.end(2):])
-    print(f"Oppdatert {len(data)} serier, 1980–2024. EU + UK: 28 land.")
+    print(f"Oppdatert {len(data)} serier, 1940–2024. EU + UK: 28 land.")
     print(f"Slovakia BNP, gjennomsnitt 1985–1989: {slovakia_average} internasjonale dollar.")
     for country in data:
         last = next((row for row in reversed(country["values"]) if row[6] is not None), None)
