@@ -29,6 +29,8 @@
   },
   "point_height_bilinear_m_nn2000": 334.29251889158127,
   "point_height_nearest_cell_m_nn2000": 332.1368103027344,
+  "north_profile_slope_0_to_20m_deg": 83.28901029722708,
+  "north_profile_slope_5_to_15m_deg": 84.55205507476569,
   "north_profile_samples": [
     {
       "distance_m": 0,

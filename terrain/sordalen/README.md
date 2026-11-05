@@ -55,6 +55,11 @@ rett nordover fra punktet. Det er et terrengprofilresultat, og **ingen bekreftet
 måling av selve klippehøyden**: topp og fot er ikke identifisert uavhengig av
 modellen eller sammenholdt med originalbildene fra den tidligere chatten.
 
+Høydefallet gir **83,3° helning fra horisontalen** langs de første 20 meterne
+nordover. Mellom 5 og 15 meter nord for punktet er profilhelningen **84,6°**.
+Dette beskriver disse profilsegmentene, ikke en innmålt veggflate eller en
+gjennomsnittsvinkel for hele klippen. Vinkelen kan variere med retning og sted.
+
 En DTM er en terrengoverflate med én høyde per horisontal posisjon. Den kan
 ikke gjengi overheng eller flere deler av en loddrett vegg ved samme posisjon.
 Flybåren laser kan dessuten ha få treff på svært bratte vegger, der terrengmodellen

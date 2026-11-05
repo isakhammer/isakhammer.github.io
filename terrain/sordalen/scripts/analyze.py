@@ -84,7 +84,7 @@ for name, azimuth, label, color in [
              x=xs, y=ys, z=zs, lon=lons, lat=lats)
     profiles.append(p)
     with (OUT/f"profile_{name}.csv").open("w", newline="") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["distance_from_target_m", "easting_epsg25833_m", "northing_epsg25833_m",
                          "longitude_deg", "latitude_deg", "height_nn2000_m"])
         writer.writerows(zip(dist, np.round(xs,3), np.round(ys,3),
@@ -196,6 +196,8 @@ summary={"target":{"latitude":LAT,"longitude":LON,"easting":X,"northing":Y},
          "source_sha256":source_hash,"crop":{"bounds":list(bounds),"shape":list(z.shape),
          "resolution_m":1,"valid_fraction":1.0,"min_height_m":float(z.min()),"max_height_m":float(z.max())},
          "point_height_bilinear_m_nn2000":point_height,"point_height_nearest_cell_m_nn2000":point_nearest,
+         "north_profile_slope_0_to_20m_deg":float(np.degrees(np.arctan2(sample(X,Y)-sample(X,Y+20),20))),
+         "north_profile_slope_5_to_15m_deg":float(np.degrees(np.arctan2(sample(X,Y+5)-sample(X,Y+15),10))),
          "north_profile_samples":[{"distance_m":d,"height_nn2000_m":float(sample(X,Y+d))} for d in (0,5,10,15,20,30,50,100,200,300)],
          "cliff_height":"Not determined: top and foot have not been independently identified.",
          "limitations":["DTM is a 2.5D ground surface; overhangs and vertical walls are not fully resolved.",

@@ -1,0 +1,3 @@
+# Plotly bundles third-party source inside the standalone export.
+outputs/terrain_3d.html -whitespace linguist-generated=true
+outputs/*.csv text eol=lf

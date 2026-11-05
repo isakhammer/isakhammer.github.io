@@ -10,8 +10,9 @@ The email is sent only to Kartverket, and is not saved by this script.
 """
 from pathlib import Path
 import argparse
+from html.parser import HTMLParser
 import json
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 import zipfile
 import requests
 from pyproj import Transformer
@@ -20,6 +21,43 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA, META = ROOT / "data", ROOT / "metadata"
 URL = "https://nedlasting.geonorge.no/hoydedata/DTM1/33-135-175.tif"
 REST = "https://hoydedata.no/laserservices/rest/"
+
+def official_url(url):
+    host=urlparse(url).hostname or ""
+    return urlparse(url).scheme=="https" and (host.endswith(".hoydedata.no") or
+           host=="hoydedata.no" or host.endswith(".geonorge.no") or host=="geonorge.no" or
+           host.endswith(".statkart.no"))
+
+class DeliveryLinks(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.links=[]
+
+    def handle_starttag(self,tag,attrs):
+        if tag=="a":
+            href=dict(attrs).get("href")
+            if href:
+                self.links.append(href)
+
+def delivery_urls(url):
+    """The status API can return either a file or an HTML delivery directory."""
+    if not official_url(url):
+        raise RuntimeError("Unexpected delivery host")
+    if Path(urlparse(url).path).suffix.lower() in (".zip",".laz"):
+        return [url]
+    r=requests.get(url,timeout=60)
+    r.raise_for_status()
+    if not official_url(r.url):
+        raise RuntimeError("Unexpected redirected delivery host")
+    parser=DeliveryLinks()
+    parser.feed(r.text)
+    urls=[urljoin(r.url,href) for href in parser.links]
+    files=list(dict.fromkeys(u for u in urls if official_url(u) and
+               Path(urlparse(u).path).suffix.lower() in (".zip",".laz")))
+    archives=[u for u in files if Path(urlparse(u).path).suffix.lower()==".zip"]
+    if not files:
+        raise RuntimeError("LAZ NOT DOWNLOADED: no ZIP/LAZ links on the official delivery page.")
+    return archives or files
 
 def download(url, destination):
     part = destination.with_suffix(destination.suffix+".part")
@@ -68,26 +106,21 @@ def main():
     if not status.get("Finished") or not status.get("Url"):
         print("LAZ NOT DOWNLOADED: export is not ready. Run --poll-lidar later.")
         return
-    url=status["Url"]
-    # Export links must come from the official API and remain on its public domains.
-    host=urlparse(url).hostname or ""
-    if not (host.endswith(".hoydedata.no") or host=="hoydedata.no" or
-            host.endswith(".geonorge.no") or host.endswith(".statkart.no")):
-        raise RuntimeError(f"Unexpected download host: {host}")
-    name=Path(urlparse(url).path).name
-    if not name or Path(name).suffix.lower() not in (".zip",".laz"):
-        name="sordalen_lidar_export.zip"
-    destination=DATA/name
-    if not destination.exists():
-        download(url,destination)
-    if zipfile.is_zipfile(destination):
-        with zipfile.ZipFile(destination) as archive:
-            for item in archive.infolist():
-                relative=Path(item.filename)
-                if relative.is_absolute() or ".." in relative.parts:
-                    raise RuntimeError("Unsafe archive member")
-                archive.extract(item,DATA/"lidar")
-            print("Archive members:",archive.namelist())
+    for url in delivery_urls(status["Url"]):
+        name=Path(urlparse(url).path).name
+        destination=DATA/name
+        if not destination.exists():
+            download(url,destination)
+        if zipfile.is_zipfile(destination):
+            with zipfile.ZipFile(destination) as archive:
+                for item in archive.infolist():
+                    relative=Path(item.filename)
+                    if relative.is_absolute() or ".." in relative.parts:
+                        raise RuntimeError("Unsafe archive member")
+                    archive.extract(item,DATA/"lidar")
+                print("Archive members:",archive.namelist())
+        elif destination.suffix.lower()==".zip":
+            raise RuntimeError("Downloaded response is not a valid ZIP archive")
 
 if __name__=="__main__":
     main()
