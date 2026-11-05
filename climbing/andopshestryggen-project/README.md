@@ -30,7 +30,10 @@ nettsiden, kartet og 3D viser `profile_steepest.csv`.
 Fotografen har oppgitt fotostedet **68.1075° N, 13.4173° E** ved Andopen.
 Startretningen i 3D beregnes fra dette punktet, ikke et representativt
 stedsnavnpunkt. Kamerahøyde, brennvidde og perspektiv er ikke rekonstruert.
-Kartpilen viser retningen mot fotostedet, som ligger utenfor 2 × 2 km-utsnittet.
+Oversiktskartet inkluderer fotostedet som et punkt merket «Her ble bildet tatt».
+Én pil viser bratteste lokale fall mot nordnordøst, 33° fra rutenettnord.
+Oversiktskartet bruker et separat utsnitt med omtrent 2 m visningsnett i
+`data/andopshestrygg_overview_2m.tif`; høydeanalysen bruker fortsatt 1 m-data.
 Fotosted og siktlinje er inkludert i `outputs/transects.geojson`, og beregnet
 retning og horisontal avstand er lagret i `metadata/analysis_summary.json`.
 
@@ -69,3 +72,8 @@ kan endre den synlige vinkelen. DTM-profilens 69,1° over 100 horisontale meter
 og 74,6° over 50 meter er kvalitativt forenlig med en bratt øvre del, men
 bildet bekrefter ikke 80,4°-verdien eller at profil og silhuett følger samme
 linje. Metode og begrensninger følger med i `metadata/analysis_summary.json`.
+
+Regnemessig er DTM-vinkelen minus bildeanslaget på 60–70°:
+20 m: +10,4 til +20,4°; 50 m: +4,6 til +14,6°; 100 m: −0,9 til +9,1°.
+Forskjellene er ikke et mål på modellfeil: profilens fysiske terrengvinkel og
+bildets projiserte vinkel beskriver ikke nødvendigvis samme linje.

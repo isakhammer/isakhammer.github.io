@@ -27,6 +27,20 @@
     "min_height_m": 16.45743751525879,
     "max_height_m": 650.81103515625
   },
+  "overview_map": {
+    "bounds": [
+      431560.0,
+      7554119.0,
+      434848.0,
+      7556519.0
+    ],
+    "resolution_m": [
+      2.0,
+      2.0
+    ],
+    "photo_marker_label": "Her ble bildet tatt",
+    "steepest_direction_grid_deg": 33.0
+  },
   "point_height_bilinear_m_nn2000": 641.727788756119,
   "point_height_nearest_cell_m_nn2000": 642.7700805664062,
   "selected_profile": {
@@ -113,6 +127,24 @@
       60,
       70
     ],
+    "model_minus_visual_range_deg": [
+      {
+        "horizontal_profile_distance_m": 20,
+        "difference_min_deg": 10.400073473583362,
+        "difference_max_deg": 20.40007347358336
+      },
+      {
+        "horizontal_profile_distance_m": 50,
+        "difference_min_deg": 4.6410495077329585,
+        "difference_max_deg": 14.641049507732959
+      },
+      {
+        "horizontal_profile_distance_m": 100,
+        "difference_min_deg": -0.9345385709992797,
+        "difference_max_deg": 9.06546142900072
+      }
+    ],
+    "difference_warning": "Arithmetic comparison of unlike projected and terrain angles, not a DTM error estimate",
     "conclusion": "Qualitatively compatible with a steep upper section, not a quantitative validation of the DTM profile. Exact correspondence between photo skyline and selected terrain profile has not been established.",
     "limitations": [
       "Unknown camera roll, pitch, focal length and perspective",
