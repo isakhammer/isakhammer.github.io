@@ -134,3 +134,11 @@ p {
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
 }
+
+.climbing-intro {
+  margin: 1.3rem auto 0;
+  max-width: 290px;
+  font-size: .8rem;
+  line-height: 1.6;
+  color: #6b7280;
+}

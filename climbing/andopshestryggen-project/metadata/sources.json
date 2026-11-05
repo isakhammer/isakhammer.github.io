@@ -1,0 +1,10 @@
+[
+  {
+    "key": "project_metadata",
+    "url": "https://hoydedata.no/laserservices/rest/projectMetadata.ashx?request=%7B%22Coordinates%22%3A+%2213.37244%2C68.10012%22%2C+%22InputWKID%22%3A+4326%2C+%22ReturnMetadata%22%3A+true%2C+%22ReturnGeometry%22%3A+false%7D"
+  },
+  {
+    "key": "geology",
+    "url": "https://geo.ngu.no/mapserver/BerggrunnWMS3?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&LAYERS=Berggrunn_regional_hovedbergarter&QUERY_LAYERS=Berggrunn_regional_hovedbergarter&SRS=EPSG%3A25833&BBOX=432210.8549159047%2C7554869.611112258%2C432310.8549159047%2C7554969.611112258&WIDTH=101&HEIGHT=101&X=50&Y=50&INFO_FORMAT=text%2Fplain&FEATURE_COUNT=5&FORMAT=image%2Fpng&STYLES="
+  }
+]

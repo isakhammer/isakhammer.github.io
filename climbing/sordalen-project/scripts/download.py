@@ -10,6 +10,7 @@ The email is sent only to Kartverket, and is not saved by this script.
 """
 from pathlib import Path
 import argparse
+from datetime import datetime, timezone
 from html.parser import HTMLParser
 import json
 from urllib.parse import urlparse, urljoin
@@ -102,6 +103,9 @@ def main():
     job=json.loads(jobpath.read_text())
     status=api("exportStatus",{"JobID":job["JobID"]})
     (META/"lidar_export_status.json").write_text(json.dumps(status,indent=2))
+    public_status={key:status.get(key) for key in ("Status","Finished","Started","Ended","ErrorMessage")}
+    public_status.update(checked_utc=datetime.now(timezone.utc).isoformat(),job_id=job["JobID"],downloaded=False)
+    (META/"lidar_download_status.json").write_text(json.dumps(public_status,indent=2))
     print(json.dumps(status,indent=2))
     if not status.get("Finished") or not status.get("Url"):
         print("LAZ NOT DOWNLOADED: export is not ready. Run --poll-lidar later.")
@@ -121,6 +125,22 @@ def main():
                 print("Archive members:",archive.namelist())
         elif destination.suffix.lower()==".zip":
             raise RuntimeError("Downloaded response is not a valid ZIP archive")
+    import laspy
+    summaries=[]
+    for path in DATA.rglob("*"):
+        if path.suffix.lower()==".laz":
+            with laspy.open(path) as source:
+                if source.header.point_count==0:
+                    raise RuntimeError("Empty LAZ file")
+                summaries.append({"filename":path.name,"bytes":path.stat().st_size,
+                                  "point_count":source.header.point_count,
+                                  "min_xyz":source.header.mins.tolist(),
+                                  "max_xyz":source.header.maxs.tolist()})
+    if not summaries:
+        raise RuntimeError("LAZ NOT DOWNLOADED: no nonempty LAZ files in the delivery")
+    public_status.update(downloaded=True,files=summaries)
+    (META/"lidar_download_status.json").write_text(json.dumps(public_status,indent=2))
+    print("LAZ headers verified:",json.dumps(summaries))
 
 if __name__=="__main__":
     main()

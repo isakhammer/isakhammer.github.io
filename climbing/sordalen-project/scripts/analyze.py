@@ -198,6 +198,8 @@ summary={"target":{"latitude":LAT,"longitude":LON,"easting":X,"northing":Y},
          "point_height_bilinear_m_nn2000":point_height,"point_height_nearest_cell_m_nn2000":point_nearest,
          "north_profile_slope_0_to_20m_deg":float(np.degrees(np.arctan2(sample(X,Y)-sample(X,Y+20),20))),
          "north_profile_slope_5_to_15m_deg":float(np.degrees(np.arctan2(sample(X,Y+5)-sample(X,Y+15),10))),
+         "north_profile_drop_0_to_300m":float(sample(X,Y)-sample(X,Y+300)),
+         "north_profile_slope_0_to_300m_deg":float(np.degrees(np.arctan2(sample(X,Y)-sample(X,Y+300),300))),
          "north_profile_samples":[{"distance_m":d,"height_nn2000_m":float(sample(X,Y+d))} for d in (0,5,10,15,20,30,50,100,200,300)],
          "cliff_height":"Not determined: top and foot have not been independently identified.",
          "limitations":["DTM is a 2.5D ground surface; overhangs and vertical walls are not fully resolved.",
@@ -205,4 +207,7 @@ summary={"target":{"latitude":LAT,"longitude":LON,"easting":X,"northing":Y},
                          "Profiles follow grid azimuths, not surveyed climb lines.",
                          "Lidar point density in project metadata is specified density, not local verified density."]}
 (META/"analysis_summary.json").write_text(json.dumps(summary,ensure_ascii=False,indent=2))
+report_payload={"summary":summary,"profiles":{
+    p["name"]:np.column_stack([dist,np.round(p["z"],3)]).tolist() for p in profiles}}
+(ROOT/"report-data.js").write_text("window.SORDALEN_DATA = "+json.dumps(report_payload,ensure_ascii=False,separators=(",",":"))+";\n")
 print(json.dumps(summary,ensure_ascii=False,indent=2))

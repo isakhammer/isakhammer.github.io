@@ -1,0 +1,85 @@
+{
+  "target": {
+    "latitude": 68.0902051,
+    "longitude": 13.3967616,
+    "easting": 433244.23091317544,
+    "northing": 7553788.005085054
+  },
+  "horizontal_crs": "EPSG:25833",
+  "vertical_crs": "EPSG:5941 (NN2000 height)",
+  "source": "https://nedlasting.geonorge.no/hoydedata/DTM1/33-135-175.tif",
+  "retrieved_local_date": "2026-11-05",
+  "source_bytes": 608490831,
+  "source_sha256": "7e681ba15cadcd451b78dd72867c870c4c5b98a46f73d299612237f997981890",
+  "crop": {
+    "bounds": [
+      432244.0,
+      7552788.0,
+      434244.0,
+      7554788.0
+    ],
+    "shape": [
+      2000,
+      2000
+    ],
+    "resolution_m": 1,
+    "valid_fraction": 1.0,
+    "min_height_m": -0.37526583671569824,
+    "max_height_m": 602.28173828125
+  },
+  "point_height_bilinear_m_nn2000": 334.29251889158127,
+  "point_height_nearest_cell_m_nn2000": 332.1368103027344,
+  "north_profile_slope_0_to_20m_deg": 83.28901029722708,
+  "north_profile_slope_5_to_15m_deg": 84.55205507476569,
+  "north_profile_samples": [
+    {
+      "distance_m": 0,
+      "height_nn2000_m": 334.29251889158127
+    },
+    {
+      "distance_m": 5,
+      "height_nn2000_m": 287.13983059431484
+    },
+    {
+      "distance_m": 10,
+      "height_nn2000_m": 232.35320377583608
+    },
+    {
+      "distance_m": 15,
+      "height_nn2000_m": 182.28744260914937
+    },
+    {
+      "distance_m": 20,
+      "height_nn2000_m": 164.32199230803664
+    },
+    {
+      "distance_m": 30,
+      "height_nn2000_m": 152.5348115800982
+    },
+    {
+      "distance_m": 50,
+      "height_nn2000_m": 142.41180330440537
+    },
+    {
+      "distance_m": 100,
+      "height_nn2000_m": 118.66336748677412
+    },
+    {
+      "distance_m": 200,
+      "height_nn2000_m": 49.08655975861606
+    },
+    {
+      "distance_m": 300,
+      "height_nn2000_m": 18.28292661195767
+    }
+  ],
+  "cliff_height": "Not determined: top and foot have not been independently identified.",
+  "limitations": [
+    "DTM is a 2.5D ground surface; overhangs and vertical walls are not fully resolved.",
+    "Grid spacing is not a statement of vertical accuracy.",
+    "Profiles follow grid azimuths, not surveyed climb lines.",
+    "Lidar point density in project metadata is specified density, not local verified density."
+  ],
+  "north_profile_drop_0_to_300m": 316.0095922796236,
+  "north_profile_slope_0_to_300m_deg": 46.4887359581065
+}

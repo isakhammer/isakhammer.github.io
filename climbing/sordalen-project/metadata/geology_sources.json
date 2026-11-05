@@ -1,0 +1,17 @@
+[
+  {
+    "layer": "Berggrunn_regional_hovedbergarter",
+    "url": "https://geo.ngu.no/mapserver/BerggrunnWMS3?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&LAYERS=Berggrunn_regional_hovedbergarter&QUERY_LAYERS=Berggrunn_regional_hovedbergarter&SRS=EPSG%3A25833&BBOX=433194.23091317544%2C7553738.005085054%2C433294.23091317544%2C7553838.005085054&WIDTH=101&HEIGHT=101&X=50&Y=50&INFO_FORMAT=text%2Fplain&FEATURE_COUNT=5&FORMAT=image%2Fpng&STYLES=",
+    "status": 200
+  },
+  {
+    "layer": "Berggrunn_regional_dannelsesalder",
+    "url": "https://geo.ngu.no/mapserver/BerggrunnWMS3?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&LAYERS=Berggrunn_regional_dannelsesalder&QUERY_LAYERS=Berggrunn_regional_dannelsesalder&SRS=EPSG%3A25833&BBOX=433194.23091317544%2C7553738.005085054%2C433294.23091317544%2C7553838.005085054&WIDTH=101&HEIGHT=101&X=50&Y=50&INFO_FORMAT=text%2Fplain&FEATURE_COUNT=5&FORMAT=image%2Fpng&STYLES=",
+    "status": 200
+  },
+  {
+    "layer": "Berggrunn_lokal_bergartsenheter_fullzoom",
+    "url": "https://geo.ngu.no/mapserver/BerggrunnWMS3?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&LAYERS=Berggrunn_lokal_bergartsenheter_fullzoom&QUERY_LAYERS=Berggrunn_lokal_bergartsenheter_fullzoom&SRS=EPSG%3A25833&BBOX=433194.23091317544%2C7553738.005085054%2C433294.23091317544%2C7553838.005085054&WIDTH=101&HEIGHT=101&X=50&Y=50&INFO_FORMAT=text%2Fplain&FEATURE_COUNT=5&FORMAT=image%2Fpng&STYLES=",
+    "status": 200
+  }
+]

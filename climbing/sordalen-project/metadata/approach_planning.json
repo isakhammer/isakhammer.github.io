@@ -1,0 +1,33 @@
+{
+  "status": "Unsurveyed planning example, not a GPX route",
+  "preferred_approach": "Kilan via Ørnheia to the top of the wall; proposed by project owner for reconnaissance and possible top-rope work",
+  "alternative": "Kilan into Sørdalen to view the foot of the wall",
+  "reference_coordinates_lon_lat": {
+    "Kilan": [
+      13.34669,
+      68.08038
+    ],
+    "Ørnheia": [
+      13.3987,
+      68.0858
+    ],
+    "target": [
+      13.3967616,
+      68.0902051
+    ]
+  },
+  "straight_geodesic_segments_m": [
+    2250.0664,
+    497.9241
+  ],
+  "default_assumptions": {
+    "distance_km": 3.5,
+    "ascent_m": 400,
+    "horizontal_speed_kmh": 2.5,
+    "ascent_allowance_m_per_hour": 400,
+    "break_minutes": 20
+  },
+  "formula": "distance_km / horizontal_speed_kmh + ascent_m / 400 + break_minutes / 60",
+  "default_duration_minutes": 164,
+  "wetness": "No live wetness measurements or verified dry route available"
+}

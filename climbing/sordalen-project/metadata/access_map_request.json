@@ -1,0 +1,17 @@
+{
+  "source": "https://wms.geonorge.no/skwms1/wms.topo?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&LAYERS=topo&STYLES=&SRS=EPSG%3A25833&BBOX=429244.23091317544%2C7550788.005085054%2C437244.23091317544%2C7556788.005085054&WIDTH=1200&HEIGHT=900&FORMAT=image%2Fpng",
+  "crs": "EPSG:25833",
+  "bbox": [
+    429244.23091317544,
+    7550788.005085054,
+    437244.23091317544,
+    7556788.005085054
+  ],
+  "width": 1200,
+  "height": 900,
+  "target_pixel": [
+    600,
+    450
+  ],
+  "credit": "Kartverket"
+}
