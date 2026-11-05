@@ -12,6 +12,8 @@ import os
 os.environ.setdefault("MPLCONFIGDIR", "/tmp/sordalen-matplotlib")
 import numpy as np
 import rasterio
+from rasterio.enums import Resampling
+from affine import Affine
 from rasterio.windows import from_bounds
 from pyproj import Transformer, CRS, Geod
 import matplotlib
@@ -128,33 +130,52 @@ for p in profiles:
 
 plt.rcParams.update({"font.family":"DejaVu Sans", "font.size":11,
                      "axes.spines.top":False, "axes.spines.right":False})
-extent = [bounds.left-X,bounds.right-X,bounds.bottom-Y,bounds.top-Y]
+# Wider overview includes the actual photo point; slope analysis remains at 1 m.
 norm = Normalize(vmin=0, vmax=750)
-rgb = LightSource(azdeg=315,altdeg=45).shade(z, cmap=plt.get_cmap("terrain"),
-                                         norm=norm, vert_exag=1, dx=1, dy=1, blend_mode="soft")
-fig, ax = plt.subplots(figsize=(10,9),layout="constrained")
+overview = DATA / "andopshestrygg_overview_2m.tif"
+if raw.exists():
+    with rasterio.open(raw) as src:
+        win = from_bounds(np.floor(X)-700, np.floor(Y)-800,
+                          np.floor(photo_x)+700, np.floor(Y)+1600,
+                          src.transform).round_offsets().round_lengths()
+        height, width = int(np.ceil(win.height/2)), int(np.ceil(win.width/2))
+        terrain = src.read(1,window=win,out_shape=(height,width),
+                           resampling=Resampling.average,masked=True)
+        assert not np.any(np.ma.getmaskarray(terrain))
+        overview_transform = src.window_transform(win)*Affine.scale(win.width/width,win.height/height)
+        profile = src.profile.copy()
+        profile.update(width=width,height=height,transform=overview_transform,
+                       compress="deflate",tiled=True,blockxsize=256,blockysize=256)
+        with rasterio.open(overview,"w",**profile) as dst:
+            dst.write(terrain.filled(src.nodata),1)
+            dst.update_tags(SOURCE="Kartverket DTM1 33-135-175.tif",CREDIT="Kartverket, NLOD 2.0",
+                            RESAMPLING="average, approximately 2 m; overview only",VERTICAL_CRS="EPSG:5941 / NN2000")
+with rasterio.open(overview) as src:
+    map_z=src.read(1,masked=True)
+    map_bounds=src.bounds
+    map_res=src.res
+    assert map_bounds.left < X < map_bounds.right and map_bounds.bottom < Y < map_bounds.top
+    assert map_bounds.left < photo_x < map_bounds.right and map_bounds.bottom < photo_y < map_bounds.top
+extent = [map_bounds.left-X,map_bounds.right-X,map_bounds.bottom-Y,map_bounds.top-Y]
+rgb = LightSource(azdeg=315,altdeg=45).shade(map_z, cmap=plt.get_cmap("terrain"),
+                                         norm=norm, vert_exag=1, dx=map_res[0], dy=map_res[1], blend_mode="soft")
+fig, ax = plt.subplots(figsize=(12,9),layout="constrained")
 ax.imshow(rgb,extent=extent,origin="upper")
-cs = ax.contour(np.arange(2000)+bounds.left+0.5-X,
-                bounds.top-np.arange(2000)-0.5-Y,z,
-                levels=np.arange(0,651,100),colors="#263a30",linewidths=.45,alpha=.65)
-ax.clabel(cs,fmt="%d m",fontsize=8)
-for p in profiles:
-    ax.plot(p["x"]-X,p["y"]-Y,color=p["color"],lw=1.7,label=p["label"])
 photo_rad = np.deg2rad(photo_bearing)
-ax.annotate("",xy=(600*np.sin(photo_rad),600*np.cos(photo_rad)), xytext=(0,0),
-            arrowprops={"arrowstyle":"->","color":"#563f28","linestyle":"--"})
-ax.text(-900,800,f"Mot fotosted · {photo_distance/1000:.2f} km (utenfor utsnittet)\n"
-        f"{PHOTO_LAT}° N, {PHOTO_LON}° E",fontsize=9,color="#563f28",
-        bbox={"facecolor":"white","alpha":.9,"edgecolor":"none"})
-ax.scatter([0],[0],s=85,c="#b92038",edgecolors="white",zorder=9)
-ax.annotate(f"Oppgitt punkt · {point_height:.0f} m",(0,0),xytext=(-450,-190),
-            arrowprops={"arrowstyle":"-","color":"#b92038"},color="#8b1024",
-            bbox={"facecolor":"white","alpha":.9,"edgecolor":"none","pad":5})
-ax.set(xlabel="Øst for punktet (m)",ylabel="Nord for punktet (m)",
-       title="Andopshestryggen, Flakstad · DTM1 og profillinjer\n68.10012° N, 13.37244° E")
-ax.legend(loc="lower left",framealpha=.95)
+box={"facecolor":"white","alpha":.95,"edgecolor":"none","pad":6}
+ax.scatter([photo_x-X],[photo_y-Y],s=115,c="#183c64",edgecolors="white",linewidths=1.6,zorder=9)
+ax.annotate(f"Her ble bildet tatt\n{PHOTO_LAT}° N, {PHOTO_LON}° E",(photo_x-X,photo_y-Y),
+            xytext=(12,15),textcoords="offset points",color="#183c64",fontsize=11,bbox=box)
+ax.scatter([0],[0],s=90,c="#b92038",edgecolors="white",zorder=9)
+ax.annotate("Andopshestryggen",(0,0),xytext=(10,-25),textcoords="offset points",
+            color="#8b1024",fontsize=11,bbox=box)
+ax.annotate("",xy=(330*np.sin(selected_radians),330*np.cos(selected_radians)), xytext=(0,0),
+            arrowprops={"arrowstyle":"-|>","color":"#006e90","lw":3,"mutation_scale":18})
+ax.text(-500,500,f"Bratteste fall\nNordnordøst · {steepest_azimuth:.0f}°",color="#006e90",fontsize=11,bbox=box)
+ax.set(xlabel="Øst for prosjektpunktet (m)",ylabel="Nord for prosjektpunktet (m)",
+       title="Andopshestryggen · fotosted og bratteste fall",xlim=extent[:2],ylim=extent[2:])
 fig.colorbar(plt.cm.ScalarMappable(norm=norm,cmap="terrain"),ax=ax,label="Terrenghøyde (m NN2000)",shrink=.75)
-fig.text(.13,.005,"Kilde: Kartverket DTM1 · 1 m rutenett · nord opp · 2 × 2 km utsnitt",fontsize=10)
+fig.text(.10,.005,"Kartverket DTM1 · ca. 2 m visningsnett · nord opp · 33° fra rutenettnord · pil viser retning, ikke vegglengde",fontsize=10)
 fig.savefig(OUT/"terrain_map.png",dpi=170)
 plt.close(fig)
 
@@ -235,6 +256,8 @@ summary={"target":{"latitude":LAT,"longitude":LON,"easting":X,"northing":Y},
          "retrieved_local_date":"2026-11-05", "source_bytes":raw.stat().st_size if raw.exists() else None,
          "source_sha256":source_hash,"crop":{"bounds":list(bounds),"shape":list(z.shape),
          "resolution_m":1,"valid_fraction":1.0,"min_height_m":float(z.min()),"max_height_m":float(z.max())},
+         "overview_map":{"bounds":list(map_bounds),"resolution_m":list(map_res),
+             "photo_marker_label":"Her ble bildet tatt","steepest_direction_grid_deg":steepest_azimuth},
          "point_height_bilinear_m_nn2000":point_height,"point_height_nearest_cell_m_nn2000":point_nearest,
          "selected_profile":{"selection":"Largest net drop over 20 horizontal metres; 360 grid azimuths at 1 degree steps",
              "azimuth_grid_north_deg":steepest_azimuth,
@@ -254,6 +277,12 @@ summary={"target":{"latitude":LAT,"longitude":LON,"easting":X,"northing":Y},
              "method":"Approximate manually selected pixel endpoints; angle measured relative to the image horizontal",
              "segments":photo_segments,
              "visual_apparent_range_deg":[60,70],
+             "model_minus_visual_range_deg":[
+                 {"horizontal_profile_distance_m":d,
+                  "difference_min_deg":float(np.degrees(np.arctan2(point_height-along_profile(d),d))-70),
+                  "difference_max_deg":float(np.degrees(np.arctan2(point_height-along_profile(d),d))-60)}
+                 for d in (20,50,100)],
+             "difference_warning":"Arithmetic comparison of unlike projected and terrain angles, not a DTM error estimate",
              "conclusion":"Qualitatively compatible with a steep upper section, not a quantitative validation of the DTM profile. Exact correspondence between photo skyline and selected terrain profile has not been established.",
              "limitations":["Unknown camera roll, pitch, focal length and perspective",
                             "Image-plane inclination is not true 3D terrain slope",
