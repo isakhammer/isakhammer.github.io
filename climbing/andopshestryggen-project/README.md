@@ -17,11 +17,19 @@ Det separate GeoTIFF-utsnittet i `data/` dekker 2 × 2 km ved dette prosjektet.
 Oppløsningen er kontrollert til 1 m, EPSG:25833 og 100 % gyldige høydeceller.
 Høydereferansen er NN2000, EPSG:5941.
 
-Interpolert punkthøyde er **641,7 m NN2000**. Nordover faller modellen 109,0 m
-de første 20 horisontale meterne, tilsvarende **79,6°**. Over 300 meter nordover
-er terrengfallet **300,0 m**, snitthelning **45,0°**. Mot øst er fallet over
-300 meter **339,3 m** og mot nordøst **336,7 m**. Dette er rette terrengprofiler,
-ikke måling av vegghøyde, klatrerute eller taulengde.
+Interpolert punkthøyde er **641,7 m NN2000**. Rapporten fokuserer på én valgt
+fallprofil, **33° fra rutenettnord**, funnet ved å undersøke størst netto fall
+over 20 horisontale meter i 360 retninger med 1° intervall. Over dette strekket
+er fallet **118,2 m**, tilsvarende **80,4°**. Videre langs samme profil er fallet
+**261,4 m over 100 m** (69,1°) og **339,0 m over 300 m** (48,5°).
+En annen målelengde kan gi en annen bratteste retning. Dette er en rett
+terrengprofil, ikke måling av hele vegghøyden, klatreruten eller taulengden.
+De tre opprinnelige kompassprofilene er beholdt som supplerende CSV-filer;
+nettsiden, kartet og 3D viser `profile_steepest.csv`.
+
+Prosjekteieren opplyser at fotoet er **tatt fra Andopen**. Nøyaktig kameraposisjon
+er ukjent. Startvinkelen i 3D er omtrent fra Andopen-siden, basert på retningen
+mot et representativt stedsnavnpunkt, ikke en kalibrert rekonstruksjon av fotoet.
 
 3D-visningen dekker 1 × 1 km med 2 meters visningsnett og uten vertikal
 overdrivelse. DTM kan ikke gjengi overheng eller flere høyder på samme posisjon.
@@ -41,3 +49,8 @@ Bruk Python-miljøet beskrevet i Sørdalen-prosjektets `requirements.txt` og kj�
 originalfilen mangler, men originalens kontrollsum blir da ikke beregnet på nytt.
 Alle høydeprofiler, kart, 3D-figurer og kontrollverdier ligger i `outputs/` og `metadata/`.
 Kartverket krediteres etter NLOD 2.0.
+
+Inngangssiden og klatreoversikten har ingen prosjektbilder. Alle bildeelementer
+i rapportene bruker `data-src` og får først `src` etter godkjent passord.
+Dette hindrer automatisk innlasting før åpning, men beskytter ikke direkte
+filer eller eldre Git-historikk i det offentlige repoet.

@@ -10,6 +10,7 @@
   const password = document.getElementById('password');
   let initialized = false;
   function unlock() {
+    report.querySelectorAll('img[data-src]').forEach(image => { image.src = image.dataset.src; });
     gate.hidden = true;
     report.hidden = false;
     report.inert = false;

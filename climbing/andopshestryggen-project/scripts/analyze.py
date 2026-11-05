@@ -69,12 +69,24 @@ def sample(xs, ys):
             + (1-dc)*dr*z[r0+1,c0] + dc*dr*z[r0+1,c0+1])
 
 point_height = float(sample(X, Y))
+# Select the largest net drop over 20 horizontal metres, rather than choosing
+# a compass direction by eye. Bearings are relative to EPSG:25833 grid north.
+scan_azimuths = np.arange(360.)
+scan_radians = np.deg2rad(scan_azimuths)
+scan_heights = sample(X+20*np.sin(scan_radians), Y+20*np.cos(scan_radians))
+steepest_azimuth = float(scan_azimuths[np.argmin(scan_heights)])
+selected_radians = np.deg2rad(steepest_azimuth)
+def along_profile(distance):
+    return float(sample(X+distance*np.sin(selected_radians),
+                        Y+distance*np.cos(selected_radians)))
+
+# Andopen is the photographer's stated area, not an exact camera location.
+andopen_x, andopen_y = forward.transform(13.41528, 68.10236)
+photo_bearing = float(np.degrees(np.arctan2(andopen_x-X, andopen_y-Y)) % 360)
 dist = np.arange(-500., 501., 1.)
 profiles = []
 for name, azimuth, label, color in [
-    ("south_north", 0., "Sør → nord", "#006e90"),
-    ("west_east", 90., "Vest → øst", "#b56816"),
-    ("southwest_northeast", 45., "Sørvest → nordøst", "#8463aa"),
+    ("steepest", steepest_azimuth, f"Bratteste 20 m-retning · {steepest_azimuth:.0f}°", "#006e90"),
 ]:
     rad = np.deg2rad(azimuth)
     xs, ys = X+dist*np.sin(rad), Y+dist*np.cos(rad)
@@ -111,6 +123,11 @@ cs = ax.contour(np.arange(2000)+bounds.left+0.5-X,
 ax.clabel(cs,fmt="%d m",fontsize=8)
 for p in profiles:
     ax.plot(p["x"]-X,p["y"]-Y,color=p["color"],lw=1.7,label=p["label"])
+photo_rad = np.deg2rad(photo_bearing)
+ax.annotate("Mot Andopen\n(fotoets område)",
+            xy=(600*np.sin(photo_rad),600*np.cos(photo_rad)), xytext=(270,350),
+            arrowprops={"arrowstyle":"->","color":"#563f28","linestyle":"--"},
+            fontsize=9,color="#563f28",bbox={"facecolor":"white","alpha":.9,"edgecolor":"none"})
 ax.scatter([0],[0],s=85,c="#b92038",edgecolors="white",zorder=9)
 ax.annotate(f"Oppgitt punkt · {point_height:.0f} m",(0,0),xytext=(-450,-190),
             arrowprops={"arrowstyle":"-","color":"#b92038"},color="#8b1024",
@@ -127,7 +144,7 @@ fig, axs = plt.subplots(2,1,figsize=(11,8),layout="constrained")
 fig.set_constrained_layout_pads(h_pad=.08, w_pad=.05, rect=(0,.045,1,.955))
 for p in profiles:
     axs[0].plot(dist,p["z"],label=p["label"],color=p["color"],lw=1.8)
-axs[0].set(title="Terrengprofiler gjennom det oppgitte punktet",xlim=(-500,500),
+axs[0].set(title=f"Valgt fallprofil · {steepest_azimuth:.0f}° fra rutenettnord",xlim=(-500,500),
            ylabel="Høyde (m NN2000)",xlabel="Avstand fra punktet langs profilen (m)")
 axs[0].legend(ncols=3,loc="upper right")
 north=profiles[0]
@@ -136,8 +153,13 @@ axs[1].fill_between(dist,north["z"],0,color=north["color"],alpha=.08)
 axs[1].scatter([0],[point_height],color="#b92038",zorder=5)
 axs[1].annotate(f"Punktet: {point_height:.1f} m",(0,point_height),xytext=(12,point_height+20),
                 arrowprops={"arrowstyle":"-","color":"#b92038"},color="#8b1024")
-axs[1].set(title="Nærbilde av nord–sør-profilen · negativ avstand = sør",xlim=(-50,100),
-           ylim=(max(0,point_height-220),point_height+60),ylabel="Høyde (m NN2000)",xlabel="Avstand fra punktet mot rutenettnord (m)")
+axs[1].set(title="Nærbilde · bratteste retning målt over de første 20 horisontale meterne",xlim=(-20,50),
+           ylim=(max(0,point_height-220),point_height+60),ylabel="Høyde (m NN2000)",xlabel="Horisontal avstand langs valgt fallretning (m)")
+axs[1].scatter([20],[along_profile(20)],color=north["color"],zorder=5)
+axs[1].annotate(f"20 m: fall {point_height-along_profile(20):.1f} m · "
+                f"{np.degrees(np.arctan2(point_height-along_profile(20),20)):.1f}°",
+                (20,along_profile(20)),xytext=(1,point_height-200),
+                arrowprops={"arrowstyle":"-","color":north["color"]},color=north["color"])
 for ax in axs:
     ax.axvline(0,color="#b92038",ls=":",lw=1)
     ax.grid(alpha=.2)
@@ -162,8 +184,8 @@ ax.set(xlabel="Øst (m)",ylabel="Nord (m)",zlabel="m NN2000",xlim=(-500,500),yli
        title="Andopshestryggen · terrengoverflate rundt punktet\n1 × 1 km · lik skala horisontalt og vertikalt")
 ax.set_zlim(0,750)
 ax.set_box_aspect((1000,1000,750))
-ax.view_init(elev=28,azim=55)
-fig.text(.10,.015,"Kartverket DTM1 · 2 m visningsnett · rødt = oppgitt punkt · blått = nord–sør-profil",fontsize=10)
+ax.view_init(elev=25,azim=90-photo_bearing)
+fig.text(.10,.015,"Kartverket DTM1 · omtrentlig utsyn fra Andopen-siden · blått = valgt fallprofil",fontsize=10)
 fig.savefig(OUT/"terrain_3d.png",dpi=170)
 plt.close(fig)
 
@@ -176,14 +198,14 @@ interactive.add_trace(go.Scatter3d(x=[0],y=[0],z=[point_height+2],mode="markers+
                       name="Oppgitt punkt",hovertemplate=f"{LAT}° N, {LON}° E<br>{point_height:.1f} m NN2000<extra></extra>"))
 interactive.add_trace(go.Scatter3d(x=(north["x"]-X).tolist(),y=(north["y"]-Y).tolist(),
                       z=(north["z"]+1).tolist(),mode="lines",line={"color":"#00b5e2","width":5},
-                      name="Sør → nord",hoverinfo="skip"))
+                      name=north["label"],hoverinfo="skip"))
 interactive.update_layout(title={"text":"Andopshestryggen, Flakstad · Kartverket DTM1<br><sup>1 × 1 km · 2 m visningsnett · terrenghøyder NN2000 · ingen vertikal overdrivelse</sup>","x":.04},
     scene={"xaxis":{"title":"Øst for punktet (m)"},"yaxis":{"title":"Nord for punktet (m)"},
            "zaxis":{"title":"Høyde (m NN2000)"},"aspectmode":"data",
-           "camera":{"eye":{"x":1.3,"y":1.5,"z":.8}}},
+           "camera":{"eye":{"x":float(1.8*np.sin(photo_rad)),"y":float(1.8*np.cos(photo_rad)),"z":.8}}},
     margin={"t":90,"b":65,"l":10,"r":10},height=800,
     legend={"orientation":"h","y":0},
-    annotations=[{"text":"Kartverket DTM1 · NDH Lofoten 2pkt 2017 · NLOD 2.0<br>Terrengmodell med én høyde per celle; overheng vises ikke.",
+    annotations=[{"text":"Kartverket DTM1 · NDH Lofoten 2pkt 2017 · NLOD 2.0<br>Åpner omtrent fra Andopen-siden. Fotoets nøyaktige kameraposisjon er ukjent. Overheng vises ikke.",
                   "xref":"paper","yref":"paper","x":0,"y":-.06,"showarrow":False,"font":{"size":11}}])
 interactive.write_html(OUT/"terrain_3d.html",include_plotlyjs=True,full_html=True,
                        config={"responsive":True,"displaylogo":False},div_id="sordalen-terrain")
@@ -196,6 +218,14 @@ summary={"target":{"latitude":LAT,"longitude":LON,"easting":X,"northing":Y},
          "source_sha256":source_hash,"crop":{"bounds":list(bounds),"shape":list(z.shape),
          "resolution_m":1,"valid_fraction":1.0,"min_height_m":float(z.min()),"max_height_m":float(z.max())},
          "point_height_bilinear_m_nn2000":point_height,"point_height_nearest_cell_m_nn2000":point_nearest,
+         "selected_profile":{"selection":"Largest net drop over 20 horizontal metres; 360 grid azimuths at 1 degree steps",
+             "azimuth_grid_north_deg":steepest_azimuth,
+             "samples":[{"horizontal_distance_m":d,"height_nn2000_m":along_profile(d),
+                         "drop_m":point_height-along_profile(d),
+                         "mean_slope_deg":float(np.degrees(np.arctan2(point_height-along_profile(d),d)))}
+                        for d in (20,50,100,200,300)],
+             "photo_origin":"Andopen, reported by project owner; exact camera position unknown",
+             "approximate_grid_bearing_to_andopen_deg":photo_bearing},
          "north_profile_slope_0_to_20m_deg":float(np.degrees(np.arctan2(sample(X,Y)-sample(X,Y+20),20))),
          "north_profile_slope_5_to_15m_deg":float(np.degrees(np.arctan2(sample(X,Y+5)-sample(X,Y+15),10))),
          "north_profile_drop_0_to_300m":float(sample(X,Y)-sample(X,Y+300)),

@@ -15,3 +15,13 @@
 @media(max-width:900px){.geology-section{gap:40px}.approach-grid{gap:35px}.walking-calculator{gap:35px}.geology-history{gap:24px}.dry-approach{gap:35px}}
 @media(max-width:680px){.hero h1{font-size:clamp(4.4rem,16vw,6rem)}.geology-section,.approach-grid,.walking-calculator,.dry-approach{grid-template-columns:1fr;gap:30px}.geology-history{grid-template-columns:1fr;gap:30px}.geology-history li+li{border-top:1px solid var(--line);padding-top:25px}.approach-grid{margin-top:35px;margin-bottom:40px}.drop-summary{margin-top:0}.drop-summary table{font-size:11px}.drop-summary th{font-size:10px}.drop-summary td,.drop-summary th{padding:12px 9px 12px 0}.walking-calculator{padding-top:30px}.dry-approach{gap:20px}.geology-copy>p:not(.intro){font-size:13px}}
 @media(max-width:680px){.site-header nav{flex-wrap:wrap;justify-content:flex-start;gap:5px 18px}.site-header nav a{min-height:28px;display:flex;align-items:center}html{scroll-padding-top:145px}}
+
+/* Minimal entry screen: project imagery is loaded only after unlock. */
+.gate.gate-minimal{display:flex;justify-content:center}
+.gate-minimal .gate-copy{width:min(100%,720px);padding:38px 36px;min-height:100svh;gap:30px}
+.gate-minimal .gate-intro{padding:20px 0;max-width:100%}
+.gate-minimal .gate-intro h1{font-size:clamp(2.1rem,6vw,3.4rem);overflow-wrap:anywhere}
+.gate-minimal form{margin-top:32px}
+.gate-minimal .password-row .button{width:auto}
+.gate-minimal .password-row input{max-width:none}
+@media(max-width:680px){.gate-minimal .gate-copy{padding:28px 24px}.gate-minimal .password-row .button{width:100%}}

@@ -29,6 +29,44 @@
   },
   "point_height_bilinear_m_nn2000": 641.727788756119,
   "point_height_nearest_cell_m_nn2000": 642.7700805664062,
+  "selected_profile": {
+    "selection": "Largest net drop over 20 horizontal metres; 360 grid azimuths at 1 degree steps",
+    "azimuth_grid_north_deg": 33.0,
+    "samples": [
+      {
+        "horizontal_distance_m": 20,
+        "height_nn2000_m": 523.4797661534958,
+        "drop_m": 118.24802260262322,
+        "mean_slope_deg": 80.40007347358336
+      },
+      {
+        "horizontal_distance_m": 50,
+        "height_nn2000_m": 459.6946333495729,
+        "drop_m": 182.03315540654614,
+        "mean_slope_deg": 74.64104950773296
+      },
+      {
+        "horizontal_distance_m": 100,
+        "height_nn2000_m": 380.3266061892593,
+        "drop_m": 261.40118256685975,
+        "mean_slope_deg": 69.06546142900072
+      },
+      {
+        "horizontal_distance_m": 200,
+        "height_nn2000_m": 310.81337427163953,
+        "drop_m": 330.9144144844795,
+        "mean_slope_deg": 58.85182705811462
+      },
+      {
+        "horizontal_distance_m": 300,
+        "height_nn2000_m": 302.6896987095854,
+        "drop_m": 339.0380900465336,
+        "mean_slope_deg": 48.49578794527998
+      }
+    ],
+    "photo_origin": "Andopen, reported by project owner; exact camera position unknown",
+    "approximate_grid_bearing_to_andopen_deg": 83.51720731834041
+  },
   "north_profile_slope_0_to_20m_deg": 79.6033455986913,
   "north_profile_slope_5_to_15m_deg": 75.42016313944802,
   "north_profile_drop_0_to_300m": 300.0494231876413,

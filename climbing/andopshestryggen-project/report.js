@@ -4,7 +4,7 @@
   const key='sordalen-report-access-v1';
   const gate=document.getElementById('gate'), report=document.getElementById('report');
   const password=document.getElementById('password'), error=document.getElementById('password-error');
-  function unlock(){gate.hidden=true;report.hidden=false;report.inert=false;password.value='';}
+  function unlock(){report.querySelectorAll('img[data-src]').forEach(image => { image.src = image.dataset.src; });gate.hidden=true;report.hidden=false;report.inert=false;password.value='';}
   document.getElementById('access-form').addEventListener('submit',async event=>{
     event.preventDefault();
     try{
