@@ -1,0 +1,10 @@
+# Original national tile and export packages stay available locally.
+data/33-135-175.tif
+data/*.part
+data/*.zip
+data/*.laz
+data/lidar/
+metadata/lidar_export_response.json
+metadata/lidar_export_status.json
+__pycache__/
+.venv/

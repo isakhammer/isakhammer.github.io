@@ -1,23 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nb">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stetind – Normalveien 1. Aug 2025</title>
+    <title>Klatring – Isak Hammer</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header class="site-header">
         <div class="header-inner">
-            <h1 class="site-title">Stetind – Normalveien</h1>
+            <a href="../" class="home-link">← Isak Hammer</a>
+            <h1 class="site-title">Klatring</h1>
             <p class="site-subtitle">
-                Trip report and photo gallery from a classic Norwegian alpine climb 
+                Turer, bilder og prosjekter i norske fjell. Her finner du Stetind-rapporten og klatreprosjektene Sørdalsveggen og Andopshestryggen i Flakstad.
             </p>
+            <nav class="climbing-nav" aria-label="Klatreprosjekter">
+                <a href="#stetind">Stetind · Normalveien</a>
+                <a href="sordalen-project/">Sørdalsveggen · ubesteget prosjekt ↗</a>
+                <a href="andopshestryggen-project/">Andopshestrygg-prosjektet ↗</a>
+            </nav>
         </div>
     </header>
 
     <main>
-        <section class="hero">
+        <section class="project-preview" aria-labelledby="sordalen-title">
+            <a href="sordalen-project/" class="project-photo"><img src="sordalen-project/pics/41b9701a-daff-4636-b637-d5cd21b457b8.jpeg" alt="Den bratte Sørdalsveggen sett nedenfra."></a>
+            <div>
+                <p class="project-label">LOFOTEN / UBESTEGET PROSJEKT</p>
+                <h2 id="sordalen-title">Sørdalsveggen-prosjektet</h2>
+                <p>Før første taulengde: bilder av veggen, offisielle terrengdata fra Kartverket, høydeprofiler og en interaktiv 3D-modell. Et grunnlag for å utforske en mulig førstebestigning.</p>
+                <a class="project-link" href="sordalen-project/">Åpne prosjektrapporten ↗</a>
+                <p class="project-access">Prosjektrapporten åpnes med passord.</p>
+            </div>
+        </section>
+        <section class="project-preview" aria-labelledby="andops-title">
+            <a href="andopshestryggen-project/" class="project-photo"><img loading="lazy" src="andopshestryggen-project/5aa28b8b-ed82-42e7-9d9e-c7a928244e45.jpeg" alt="Andopshesten og den markerte ryggen sett fra dalen."></a>
+            <div>
+                <p class="project-label">LOFOTEN / KLATREPROSJEKT</p>
+                <h2 id="andops-title">Andopshestrygg-prosjektet</h2>
+                <p>Et nytt blikk på ryggen ved Andopshesten. Prosjektfoto, egen terrenganalyse, berggrunn, høydeprofiler og 3D-visning rundt det oppgitte punktet.</p>
+                <a class="project-link" href="andopshestryggen-project/">Åpne prosjektrapporten ↗</a>
+                <p class="project-access">Prosjektrapporten åpnes med passord.</p>
+            </div>
+        </section>
+        <section class="hero" id="stetind">
             <div class="hero-image-wrap">
                 <!-- Use one of your best images here -->
                 <img src="stetind_normalveien/IMG_9098.jpg" alt="Stetind seen from the approach">

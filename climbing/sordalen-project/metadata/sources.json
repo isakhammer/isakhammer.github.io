@@ -1,0 +1,16 @@
+{
+  "metadata_url": "https://hoydedata.no/laserservices/rest/projectMetadata.ashx",
+  "metadata_request": {
+    "Coordinates": "13.3967616,68.0902051",
+    "InputWKID": 4326,
+    "ReturnMetadata": true,
+    "ReturnGeometry": true
+  },
+  "geometry_coordinate_system": "EPSG:25833 (default OutputWKID)",
+  "dtm1_feed": "https://nedlasting.geonorge.no/geonorge/ATOM/hoydedata/datasett/DTM1.atom",
+  "dtm1_url": "https://nedlasting.geonorge.no/hoydedata/DTM1/33-135-175.tif",
+  "license": "https://data.norge.no/nlod/no/2.0/",
+  "credit": "Kartverket",
+  "download_date": "2026-11-05",
+  "note": "The feed length is stale: advertised 606829546 bytes; actual successful download 608490831 bytes. The entire file was opened and the target crop decoded and validated."
+}

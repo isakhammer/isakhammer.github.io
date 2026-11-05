@@ -1,0 +1,1318 @@
+{
+  "source": "https://ws.geonorge.no/stedsnavn/v1/punkt?nord=68.0902051&ost=13.3967616&koordsys=4326&radius=2500&utkoordsys=4326&treffPerSide=100",
+  "response": {
+    "metadata": {
+      "side": 1,
+      "sokeStreng": "nord=68.0902051&ost=13.3967616&koordsys=4326&radius=2500&utkoordsys=4326&treffPerSide=100",
+      "totaltAntallTreff": 62,
+      "treffPerSide": 100,
+      "viserFra": 1,
+      "viserTil": 100
+    },
+    "navn": [
+      {
+        "meterFraPunkt": 1143,
+        "navneobjekttype": "Gjerde",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09595,
+          "øst": 13.41952
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Sørgjerdet",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 97741,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1165,
+        "navneobjekttype": "Bruk",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09682,
+          "øst": 13.41843
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Moneset",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 260695,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2366,
+        "navneobjekttype": "Bruk",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.08782,
+          "øst": 13.3403
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Trauan",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 806637,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2474,
+        "navneobjekttype": "Stein",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09049,
+          "øst": 13.33735
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Båtsteinen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 838795,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1167,
+        "navneobjekttype": "Gammel bosettingsplass",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09685,
+          "øst": 13.41844
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Skarlaget",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 37728,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1559,
+        "navneobjekttype": "Gard",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.10236,
+          "øst": 13.41528
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Andopen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 259829,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1791,
+        "navneobjekttype": "Skjær i sjø",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.07661,
+          "øst": 13.41998
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Seglsteinen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 745771,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1811,
+        "navneobjekttype": "Haug",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.08343,
+          "øst": 13.35723
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Litltinden",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 745632,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2001,
+        "navneobjekttype": "Bakke",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.07369,
+          "øst": 13.3779
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Hellen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 473584,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2230,
+        "navneobjekttype": "Skjær i sjø",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.06884,
+          "øst": 13.4107
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Myrskjeran",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 17727,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2333,
+        "navneobjekttype": "Bruk",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.08447,
+          "øst": 13.34288
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Klokkargården",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 2
+          },
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Klokkergården",
+            "skrivemåtestatus": "godkjent",
+            "språk": "Norsk",
+            "stedsnavnnummer": 2
+          }
+        ],
+        "stedsnummer": 806638,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2355,
+        "navneobjekttype": "Gard",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.08038,
+          "øst": 13.34669
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Kilan",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 562705,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2384,
+        "navneobjekttype": "Bruk",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.08304,
+          "øst": 13.34282
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Nordgård",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 1080826,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2391,
+        "navneobjekttype": "Adressenavn",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 67.97742,
+          "øst": 13.18395
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Flakstadveien",
+            "skrivemåtestatus": "vedtatt",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 1001360,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 669,
+        "navneobjekttype": "Fjellside",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09578,
+          "øst": 13.40271
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Svaet",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 582750,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 911,
+        "navneobjekttype": "Bekk",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09829,
+          "øst": 13.39997
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Heggurelva",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 643756,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1724,
+        "navneobjekttype": "Bekk",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.07746,
+          "øst": 13.37329
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Ølkona",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 49599,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2092,
+        "navneobjekttype": "Grunne i sjø",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.07286,
+          "øst": 13.41595
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Seglsteingrunnen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 866709,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2095,
+        "navneobjekttype": "Bekk",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.0871,
+          "øst": 13.34713
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Klokkarelva",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 656786,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 632,
+        "navneobjekttype": "Gruppe av tjern",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.08454,
+          "øst": 13.39734
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Tjønnen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 825712,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 758,
+        "navneobjekttype": "Tjern",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.096,
+          "øst": 13.40667
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Sørdalsvatnet",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 260698,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 800,
+        "navneobjekttype": "Tjern",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09715,
+          "øst": 13.39189
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Langvatnet",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 535739,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 917,
+        "navneobjekttype": "Berg",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09088,
+          "øst": 13.41921
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Storbåthellaren",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 17708,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 924,
+        "navneobjekttype": "Ås",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.08539,
+          "øst": 13.3787
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "sidenavn",
+            "skrivemåte": "Hestræva",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          },
+          {
+            "navnestatus": "sidenavn",
+            "skrivemåte": "Moltinden",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 2
+          }
+        ],
+        "stedsnummer": 623883,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 977,
+        "navneobjekttype": "Rygg",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.08678,
+          "øst": 13.37516
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Hestræva",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 158733,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 980,
+        "navneobjekttype": "Berg",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.08599,
+          "øst": 13.41744
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Litlbåthellaren",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 685620,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1087,
+        "navneobjekttype": "Ås",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09273,
+          "øst": 13.37155
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Hestmanken",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 562812,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1153,
+        "navneobjekttype": "Tjern",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09741,
+          "øst": 13.41665
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Sevtjønna",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          },
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Sivtjønna",
+            "skrivemåtestatus": "godkjent",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 219741,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1154,
+        "navneobjekttype": "Høyde",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09849,
+          "øst": 13.41341
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Storhågen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 219743,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1653,
+        "navneobjekttype": "Berg",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.10495,
+          "øst": 13.40096
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Buhammaren",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 806838,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1790,
+        "navneobjekttype": "Tjern",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.07611,
+          "øst": 13.37427
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Ølkonvatnet",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          },
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Ølkona",
+            "skrivemåtestatus": "godkjent",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 77730,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1798,
+        "navneobjekttype": "Høyde",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.10439,
+          "øst": 13.41733
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Kuberget",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 473161,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1916,
+        "navneobjekttype": "Tjern",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.07303,
+          "øst": 13.39498
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Ørnheivatnet",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 899606,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1917,
+        "navneobjekttype": "Ås",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09739,
+          "øst": 13.35479
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Blekktinden",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 78825,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1926,
+        "navneobjekttype": "Ås",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.1064,
+          "øst": 13.38063
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Merra",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 502827,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1974,
+        "navneobjekttype": "Ås",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.07309,
+          "øst": 13.36415
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Kamman",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 259720,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2163,
+        "navneobjekttype": "Tjern",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.07111,
+          "øst": 13.37316
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Straumøyvatnet",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          },
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Straumsøyvatnet",
+            "skrivemåtestatus": "godkjent",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 138741,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2342,
+        "navneobjekttype": "Skar",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.11008,
+          "øst": 13.37849
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Budalsskaret",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          },
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Budalsskardet",
+            "skrivemåtestatus": "godkjent",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 563866,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1041,
+        "navneobjekttype": "Vann",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09804,
+          "øst": 13.38313
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Storvatnet",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 110769,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1101,
+        "navneobjekttype": "Nes i sjø",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.0944,
+          "øst": 13.4207
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Monesodden",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 947701,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1354,
+        "navneobjekttype": "Nes i sjø",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09978,
+          "øst": 13.41679
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Moneset",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 413156,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1622,
+        "navneobjekttype": "Vann",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.10337,
+          "øst": 13.41336
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Klesvatnet",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 109143,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1754,
+        "navneobjekttype": "Nes i sjø",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.07621,
+          "øst": 13.41604
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Seglsteinneset",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 199744,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2105,
+        "navneobjekttype": "Stup",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.07179,
+          "øst": 13.38556
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Svaen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 959578,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2174,
+        "navneobjekttype": "Stup",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.07773,
+          "øst": 13.35665
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Svartberget",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 777581,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2248,
+        "navneobjekttype": "Myr",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.06932,
+          "øst": 13.40576
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Myran",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 320681,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 467,
+        "navneobjekttype": "Hei",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.08691,
+          "øst": 13.3898
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Ørnheia",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 461739,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 783,
+        "navneobjekttype": "Hei",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09468,
+          "øst": 13.41127
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Moneshammaren",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 582745,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 936,
+        "navneobjekttype": "Hei",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.08205,
+          "øst": 13.40217
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Segelsteinheia",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 158732,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1130,
+        "navneobjekttype": "Vik i sjø",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09517,
+          "øst": 13.42042
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Langvika",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 947702,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1455,
+        "navneobjekttype": "Vik i sjø",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.10113,
+          "øst": 13.41591
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Andopsvika",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 442841,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2233,
+        "navneobjekttype": "Halvøy",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.07184,
+          "øst": 13.37537
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Sildnebben",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 110621,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 276,
+        "navneobjekttype": "Dal",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09245,
+          "øst": 13.39391
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Sørdalen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 199697,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 497,
+        "navneobjekttype": "Fjell",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.0858,
+          "øst": 13.3987
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Ørnheia",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 381646,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1409,
+        "navneobjekttype": "Fjell",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09976,
+          "øst": 13.37214
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Andopshesten",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 866822,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1527,
+        "navneobjekttype": "Dal",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09434,
+          "øst": 13.3618
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "sidenavn",
+            "skrivemåte": "Kildalen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          },
+          {
+            "navnestatus": "sidenavn",
+            "skrivemåte": "Klokkardalen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 2
+          }
+        ],
+        "stedsnummer": 684659,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1641,
+        "navneobjekttype": "Dal",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.09101,
+          "øst": 13.35739
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Djupdalen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 717764,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1802,
+        "navneobjekttype": "Dal",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.106,
+          "øst": 13.40596
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Andopsdalen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 958146,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1870,
+        "navneobjekttype": "Dal",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.11076,
+          "øst": 13.36798
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "sidenavn",
+            "skrivemåte": "Budalen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          },
+          {
+            "navnestatus": "sidenavn",
+            "skrivemåte": "Andopsbudalen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 2
+          }
+        ],
+        "stedsnummer": 745877,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2348,
+        "navneobjekttype": "Dal",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.10239,
+          "øst": 13.35074
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Kvanndalen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 320826,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 2471,
+        "navneobjekttype": "Dal",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.11021,
+          "øst": 13.37123
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Budalen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 291152,
+        "stedstatus": "aktiv"
+      },
+      {
+        "meterFraPunkt": 1438,
+        "navneobjekttype": "Fjord",
+        "representasjonspunkt": {
+          "koordsys": 4326,
+          "nord": 68.07959,
+          "øst": 13.431
+        },
+        "stedsnavn": [
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Nappsstraumen",
+            "skrivemåtestatus": "godkjent og prioritert",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          },
+          {
+            "navnestatus": "hovednavn",
+            "skrivemåte": "Nappstraumen",
+            "skrivemåtestatus": "godkjent",
+            "språk": "Norsk",
+            "stedsnavnnummer": 1
+          }
+        ],
+        "stedsnummer": 684826,
+        "stedstatus": "aktiv"
+      }
+    ]
+  }
+}

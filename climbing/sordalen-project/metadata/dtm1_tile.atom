@@ -1,0 +1,27 @@
+<ns0:entry xmlns:ns0="http://www.w3.org/2005/Atom" xmlns:ns1="http://www.georss.org/georss" xmlns:ns2="http://geonorge.no/geonorge">
+		<ns0:title>Høydedata DTM1 33-135-175</ns0:title>
+
+		<ns0:id>https://nedlasting.geonorge.no/geonorge/ATOM/hoydedata/DTM1/33-135-175.tif</ns0:id>
+
+		<ns0:content>Link til national digital høydemodell raster DTM1 for tile 33-135-175</ns0:content>
+
+		<ns1:polygon>68.06323921747047 13.211021340475577 68.19780063901975 13.200529380000182 68.20133106077203 13.562556515469023 68.06674580836713 13.570939624916047 68.06323921747047 13.211021340475577</ns1:polygon>
+
+		<ns0:category term="http://www.opengis.net/def/crs/EPSG/0/25833" label="ETRS89 / UTM zone 33N" scheme="https://register.geonorge.no/api/epsg-koder" />
+		<ns0:category term="GeoTIFF" label="GeoTIFF" scheme="https://register.geonorge.no/api/metadata-kodelister/rasterformater/geotiff/d7aa9c07-ee69-4cc9-878a-e33c4b20ff36" />
+
+		<ns0:category term="1860" label="Vestvågøy" scheme="https://register.geonorge.no/api/metadata-kodelister/geografisk-distribusjonsinndeling/kommune/9a46038d-16ee-4562-96d2-8f6304aab120" />
+		<ns0:category term="1859" label="Flakstad" scheme="https://register.geonorge.no/api/metadata-kodelister/geografisk-distribusjonsinndeling/kommune/9a46038d-16ee-4562-96d2-8f6304aab120" />
+
+		<ns2:coverage>
+			<ns2:project number="LACH0009">
+				<ns2:name>NDH Lofoten 2pkt 2017</ns2:name>
+				<ns2:rapport>\\statkart.no\hoydedata_orig\vol6\819\metadata\NDH Lofoten 2pkt 2017_Prosjektrapport.pdf</ns2:rapport>
+				<ns2:published>2018-06-08</ns2:published>
+			</ns2:project>
+		</ns2:coverage>
+
+		<ns0:updated>2021-12-10T11:07:18</ns0:updated>
+
+		<ns0:link href="https://nedlasting.geonorge.no/hoydedata/DTM1/33-135-175.tif" rel="section" type="application/geotiff" hreflang="no" title="33-135-175.tif" length="606829546" />
+	</ns0:entry>
