@@ -180,3 +180,7 @@ For en ny eksport, bare dersom lokal jobbreferanse mangler:
 
 Det oppretter en eksport hos Kartverket og sender deres statusmeldinger til den
 oppgitte adressen. Ikke bruk dette til å opprette duplikatbestillinger.
+
+Inngangssiden og klatreoversikten har ingen prosjektbilder. Rapportens bilder
+får først aktive bildeadresser etter godkjent passord. Dette er fortsatt en
+visningssperre og beskytter ikke direkte filer eller offentlig Git-historikk.

@@ -12,22 +12,18 @@
 </head>
 <body>
   <a class="skip-link" href="#innhold">Hopp til innholdet</a>
-  <div class="gate" id="gate">
+  <div class="gate gate-minimal" id="gate">
     <div class="gate-copy">
       <a class="wordmark" href="../">ISAK HAMMER <span>/ KLATRING</span></a>
-      <div class="gate-intro">
-        <p class="eyebrow">SØRDALEN · FLAKSTAD · LOFOTEN</p>
-        <h1>Før første<br>taulengde.</h1>
-        <p>Et ubesteget prosjekt. Bilder fra veggen, terrenganalyse og en nærmere titt på det som venter.</p>
-        <form id="access-form">
+      <div class="gate-intro"><p class="eyebrow">SØRDALSVEGGEN</p><h1>Prosjektrapport</h1><form id="access-form">
           <label for="password">Passord til prosjektrapporten</label>
           <div class="password-row"><input id="password" name="password" type="password" required autocomplete="current-password"><button class="button" type="submit">Åpne rapporten <span aria-hidden="true">↗</span></button></div>
           <p class="form-error" id="password-error" role="alert" hidden></p>
         </form>
       </div>
-      <p class="gate-foot">SØRDALEN-PROSJEKTET <span>68.0902051° N · 13.3967616° E</span></p>
+      <p class="gate-foot">Bilder og rapport åpnes med passord.</p>
     </div>
-    <div class="gate-image"><img src="pics/41b9701a-daff-4636-b637-d5cd21b457b8.jpeg" alt="Den bratte fjellveggen i Sørdalen, med store steinformasjoner og markerte riss."><span>En vegg. Et åpent spørsmål.</span></div>
+
   </div>
 
   <div id="report" hidden inert>
@@ -47,7 +43,7 @@
           <a class="text-link light" href="#prosjektet">Se nærmere på prosjektet <span aria-hidden="true">↓</span></a>
           <div class="hero-location"><span>68.0902051° N<br>13.3967616° E</span><span>LOFOTEN<br>NORGE</span></div>
         </div>
-        <figure class="hero-image"><img src="pics/41b9701a-daff-4636-b637-d5cd21b457b8.jpeg" alt="Hovedveggen sett nedenfra. Store flak, åpne riss og bratte, sammenhengende partier."><figcaption>01 / VEGGEN SETT NEDENFRA</figcaption></figure>
+        <figure class="hero-image"><img data-src="pics/41b9701a-daff-4636-b637-d5cd21b457b8.jpeg" alt="Hovedveggen sett nedenfra. Store flak, åpne riss og bratte, sammenhengende partier."><figcaption>01 / VEGGEN SETT NEDENFRA</figcaption></figure>
       </section>
 
       <section class="section project-section" id="prosjektet">
@@ -58,8 +54,8 @@
       <section class="photo-section" id="bilder" aria-labelledby="photos-title">
         <div class="section section-heading photo-heading"><p class="eyebrow">02 / FRA TERRENGET</p><h2 id="photos-title">Tre blikk på veggen.</h2><p>Prosjektbildene er bevart uten inntegnede ruter. Åpne et bilde for å se originalen.</p></div>
         <div class="photo-grid">
-          <figure><a href="pics/028b0196-b2d1-4f48-aecc-602bbaf958ed.jpeg" target="_blank" rel="noopener"><img loading="lazy" src="pics/028b0196-b2d1-4f48-aecc-602bbaf958ed.jpeg" alt="Oversiktsbilde med vann, blokker og veggen lenger oppe i terrenget."></a><figcaption><span>02 / SAMMENHENGEN</span><span>Terrenget ved vannet ↗</span></figcaption></figure>
-          <figure><a href="pics/01d01a9d-a88d-4b77-ac9a-71ce728a79b2.jpeg" target="_blank" rel="noopener"><img loading="lazy" src="pics/01d01a9d-a88d-4b77-ac9a-71ce728a79b2.jpeg" alt="Veggen sett fra siden av ur og vegetasjon ved foten."></a><figcaption><span>03 / NÆRMERE VEGGEN</span><span>Profil og terreng ↗</span></figcaption></figure>
+          <figure><a href="pics/028b0196-b2d1-4f48-aecc-602bbaf958ed.jpeg" target="_blank" rel="noopener"><img loading="lazy" data-src="pics/028b0196-b2d1-4f48-aecc-602bbaf958ed.jpeg" alt="Oversiktsbilde med vann, blokker og veggen lenger oppe i terrenget."></a><figcaption><span>02 / SAMMENHENGEN</span><span>Terrenget ved vannet ↗</span></figcaption></figure>
+          <figure><a href="pics/01d01a9d-a88d-4b77-ac9a-71ce728a79b2.jpeg" target="_blank" rel="noopener"><img loading="lazy" data-src="pics/01d01a9d-a88d-4b77-ac9a-71ce728a79b2.jpeg" alt="Veggen sett fra siden av ur og vegetasjon ved foten."></a><figcaption><span>03 / NÆRMERE VEGGEN</span><span>Profil og terreng ↗</span></figcaption></figure>
         </div>
         <div class="photo-original"><a class="text-link" href="pics/41b9701a-daff-4636-b637-d5cd21b457b8.jpeg" target="_blank" rel="noopener">Åpne originalen av hovedbildet <span aria-hidden="true">↗</span></a></div>
       </section>
@@ -82,13 +78,13 @@
 
       <section class="terrain-section" id="terreng">
         <div class="section terrain-heading"><div><p class="eyebrow">04 / SE HELHETEN</p><h2>Veggen i landskapet.</h2></div><p>Roter modellen og se hvordan kanten ligger over dalen. Det røde punktet er det oppgitte koordinatet; den blå linjen viser nord–sør-profilen.</p></div>
-        <div class="terrain-view" id="terrain-view"><img src="outputs/terrain_3d.png" alt="3D-visning av terrenget ved veggen, med det oppgitte punktet markert og dalen foran." loading="lazy"><button class="button" type="button" id="load-terrain">Utforsk i 3D <span aria-hidden="true">↗</span></button></div>
+        <div class="terrain-view" id="terrain-view"><img data-src="outputs/terrain_3d.png" alt="3D-visning av terrenget ved veggen, med det oppgitte punktet markert og dalen foran." loading="lazy"><button class="button" type="button" id="load-terrain">Utforsk i 3D <span aria-hidden="true">↗</span></button></div>
         <div class="section terrain-caption"><p>1 × 1 km utsnitt · 2 m visningsnett · ingen vertikal overdrivelse</p><a href="outputs/terrain_3d.html" class="text-link light" target="_blank" rel="noopener">Åpne 3D i eget vindu ↗</a></div>
       </section>
 
       <section class="section map-section">
         <div class="map-copy"><p class="eyebrow">05 / PLASSERING</p><h2>Et punkt.<br>Tre retninger.</h2><p>Det markerte punktet ligger på omtrent <strong>334 m NN2000</strong> i den interpolerte modellen. Det er høyden over høydereferansen — ikke høyden på klippen.</p><p>Kartutsnittet dekker 2 × 2 km. Alle de fire millioner rastercellene har gyldige høydeverdier. En gyldig celle betyr ikke nødvendigvis at det finnes et direkte laserpunkt akkurat der.</p><dl class="coordinates"><div><dt>Breddegrad</dt><dd>68.0902051° N</dd></div><div><dt>Lengdegrad</dt><dd>13.3967616° E</dd></div><div><dt>Sted</dt><dd>Sørdalen, Flakstad</dd></div></dl><a class="text-link" href="outputs/terrain_map.png" target="_blank" rel="noopener">Åpne kartet i full størrelse ↗</a></div>
-        <figure><a href="outputs/terrain_map.png" target="_blank" rel="noopener"><img src="outputs/terrain_map.png" loading="lazy" alt="Nordvendt terrengkart over 2 ganger 2 kilometer, med punktet og tre profillinjer."></a><figcaption>Kartverket DTM1 · nord opp · koordinater i meter fra punktet</figcaption></figure>
+        <figure><a href="outputs/terrain_map.png" target="_blank" rel="noopener"><img data-src="outputs/terrain_map.png" loading="lazy" alt="Nordvendt terrengkart over 2 ganger 2 kilometer, med punktet og tre profillinjer."></a><figcaption>Kartverket DTM1 · nord opp · koordinater i meter fra punktet</figcaption></figure>
       </section>
 
       <section class="section geology-section" id="geologi">
@@ -100,7 +96,7 @@
 
       <section class="approach-section" id="adkomst"><div class="section">
         <div class="section-heading"><p class="eyebrow">07 / PLAN FOR BEFARING</p><h2>Fra Kilan.<br>Over Ørnheia.</h2><p>Prosjekteierens hovedidé er å komme til oversiden av veggen for rekognosering og mulig arbeid med topptau.</p></div>
-        <div class="approach-grid"><div><div class="approach-option"><span class="eyebrow">FORETRUKKET / OVENFRA</span><h3>Kilan → Ørnheia → oversiden</h3><p>Planen er å gå fra Kilan via Ørnheia og undersøke veggen ovenfra. Nøyaktig gangtrasé, adkomst til kanten og egnede innfestingspunkter er ennå ikke dokumentert. Det er heller ikke etablert en rappell- eller topptauplan i rapporten.</p></div><div class="approach-option"><span class="eyebrow">ALTERNATIV / NEDEFRA</span><h3>Kilan → Sørdalen → veggfoten</h3><p>Et alternativ er å komme ned i Sørdalen for å se veggen fra foten. Også dette er en foreslått adkomst fra prosjekteieren, ikke et oppmålt GPS-spor eller en bekreftet ruteanvisning.</p></div><p class="figure-caption">Kilan ligger ved E10 på vestsiden av området. Kartet viser Sørdalen nord for Ørnheia, på siden mot Nappstraumen. Punktet ved veggen er ikke en parkeringsplass eller et sikkert turmål for navigasjon helt til kanten.</p></div><figure><div class="access-map"><a href="outputs/access_map.png" target="_blank" rel="noopener"><img src="outputs/access_map.png" loading="lazy" alt="Kart over Kilan ved E10 i vest, Ørnheia og Sørdalen i øst og Nappstraumen. Rødt punkt markerer koordinatet ved veggen."><span class="map-pin" aria-hidden="true"></span></a></div><figcaption>Kartverket · 8 × 6 km · nord opp · rødt = oppgitt punkt. Ingen gangrute er tegnet inn.</figcaption></figure></div>
+        <div class="approach-grid"><div><div class="approach-option"><span class="eyebrow">FORETRUKKET / OVENFRA</span><h3>Kilan → Ørnheia → oversiden</h3><p>Planen er å gå fra Kilan via Ørnheia og undersøke veggen ovenfra. Nøyaktig gangtrasé, adkomst til kanten og egnede innfestingspunkter er ennå ikke dokumentert. Det er heller ikke etablert en rappell- eller topptauplan i rapporten.</p></div><div class="approach-option"><span class="eyebrow">ALTERNATIV / NEDEFRA</span><h3>Kilan → Sørdalen → veggfoten</h3><p>Et alternativ er å komme ned i Sørdalen for å se veggen fra foten. Også dette er en foreslått adkomst fra prosjekteieren, ikke et oppmålt GPS-spor eller en bekreftet ruteanvisning.</p></div><p class="figure-caption">Kilan ligger ved E10 på vestsiden av området. Kartet viser Sørdalen nord for Ørnheia, på siden mot Nappstraumen. Punktet ved veggen er ikke en parkeringsplass eller et sikkert turmål for navigasjon helt til kanten.</p></div><figure><div class="access-map"><a href="outputs/access_map.png" target="_blank" rel="noopener"><img data-src="outputs/access_map.png" loading="lazy" alt="Kart over Kilan ved E10 i vest, Ørnheia og Sørdalen i øst og Nappstraumen. Rødt punkt markerer koordinatet ved veggen."><span class="map-pin" aria-hidden="true"></span></a></div><figcaption>Kartverket · 8 × 6 km · nord opp · rødt = oppgitt punkt. Ingen gangrute er tegnet inn.</figcaption></figure></div>
         <div class="walking-calculator"><div><p class="eyebrow">REGNEEKSEMPEL / ÉN VEI</p><h3>Hvor lang tid til oversiden?</h3><p>Rette linjer Kilan → Ørnheia → punktet utgjør omtrent <strong>2,75 km</strong>. Det er en geometrisk minsteavstand via disse referansepunktene. En gangbar trasé blir lengre, og samlet stigning er ikke målt.</p><p>Startverdiene under er derfor <strong>antakelser</strong>: 3,5 km, 400 høydemeter stigning, 2,5 km/t grunnfart og 20 minutter pause. Endre dem etter faktisk trasé, føre og sekk.</p></div><div class="calculator-controls"><label for="walk-distance">Antatt gangdistanse <output id="walk-distance-value">3,5 km</output><input id="walk-distance" type="range" min="2.8" max="7" step="0.1" value="3.5"></label><label for="walk-ascent">Antatt samlet stigning <output id="walk-ascent-value">400 m</output><input id="walk-ascent" type="range" min="320" max="900" step="20" value="400"></label><label for="walk-speed">Grunnfart på distansen <output id="walk-speed-value">2,5 km/t</output><input id="walk-speed" type="range" min="1.5" max="4" step="0.1" value="2.5"></label><label for="walk-break">Pauser <output id="walk-break-value">20 min</output><input id="walk-break" type="range" min="0" max="90" step="5" value="20"></label><div class="walking-result" aria-live="polite"><strong id="walking-time">2 t 44 min</strong><span id="walking-average">Effektiv snittfart: 1,3 km/t, med stigning og pauser</span></div></div><p class="calculator-method">Modell: tid = distanse / grunnfart + stigning / 400 m per time + pauser. Dette er et enkelt planleggingsanslag, ikke målt gangtid. Retur, veifinning, rekognosering og arbeid ved veggen må planlegges i tillegg. Kartets SSR-referansepunkter ligger på omtrent 22 m ved Kilan og 338 m ved Ørnheia; de angir ikke startparkering eller valgt trasé.</p></div>
         <div class="dry-approach"><h3>En tørrere adkomst</h3><div><p><strong>Les vannveiene.</strong> Se etter myrsymboler, bekker og flate søkk i kartet. Dalfører og forsenkninger samler ofte vann; høyere, konvekse terrengformer kan være tørrere.</p><p><strong>Velg fast underlag der terrenget tillater det.</strong> Undersøk ryggene mot Ørnheia fremfor å anta at den korteste linjen gjennom et søkk er best. Våte sva er ikke et godt alternativ til myr, og en tørrere variant må fortsatt være gangbar.</p><p><strong>Tilpass etter forholdene.</strong> Kartet og DTM1 måler ikke dagens fuktighet. Ingen bestemt tørr trasé kan bekreftes uten befaring eller GPS-spor med observasjoner. Bruk bildet av adkomsten, lokale forhold og værutviklingen til å justere planen.</p></div></div>
       </div></section>
