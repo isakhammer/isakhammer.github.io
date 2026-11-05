@@ -64,8 +64,61 @@
         "mean_slope_deg": 48.49578794527998
       }
     ],
-    "photo_origin": "Andopen, reported by project owner; exact camera position unknown",
-    "approximate_grid_bearing_to_andopen_deg": 83.51720731834041
+    "photo_origin": "Andopen; photo coordinate supplied by the photographer",
+    "photo_location": {
+      "latitude": 68.1075,
+      "longitude": 13.4173,
+      "easting": 434148.6719789613,
+      "northing": 7555693.664383776
+    },
+    "grid_bearing_target_to_photo_deg": 67.70511652402756,
+    "true_bearing_target_to_photo_deg": 66.19491299051947,
+    "horizontal_distance_target_to_photo_m": 2041.0509663632486,
+    "camera_limitations": "Only initial horizontal viewing direction follows the supplied location; camera height, focal length and perspective are not reconstructed."
+  },
+  "photo_comparison": {
+    "interpretation": "Right skyline of the main summit in the middle of the photo, not the foreground wall at far right",
+    "original_image_size_pixels": [
+      3024,
+      4032
+    ],
+    "method": "Approximate manually selected pixel endpoints; angle measured relative to the image horizontal",
+    "segments": [
+      {
+        "label": "Main summit's right skyline",
+        "start_pixel": [
+          1585,
+          1490
+        ],
+        "end_pixel": [
+          1945,
+          2100
+        ],
+        "apparent_image_angle_deg": 59.45242825109298
+      },
+      {
+        "label": "Steeper middle part of the same skyline",
+        "start_pixel": [
+          1645,
+          1547
+        ],
+        "end_pixel": [
+          1855,
+          2019
+        ],
+        "apparent_image_angle_deg": 66.01498910067257
+      }
+    ],
+    "visual_apparent_range_deg": [
+      60,
+      70
+    ],
+    "conclusion": "Qualitatively compatible with a steep upper section, not a quantitative validation of the DTM profile. Exact correspondence between photo skyline and selected terrain profile has not been established.",
+    "limitations": [
+      "Unknown camera roll, pitch, focal length and perspective",
+      "Image-plane inclination is not true 3D terrain slope",
+      "Pixel endpoints and interpreted skyline are approximate"
+    ]
   },
   "north_profile_slope_0_to_20m_deg": 79.6033455986913,
   "north_profile_slope_5_to_15m_deg": 75.42016313944802,

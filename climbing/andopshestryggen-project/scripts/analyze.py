@@ -13,7 +13,7 @@ os.environ.setdefault("MPLCONFIGDIR", "/tmp/sordalen-matplotlib")
 import numpy as np
 import rasterio
 from rasterio.windows import from_bounds
-from pyproj import Transformer, CRS
+from pyproj import Transformer, CRS, Geod
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -80,9 +80,20 @@ def along_profile(distance):
     return float(sample(X+distance*np.sin(selected_radians),
                         Y+distance*np.cos(selected_radians)))
 
-# Andopen is the photographer's stated area, not an exact camera location.
-andopen_x, andopen_y = forward.transform(13.41528, 68.10236)
-photo_bearing = float(np.degrees(np.arctan2(andopen_x-X, andopen_y-Y)) % 360)
+# Photo location supplied by the photographer; camera height and optics unknown.
+PHOTO_LAT, PHOTO_LON = 68.1075, 13.4173
+photo_x, photo_y = forward.transform(PHOTO_LON, PHOTO_LAT)
+photo_bearing = float(np.degrees(np.arctan2(photo_x-X, photo_y-Y)) % 360)
+photo_true_bearing, _, photo_distance = Geod(ellps="GRS80").inv(LON, LAT, PHOTO_LON, PHOTO_LAT)
+# Approximate hand-picked endpoints on the original 3024 x 4032 photo.
+# These are image-plane inclinations, not calibrated terrain slopes.
+photo_segments = []
+for label, start, end in [
+    ("Main summit's right skyline", (1585,1490), (1945,2100)),
+    ("Steeper middle part of the same skyline", (1645,1547), (1855,2019)),
+]:
+    photo_segments.append({"label":label,"start_pixel":list(start),"end_pixel":list(end),
+        "apparent_image_angle_deg":float(np.degrees(np.arctan2(abs(end[1]-start[1]),abs(end[0]-start[0]))))})
 dist = np.arange(-500., 501., 1.)
 profiles = []
 for name, azimuth, label, color in [
@@ -104,6 +115,12 @@ for name, azimuth, label, color in [
 
 features = [{"type":"Feature", "properties":{"name":"Oppgitt punkt", "height_nn2000_m":point_height},
              "geometry":{"type":"Point", "coordinates":[LON,LAT]}}]
+features.extend([
+    {"type":"Feature", "properties":{"name":"Fotosted", "source":"Photographer-supplied coordinate"},
+     "geometry":{"type":"Point", "coordinates":[PHOTO_LON,PHOTO_LAT]}},
+    {"type":"Feature", "properties":{"name":"Siktretning mot fotosted", "distance_m":photo_distance},
+     "geometry":{"type":"LineString", "coordinates":[[LON,LAT],[PHOTO_LON,PHOTO_LAT]]}}
+])
 for p in profiles:
     features.append({"type":"Feature", "properties":{"name":p["name"],"azimuth_grid_north_deg":p["azimuth"]},
                      "geometry":{"type":"LineString", "coordinates":np.column_stack([p["lon"],p["lat"]]).tolist()}})
@@ -124,10 +141,11 @@ ax.clabel(cs,fmt="%d m",fontsize=8)
 for p in profiles:
     ax.plot(p["x"]-X,p["y"]-Y,color=p["color"],lw=1.7,label=p["label"])
 photo_rad = np.deg2rad(photo_bearing)
-ax.annotate("Mot Andopen\n(fotoets område)",
-            xy=(600*np.sin(photo_rad),600*np.cos(photo_rad)), xytext=(270,350),
-            arrowprops={"arrowstyle":"->","color":"#563f28","linestyle":"--"},
-            fontsize=9,color="#563f28",bbox={"facecolor":"white","alpha":.9,"edgecolor":"none"})
+ax.annotate("",xy=(600*np.sin(photo_rad),600*np.cos(photo_rad)), xytext=(0,0),
+            arrowprops={"arrowstyle":"->","color":"#563f28","linestyle":"--"})
+ax.text(-900,800,f"Mot fotosted · {photo_distance/1000:.2f} km (utenfor utsnittet)\n"
+        f"{PHOTO_LAT}° N, {PHOTO_LON}° E",fontsize=9,color="#563f28",
+        bbox={"facecolor":"white","alpha":.9,"edgecolor":"none"})
 ax.scatter([0],[0],s=85,c="#b92038",edgecolors="white",zorder=9)
 ax.annotate(f"Oppgitt punkt · {point_height:.0f} m",(0,0),xytext=(-450,-190),
             arrowprops={"arrowstyle":"-","color":"#b92038"},color="#8b1024",
@@ -185,7 +203,7 @@ ax.set(xlabel="Øst (m)",ylabel="Nord (m)",zlabel="m NN2000",xlim=(-500,500),yli
 ax.set_zlim(0,750)
 ax.set_box_aspect((1000,1000,750))
 ax.view_init(elev=25,azim=90-photo_bearing)
-fig.text(.10,.015,"Kartverket DTM1 · omtrentlig utsyn fra Andopen-siden · blått = valgt fallprofil",fontsize=10)
+fig.text(.10,.015,"Kartverket DTM1 · retning fra oppgitt fotosted · blått = valgt fallprofil",fontsize=10)
 fig.savefig(OUT/"terrain_3d.png",dpi=170)
 plt.close(fig)
 
@@ -205,7 +223,7 @@ interactive.update_layout(title={"text":"Andopshestryggen, Flakstad · Kartverke
            "camera":{"eye":{"x":float(1.8*np.sin(photo_rad)),"y":float(1.8*np.cos(photo_rad)),"z":.8}}},
     margin={"t":90,"b":65,"l":10,"r":10},height=800,
     legend={"orientation":"h","y":0},
-    annotations=[{"text":"Kartverket DTM1 · NDH Lofoten 2pkt 2017 · NLOD 2.0<br>Åpner omtrent fra Andopen-siden. Fotoets nøyaktige kameraposisjon er ukjent. Overheng vises ikke.",
+    annotations=[{"text":"Kartverket DTM1 · NDH Lofoten 2pkt 2017 · NLOD 2.0<br>Startretning fra fotosted 68.1075° N, 13.4173° E. Kamerahøyde og perspektiv er ikke rekonstruert. Overheng vises ikke.",
                   "xref":"paper","yref":"paper","x":0,"y":-.06,"showarrow":False,"font":{"size":11}}])
 interactive.write_html(OUT/"terrain_3d.html",include_plotlyjs=True,full_html=True,
                        config={"responsive":True,"displaylogo":False},div_id="sordalen-terrain")
@@ -224,8 +242,22 @@ summary={"target":{"latitude":LAT,"longitude":LON,"easting":X,"northing":Y},
                          "drop_m":point_height-along_profile(d),
                          "mean_slope_deg":float(np.degrees(np.arctan2(point_height-along_profile(d),d)))}
                         for d in (20,50,100,200,300)],
-             "photo_origin":"Andopen, reported by project owner; exact camera position unknown",
-             "approximate_grid_bearing_to_andopen_deg":photo_bearing},
+             "photo_origin":"Andopen; photo coordinate supplied by the photographer",
+             "photo_location":{"latitude":PHOTO_LAT,"longitude":PHOTO_LON,
+                               "easting":photo_x,"northing":photo_y},
+             "grid_bearing_target_to_photo_deg":photo_bearing,
+             "true_bearing_target_to_photo_deg":photo_true_bearing % 360,
+             "horizontal_distance_target_to_photo_m":photo_distance,
+             "camera_limitations":"Only initial horizontal viewing direction follows the supplied location; camera height, focal length and perspective are not reconstructed."},
+         "photo_comparison":{"interpretation":"Right skyline of the main summit in the middle of the photo, not the foreground wall at far right",
+             "original_image_size_pixels":[3024,4032],
+             "method":"Approximate manually selected pixel endpoints; angle measured relative to the image horizontal",
+             "segments":photo_segments,
+             "visual_apparent_range_deg":[60,70],
+             "conclusion":"Qualitatively compatible with a steep upper section, not a quantitative validation of the DTM profile. Exact correspondence between photo skyline and selected terrain profile has not been established.",
+             "limitations":["Unknown camera roll, pitch, focal length and perspective",
+                            "Image-plane inclination is not true 3D terrain slope",
+                            "Pixel endpoints and interpreted skyline are approximate"]},
          "north_profile_slope_0_to_20m_deg":float(np.degrees(np.arctan2(sample(X,Y)-sample(X,Y+20),20))),
          "north_profile_slope_5_to_15m_deg":float(np.degrees(np.arctan2(sample(X,Y+5)-sample(X,Y+15),10))),
          "north_profile_drop_0_to_300m":float(sample(X,Y)-sample(X,Y+300)),
