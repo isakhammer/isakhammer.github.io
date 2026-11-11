@@ -219,8 +219,8 @@
       // Zoom is applied only to the on-screen canvas, not to the saved PNG.
       function clampPan() {
         const view = viewport.getBoundingClientRect();
-        const baseWidth = edited.getBoundingClientRect().width / zoom;
-        const baseHeight = edited.getBoundingClientRect().height / zoom;
+        const baseWidth = edited.offsetWidth;
+        const baseHeight = edited.offsetHeight;
         const limitX = Math.max(0, (baseWidth * zoom - view.width) / 2);
         const limitY = Math.max(0, (baseHeight * zoom - view.height) / 2);
         panX = Math.max(-limitX, Math.min(limitX, panX));
