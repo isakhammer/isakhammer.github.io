@@ -49,6 +49,9 @@
     canvas { display: block; max-width: 100%; width: auto; height: auto; max-height: min(70vh, 860px); }
     .empty { text-align: center; padding: 30px 18px; color: var(--muted); font-size: 13px; line-height: 1.7; }
     .empty strong { color: #333; font-size: 15px; }
+    .paste-target { display: block; min-height: 54px; width: min(100%, 360px); margin: 16px auto 10px; padding: 16px 14px; border: 1px dashed #adada7; border-radius: 9px; color: #454545; background: rgba(255,255,255,.7); outline: none; }
+    .paste-target:empty::before { content: attr(data-placeholder); }
+    .paste-target:focus { border-color: #404040; box-shadow: 0 0 0 2px rgba(60,60,60,.09); }
     .empty .mark { width: 44px; height: 44px; border: 1px solid #bdbdb9; border-radius: 12px; display: grid; place-items: center; margin: 0 auto 16px; font-size: 25px; }
     .photo-box.has-image .empty { display: none; }
     .photo-box:not(.has-image) canvas { display: none; }
@@ -131,7 +134,7 @@
             <div class="panel photo-panel">
               <div class="photo-label"><span>Reference</span><span>Original</span></div>
               <div class="photo-box" id="original-box">
-                <div class="empty"><div class="mark">+</div><strong>Paste an image</strong><div>Ctrl+V, drag and drop, or choose a file.</div></div>
+                <div class="empty"><div class="mark">+</div><strong>Paste an image</strong><div id="paste-target" class="paste-target" contenteditable="true" role="textbox" aria-label="Paste your image here" spellcheck="false" data-placeholder="Click here, then press Ctrl+V"></div><div>Or right-click → Paste, or drag a photo here.</div></div>
                 <canvas id="original-canvas" aria-label="Original image"></canvas>
               </div>
             </div>
@@ -245,7 +248,13 @@
       document.addEventListener('paste', event => {
         const items = Array.from(event.clipboardData?.items || []);
         const picture = items.find(item => item.type.startsWith('image/'));
-        if (!picture) return;
+        if (!picture) {
+          if (event.target?.id === 'paste-target') {
+            event.preventDefault();
+            report('Clipboard does not contain an image. Copy the picture itself and paste again.');
+          }
+          return;
+        }
         event.preventDefault();
         loadImage(picture.getAsFile());
       });
