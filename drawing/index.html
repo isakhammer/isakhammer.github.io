@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f7f7f5">
-  <title>Value Study | Isak Hammer</title>
+  <title>Drawing Assistant | Isak Hammer</title>
   <style>
     :root { color-scheme: light; --bg: #f7f7f5; --surface: #fff; --ink: #202020; --muted: #737373; --line: #dededb; --accent: #242424; }
     * { box-sizing: border-box; }
@@ -60,14 +60,40 @@
     #status { font-size: 12px; color: var(--muted); min-height: 18px; margin: 0; }
     @media (max-width: 1040px) { .workspace { grid-template-columns: 1fr; } .controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 25px; } .controls .eyebrow, .controls .divider, .presets-section { grid-column: 1 / -1; } }
     @media (max-width: 640px) { .wrap { width: min(100% - 28px, 1440px); } header { padding: 20px 0; } .controls { display: block; padding: 20px; } .canvases { grid-template-columns: 1fr; } .photo-box { min-height: 250px; } .topline { align-items: flex-start; } }
+
+    /* Compact adjustments and one large image */
+    .workspace { display: flex; flex-direction: column; gap: 14px; }
+    .controls { width: 100%; padding: 15px 18px 12px; }
+    .adjustments { display: flex; flex-wrap: wrap; align-items: end; gap: 12px 22px; }
+    .control { width: 132px; max-width: 100%; flex: 0 1 132px; margin: 0; }
+    .control.values { width: 145px; flex-basis: 145px; }
+    .control-head { margin-bottom: 6px; font-size: 12px; }
+    .control output { font-size: 11px; }
+    input[type="range"] { width: 100%; height: 16px; }
+    select { padding: 5px 7px; font-size: 12px; min-height: 28px; }
+    .presets-section { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--line); display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .preset-label { color: var(--muted); font-size: 11px; }
+    .presets button { padding: 5px 10px; }
+    .photo-box { min-height: 52vh; }
+    .photo-box canvas { width: auto; max-width: 100%; max-height: 76vh; object-fit: contain; }
+    @media (max-width: 1040px) {
+      .workspace { display: flex; flex-direction: column; }
+      .controls { display: block; }
+    }
+    @media (max-width: 640px) {
+      .controls { display: block; padding: 14px; }
+      .adjustments { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 20px; }
+      .control, .control.values { width: 100%; flex-basis: auto; }
+      .photo-box { min-height: 38vh; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <div>
-        <h1>Value Study</h1>
-        <p class="subtitle">See the big shapes first. Refine the details later.</p>
+        <h1>Drawing Assistant</h1>
+        <p class="subtitle">Paste an image, adjust it, and draw.</p>
       </div>
       <a class="brand" href="../">← isakhammer.github.io</a>
     </header>
@@ -81,65 +107,61 @@
           <button id="reset" class="btn" type="button">Reset adjustments</button>
           <button id="download" class="btn" type="button" disabled>Save PNG</button>
         </div>
-        <p id="status" role="status" aria-live="polite">Paste with Ctrl+V, or drop an image onto this page.</p>
+        <p id="status" role="status" aria-live="polite">Copy an image, then click Paste image or press Ctrl+V.</p>
       </div>
 
       <div class="workspace">
-        <aside class="controls panel" aria-label="Image adjustments">
-          <p class="eyebrow">Adjustments</p>
-          <div class="control">
-            <div class="control-head"><label for="grayscale">Grayscale</label><output id="grayscale-value" for="grayscale">100%</output></div>
-            <input id="grayscale" type="range" min="0" max="100" step="1" value="100">
+        <section class="controls panel" aria-label="Image adjustments">
+          <div class="adjustments">
+            <div class="control">
+              <div class="control-head"><label for="grayscale">Grayscale</label><output id="grayscale-value" for="grayscale">100%</output></div>
+              <input id="grayscale" type="range" min="0" max="100" step="1" value="100">
+            </div>
+            <div class="control">
+              <div class="control-head"><label for="brightness">Brightness</label><output id="brightness-value" for="brightness">100%</output></div>
+              <input id="brightness" type="range" min="20" max="200" step="1" value="100">
+            </div>
+            <div class="control">
+              <div class="control-head"><label for="contrast">Contrast</label><output id="contrast-value" for="contrast">100%</output></div>
+              <input id="contrast" type="range" min="0" max="300" step="1" value="100">
+            </div>
+            <div class="control">
+              <div class="control-head"><label for="blur">Blur</label><output id="blur-value" for="blur">0 px</output></div>
+              <input id="blur" type="range" min="0" max="25" step="0.5" value="0">
+            </div>
+            <div class="control values">
+              <div class="control-head"><label for="levels">Grey levels</label></div>
+              <select id="levels">
+                <option value="0">Continuous</option>
+                <option value="2">2 levels</option>
+                <option value="3">3 levels</option>
+                <option value="4">4 levels</option>
+                <option value="5">5 levels</option>
+                <option value="6">6 levels</option>
+                <option value="8">8 levels</option>
+                <option value="10">10 levels</option>
+              </select>
+            </div>
           </div>
-          <div class="control">
-            <div class="control-head"><label for="brightness">Brightness</label><output id="brightness-value" for="brightness">100%</output></div>
-            <input id="brightness" type="range" min="20" max="200" step="1" value="100">
-          </div>
-          <div class="control">
-            <div class="control-head"><label for="contrast">Contrast</label><output id="contrast-value" for="contrast">100%</output></div>
-            <input id="contrast" type="range" min="0" max="300" step="1" value="100">
-          </div>
-          <div class="control">
-            <div class="control-head"><label for="blur">Blur</label><output id="blur-value" for="blur">0 px</output></div>
-            <input id="blur" type="range" min="0" max="25" step="0.5" value="0">
-          </div>
-          <div class="control">
-            <div class="control-head"><label for="levels">Value levels</label></div>
-            <select id="levels">
-              <option value="0">Continuous tones</option>
-              <option value="2">2 values</option>
-              <option value="3">3 values</option>
-              <option value="4">4 values</option>
-              <option value="5">5 values</option>
-              <option value="6">6 values</option>
-              <option value="8">8 values</option>
-              <option value="10">10 values</option>
-            </select>
-            <p class="hint">Reduce the photo to a few distinct light and dark masses.</p>
-          </div>
-          <hr class="divider">
-          <section class="presets-section">
-            <p class="eyebrow">Quick studies</p>
+          <div class="presets-section">
+            <span class="preset-label">Quick settings</span>
             <div class="presets">
               <button type="button" data-preset="gray">Grayscale</button>
               <button type="button" data-preset="three">3 values</button>
               <button type="button" data-preset="five">5 values</button>
-              <button type="button" data-preset="macro">Blurred masses</button>
-            </div>
-          </section>
-        </aside>
-
-        <section class="results" aria-label="Image preview">
-          <div class="canvases">
-            <div class="panel photo-panel">
-              <div class="photo-label"><span>Value study</span><span id="preview-label">Adjusted</span></div>
-              <div class="photo-box" id="edited-box">
-                <div class="empty"><div class="mark">+</div><strong>Paste an image</strong><div id="paste-target" class="paste-target" contenteditable="true" role="textbox" aria-label="Paste your image here" spellcheck="false" data-placeholder="Click here, then press Ctrl+V"></div><div>Or right-click → Paste, or drag a photo here.</div></div>
-                <canvas id="edited-canvas" aria-label="Image preview"></canvas>
-              </div>
+              <button type="button" data-preset="macro">Blurred</button>
             </div>
           </div>
-          <p class="bottom-note">Tip: start with 3 values and some blur to map the main shadow and light shapes. Then gradually add more tones and details. Images are processed locally in your browser and are not uploaded.</p>
+        </section>
+        <section class="results" aria-label="Image preview">
+          <div class="panel photo-panel">
+            <div class="photo-label"><span>Image</span><span id="preview-label">Adjusted</span></div>
+            <div class="photo-box" id="edited-box">
+              <div class="empty"><div class="mark">+</div><strong>Paste your image</strong><div id="paste-target" class="paste-target" contenteditable="true" role="textbox" aria-label="Paste an image here" spellcheck="false" data-placeholder="Click and press Ctrl+V"></div><div>Or click Paste image above, or drag and drop here.</div></div>
+              <canvas id="edited-canvas" aria-label="Image preview"></canvas>
+            </div>
+          </div>
+          <p class="bottom-note">Paste with Ctrl+V anywhere, or use the Paste image button. Your images are processed locally in your browser.</p>
         </section>
       </div>
     </main>
@@ -164,7 +186,7 @@
       let showOriginal = false;
       let ready = false;
       let queued = false;
-      let imageName = 'value-study';
+      let imageName = 'drawing';
 
       function report(message) { status.textContent = message; }
 
@@ -311,7 +333,7 @@
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = imageName + '-value-study.png';
+          a.download = imageName + '-drawing-reference.png';
           a.click();
           setTimeout(() => URL.revokeObjectURL(url), 2000);
         }, 'image/png');
