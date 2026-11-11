@@ -86,6 +86,16 @@
       .control, .control.values { width: 100%; flex-basis: auto; }
       .photo-box { min-height: 38vh; }
     }
+    .zoom-controls { display: flex; align-items: center; gap: 5px; }
+    .zoom-controls button { border: 1px solid var(--line); background: #fff; border-radius: 6px; min-width: 30px; height: 28px; padding: 0 8px; font-size: 13px; cursor: pointer; }
+    .zoom-controls button:hover:not(:disabled) { background: #f1f1ee; }
+    .zoom-controls button:disabled { opacity: .35; cursor: default; }
+    .zoom-controls output { min-width: 43px; text-align: center; font-size: 11px; font-variant-numeric: tabular-nums; color: var(--muted); }
+    .photo-box.has-image { height: min(72vh, 800px); overflow: hidden; cursor: zoom-in; touch-action: none; }
+    .photo-box.has-image.zoomed { cursor: grab; }
+    .photo-box.has-image.panning { cursor: grabbing; }
+    .photo-box.has-image canvas { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center center; pointer-events: none; user-select: none; }
+    @media (max-width: 640px) { .photo-box.has-image { height: min(65vh, 600px); } }
   </style>
 </head>
 <body>
@@ -155,13 +165,21 @@
         </section>
         <section class="results" aria-label="Image preview">
           <div class="panel photo-panel">
-            <div class="photo-label"><span>Image</span><span id="preview-label">Adjusted</span></div>
+            <div class="photo-label">
+              <span>Image · <span id="preview-label">Adjusted</span></span>
+              <div class="zoom-controls" aria-label="Image zoom">
+                <button id="zoom-out" type="button" aria-label="Zoom out" title="Zoom out" disabled>−</button>
+                <output id="zoom-label" aria-live="off">100%</output>
+                <button id="zoom-in" type="button" aria-label="Zoom in" title="Zoom in" disabled>+</button>
+                <button id="zoom-fit" type="button" title="Fit image to window" disabled>Fit</button>
+              </div>
+            </div>
             <div class="photo-box" id="edited-box">
               <div class="empty"><div class="mark">+</div><strong>Paste your image</strong><div id="paste-target" class="paste-target" contenteditable="true" role="textbox" aria-label="Paste an image here" spellcheck="false" data-placeholder="Click and press Ctrl+V"></div><div>Or click Paste image above, or drag and drop here.</div></div>
               <canvas id="edited-canvas" aria-label="Image preview"></canvas>
             </div>
           </div>
-          <p class="bottom-note">Paste with Ctrl+V anywhere, or use the Paste image button. Your images are processed locally in your browser.</p>
+          <p class="bottom-note">Paste with Ctrl+V or the Paste image button. Zoom with the mouse wheel, drag to move around, and double-click to fit. Your images stay in your browser.</p>
         </section>
       </div>
     </main>
@@ -183,12 +201,102 @@
       const download = document.getElementById('download');
       const originalButton = document.getElementById('toggle-original');
       const previewLabel = document.getElementById('preview-label');
+      const viewport = document.getElementById('edited-box');
+      const zoomInButton = document.getElementById('zoom-in');
+      const zoomOutButton = document.getElementById('zoom-out');
+      const zoomFitButton = document.getElementById('zoom-fit');
+      const zoomLabel = document.getElementById('zoom-label');
+      const maxZoom = 12;
+      let zoom = 1, panX = 0, panY = 0;
+      let dragging = false, dragPoint = null;
       let showOriginal = false;
       let ready = false;
       let queued = false;
       let imageName = 'drawing';
 
       function report(message) { status.textContent = message; }
+
+      // Zoom is applied only to the on-screen canvas, not to the saved PNG.
+      function clampPan() {
+        const view = viewport.getBoundingClientRect();
+        const baseWidth = edited.getBoundingClientRect().width / zoom;
+        const baseHeight = edited.getBoundingClientRect().height / zoom;
+        const limitX = Math.max(0, (baseWidth * zoom - view.width) / 2);
+        const limitY = Math.max(0, (baseHeight * zoom - view.height) / 2);
+        panX = Math.max(-limitX, Math.min(limitX, panX));
+        panY = Math.max(-limitY, Math.min(limitY, panY));
+      }
+
+      function applyZoom() {
+        if (!ready) return;
+        clampPan();
+        edited.style.transform = 'translate(' + panX + 'px, ' + panY + 'px) scale(' + zoom + ')';
+        zoomLabel.textContent = Math.round(zoom * 100) + '%';
+        zoomInButton.disabled = zoom >= maxZoom;
+        zoomOutButton.disabled = zoom <= 1;
+        zoomFitButton.disabled = zoom <= 1 && panX === 0 && panY === 0;
+        viewport.classList.toggle('zoomed', zoom > 1);
+      }
+
+      function fitZoom() {
+        zoom = 1;
+        panX = panY = 0;
+        applyZoom();
+      }
+
+      function zoomTo(nextZoom, clientX, clientY) {
+        if (!ready) return;
+        const target = Math.min(maxZoom, Math.max(1, nextZoom));
+        if (target === zoom) return;
+        const rect = viewport.getBoundingClientRect();
+        const x = clientX == null ? 0 : clientX - rect.left - rect.width / 2;
+        const y = clientY == null ? 0 : clientY - rect.top - rect.height / 2;
+        const ratio = target / zoom;
+        panX = x - (x - panX) * ratio;
+        panY = y - (y - panY) * ratio;
+        zoom = target;
+        applyZoom();
+      }
+
+      zoomInButton.addEventListener('click', () => zoomTo(zoom * 1.3));
+      zoomOutButton.addEventListener('click', () => zoomTo(zoom / 1.3));
+      zoomFitButton.addEventListener('click', fitZoom);
+
+      viewport.addEventListener('wheel', event => {
+        if (!ready) return;
+        event.preventDefault();
+        const factor = Math.exp(-event.deltaY * 0.0015);
+        zoomTo(zoom * factor, event.clientX, event.clientY);
+      }, { passive: false });
+
+      viewport.addEventListener('pointerdown', event => {
+        if (!ready || zoom <= 1 || event.button !== 0) return;
+        dragging = true;
+        dragPoint = { id: event.pointerId, x: event.clientX, y: event.clientY };
+        viewport.classList.add('panning');
+        viewport.setPointerCapture(event.pointerId);
+      });
+      viewport.addEventListener('pointermove', event => {
+        if (!dragging || !dragPoint || event.pointerId !== dragPoint.id) return;
+        panX += event.clientX - dragPoint.x;
+        panY += event.clientY - dragPoint.y;
+        dragPoint.x = event.clientX;
+        dragPoint.y = event.clientY;
+        applyZoom();
+      });
+      function stopPan(event) {
+        if (!dragPoint || event.pointerId !== dragPoint.id) return;
+        dragging = false;
+        dragPoint = null;
+        viewport.classList.remove('panning');
+      }
+      viewport.addEventListener('pointerup', stopPan);
+      viewport.addEventListener('pointercancel', stopPan);
+      viewport.addEventListener('lostpointercapture', stopPan);
+      viewport.addEventListener('dblclick', () => { if (ready) fitZoom(); });
+      if ('ResizeObserver' in window) new ResizeObserver(() => {
+        if (ready) applyZoom();
+      }).observe(viewport);
 
       function setValues(values) {
         for (const [key, value] of Object.entries(values)) {
@@ -260,7 +368,11 @@
           bitmap.close();
           ready = true;
           imageName = (file.name || 'image').replace(/\.[^.]+$/, '') || 'image';
-          document.getElementById('edited-box').classList.add('has-image');
+          viewport.classList.add('has-image');
+          zoomInButton.disabled = false;
+          zoomOutButton.disabled = false;
+          zoomFitButton.disabled = false;
+          fitZoom();
           originalButton.disabled = false;
           download.disabled = false;
           report('Image ready · ' + w + ' × ' + h + ' pixels');
