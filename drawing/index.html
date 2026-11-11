@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f7f5">
+  <title>Value Study | Isak Hammer</title>
+  <style>
+    :root { color-scheme: light; --bg: #f7f7f5; --surface: #fff; --ink: #202020; --muted: #737373; --line: #dededb; --accent: #242424; }
+    * { box-sizing: border-box; }
+    html { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { margin: 0; background: var(--bg); color: var(--ink); }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .wrap { width: min(1440px, calc(100% - 48px)); margin: auto; }
+    header { padding: 28px 0 22px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); }
+    .brand { text-decoration: none; color: var(--muted); font-size: 13px; }
+    h1 { font-size: clamp(25px, 3vw, 36px); letter-spacing: -.045em; font-weight: 600; margin: 0; }
+    .subtitle { color: var(--muted); font-size: 14px; margin: 8px 0 0; line-height: 1.5; }
+    main { padding: 28px 0 60px; }
+    .topline { display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
+    .actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+    .btn { border: 1px solid #cececa; border-radius: 9px; padding: 10px 15px; background: #fff; color: var(--ink); font-size: 13px; font-weight: 600; min-height: 40px; }
+    .btn:hover { background: #efefec; }
+    .btn:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid #477bb5; outline-offset: 3px; }
+    .btn.dark { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn.dark:hover { background: #4a4a4a; }
+    .btn:disabled { opacity: .42; cursor: default; }
+    .workspace { display: grid; grid-template-columns: minmax(260px, 310px) minmax(0, 1fr); align-items: start; gap: 22px; }
+    .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+    .controls { padding: 24px; }
+    .eyebrow { font-size: 11px; color: var(--muted); font-weight: 700; letter-spacing: .13em; text-transform: uppercase; margin: 0 0 20px; }
+    .control { margin-bottom: 25px; }
+    .control-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 14px; margin-bottom: 12px; }
+    output { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12px; }
+    input[type="range"] { width: 100%; accent-color: #292929; cursor: pointer; margin: 0; }
+    select { width: 100%; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--ink); font-size: 13px; }
+    .hint { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 11px 0 0; }
+    .divider { border: 0; border-top: 1px solid var(--line); margin: 22px 0; }
+    .presets { display: flex; gap: 7px; flex-wrap: wrap; }
+    .presets button { border: 1px solid var(--line); background: #fff; padding: 8px 10px; border-radius: 7px; font-size: 12px; }
+    .presets button:hover { background: #ededeb; }
+    .results { min-width: 0; }
+    .canvases { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .photo-panel { overflow: hidden; }
+    .photo-label { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; font-size: 12px; font-weight: 650; border-bottom: 1px solid var(--line); }
+    .photo-label span:last-child { color: var(--muted); font-weight: 400; }
+    .photo-box { min-height: 340px; background: #eeefeb; display: flex; align-items: center; justify-content: center; position: relative; }
+    canvas { display: block; max-width: 100%; width: auto; height: auto; max-height: min(70vh, 860px); }
+    .empty { text-align: center; padding: 30px 18px; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .empty strong { color: #333; font-size: 15px; }
+    .empty .mark { width: 44px; height: 44px; border: 1px solid #bdbdb9; border-radius: 12px; display: grid; place-items: center; margin: 0 auto 16px; font-size: 25px; }
+    .photo-box.has-image .empty { display: none; }
+    .photo-box:not(.has-image) canvas { display: none; }
+    .drop-active { outline: 3px dashed #555; outline-offset: -6px; }
+    .bottom-note { margin: 20px 0 0; font-size: 12px; color: var(--muted); line-height: 1.7; }
+    #status { font-size: 12px; color: var(--muted); min-height: 18px; margin: 0; }
+    @media (max-width: 1040px) { .workspace { grid-template-columns: 1fr; } .controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 25px; } .controls .eyebrow, .controls .divider, .presets-section { grid-column: 1 / -1; } }
+    @media (max-width: 640px) { .wrap { width: min(100% - 28px, 1440px); } header { padding: 20px 0; } .controls { display: block; padding: 20px; } .canvases { grid-template-columns: 1fr; } .photo-box { min-height: 250px; } .topline { align-items: flex-start; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Value Study</h1>
+        <p class="subtitle">See the big shapes first. Refine the details later.</p>
+      </div>
+      <a class="brand" href="../">← isakhammer.github.io</a>
+    </header>
+    <main>
+      <div class="topline">
+        <div class="actions">
+          <button id="paste" class="btn dark" type="button">Paste image</button>
+          <button id="upload" class="btn" type="button">Choose file</button>
+          <input id="file" type="file" accept="image/*" hidden>
+          <button id="reset" class="btn" type="button">Reset adjustments</button>
+          <button id="download" class="btn" type="button" disabled>Save PNG</button>
+        </div>
+        <p id="status" role="status" aria-live="polite">Paste with Ctrl+V, or drop an image onto this page.</p>
+      </div>
+
+      <div class="workspace">
+        <aside class="controls panel" aria-label="Image adjustments">
+          <p class="eyebrow">Adjustments</p>
+          <div class="control">
+            <div class="control-head"><label for="grayscale">Grayscale</label><output id="grayscale-value" for="grayscale">100%</output></div>
+            <input id="grayscale" type="range" min="0" max="100" step="1" value="100">
+          </div>
+          <div class="control">
+            <div class="control-head"><label for="brightness">Brightness</label><output id="brightness-value" for="brightness">100%</output></div>
+            <input id="brightness" type="range" min="20" max="200" step="1" value="100">
+          </div>
+          <div class="control">
+            <div class="control-head"><label for="contrast">Contrast</label><output id="contrast-value" for="contrast">100%</output></div>
+            <input id="contrast" type="range" min="0" max="300" step="1" value="100">
+          </div>
+          <div class="control">
+            <div class="control-head"><label for="blur">Blur</label><output id="blur-value" for="blur">0 px</output></div>
+            <input id="blur" type="range" min="0" max="25" step="0.5" value="0">
+          </div>
+          <div class="control">
+            <div class="control-head"><label for="levels">Value levels</label></div>
+            <select id="levels">
+              <option value="0">Continuous tones</option>
+              <option value="2">2 values</option>
+              <option value="3">3 values</option>
+              <option value="4">4 values</option>
+              <option value="5">5 values</option>
+              <option value="6">6 values</option>
+              <option value="8">8 values</option>
+              <option value="10">10 values</option>
+            </select>
+            <p class="hint">Reduce the photo to a few distinct light and dark masses.</p>
+          </div>
+          <hr class="divider">
+          <section class="presets-section">
+            <p class="eyebrow">Quick studies</p>
+            <div class="presets">
+              <button type="button" data-preset="original">Original</button>
+              <button type="button" data-preset="gray">Grayscale</button>
+              <button type="button" data-preset="three">3 values</button>
+              <button type="button" data-preset="five">5 values</button>
+              <button type="button" data-preset="macro">Blurred masses</button>
+            </div>
+          </section>
+        </aside>
+
+        <section class="results" aria-label="Image comparison">
+          <div class="canvases">
+            <div class="panel photo-panel">
+              <div class="photo-label"><span>Reference</span><span>Original</span></div>
+              <div class="photo-box" id="original-box">
+                <div class="empty"><div class="mark">+</div><strong>Paste an image</strong><div>Ctrl+V, drag and drop, or choose a file.</div></div>
+                <canvas id="original-canvas" aria-label="Original image"></canvas>
+              </div>
+            </div>
+            <div class="panel photo-panel">
+              <div class="photo-label"><span>Study</span><span>Adjusted</span></div>
+              <div class="photo-box" id="edited-box">
+                <div class="empty"><div class="mark">◒</div><strong>Your value study</strong><div>The edited image appears here.</div></div>
+                <canvas id="edited-canvas" aria-label="Adjusted image"></canvas>
+              </div>
+            </div>
+          </div>
+          <p class="bottom-note">Tip: start with 3 values and some blur to map the main shadow and light shapes. Then gradually add more tones and details. Images are processed locally in your browser and are not uploaded.</p>
+        </section>
+      </div>
+    </main>
+  </div>
+  <script>
+    (() => {
+      'use strict';
+      const source = document.getElementById('original-canvas');
+      const edited = document.getElementById('edited-canvas');
+      const sctx = source.getContext('2d');
+      const ectx = edited.getContext('2d', { willReadFrequently: true });
+      const keys = ['grayscale', 'brightness', 'contrast', 'blur'];
+      const controls = Object.fromEntries(keys.map(k => [k, document.getElementById(k)]));
+      const levels = document.getElementById('levels');
+      const status = document.getElementById('status');
+      const fileInput = document.getElementById('file');
+      const download = document.getElementById('download');
+      let ready = false;
+      let queued = false;
+      let imageName = 'value-study';
+
+      function report(message) { status.textContent = message; }
+
+      function setValues(values) {
+        for (const [key, value] of Object.entries(values)) {
+          if (controls[key]) controls[key].value = value;
+        }
+        if (values.levels !== undefined) levels.value = values.levels;
+        schedule();
+      }
+
+      function schedule() {
+        for (const key of keys) {
+          document.getElementById(key + '-value').textContent =
+            controls[key].value + (key === 'blur' ? ' px' : '%');
+        }
+        if (!ready || queued) return;
+        queued = true;
+        requestAnimationFrame(() => { queued = false; render(); });
+      }
+
+      function render() {
+        const w = source.width, h = source.height;
+        if (!w || !h) return;
+        ectx.clearRect(0, 0, w, h);
+        ectx.save();
+        ectx.filter = [
+          'grayscale(' + controls.grayscale.value + '%)',
+          'brightness(' + controls.brightness.value + '%)',
+          'contrast(' + controls.contrast.value + '%)',
+          'blur(' + controls.blur.value + 'px)'
+        ].join(' ');
+        ectx.drawImage(source, 0, 0);
+        ectx.restore();
+
+        const count = Number(levels.value);
+        if (count >= 2) {
+          const pixels = ectx.getImageData(0, 0, w, h);
+          const data = pixels.data;
+          const scale = count - 1;
+          for (let i = 0; i < data.length; i += 4) {
+            for (let c = 0; c < 3; c++) {
+              data[i + c] = Math.round((data[i + c] / 255) * scale) / scale * 255;
+            }
+          }
+          ectx.putImageData(pixels, 0, 0);
+        }
+      }
+
+      async function loadImage(file) {
+        if (!file || !file.type.startsWith('image/')) {
+          report('Please paste or choose an image file.');
+          return;
+        }
+        try {
+          const bitmap = await createImageBitmap(file);
+          const maxSide = 2000;
+          const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+          const w = Math.max(1, Math.round(bitmap.width * scale));
+          const h = Math.max(1, Math.round(bitmap.height * scale));
+          source.width = edited.width = w;
+          source.height = edited.height = h;
+          sctx.clearRect(0, 0, w, h);
+          sctx.drawImage(bitmap, 0, 0, w, h);
+          bitmap.close();
+          ready = true;
+          imageName = (file.name || 'image').replace(/\.[^.]+$/, '') || 'image';
+          document.getElementById('original-box').classList.add('has-image');
+          document.getElementById('edited-box').classList.add('has-image');
+          download.disabled = false;
+          report('Image ready · ' + w + ' × ' + h + ' pixels');
+          schedule();
+        } catch (error) {
+          report('Could not open this image. Please try a PNG or JPEG.');
+          console.error(error);
+        }
+      }
+
+      document.addEventListener('paste', event => {
+        const items = Array.from(event.clipboardData?.items || []);
+        const picture = items.find(item => item.type.startsWith('image/'));
+        if (!picture) return;
+        event.preventDefault();
+        loadImage(picture.getAsFile());
+      });
+
+      document.getElementById('paste').addEventListener('click', async () => {
+        if (!navigator.clipboard?.read) {
+          report('Press Ctrl+V (or Cmd+V on Mac) to paste an image.');
+          return;
+        }
+        try {
+          const items = await navigator.clipboard.read();
+          for (const item of items) {
+            const type = item.types.find(type => type.startsWith('image/'));
+            if (type) { await loadImage(await item.getType(type)); return; }
+          }
+          report('No image found on your clipboard. Copy an image and try again.');
+        } catch {
+          report('Clipboard access was blocked. Try Ctrl+V instead.');
+        }
+      });
+
+      document.getElementById('upload').addEventListener('click', () => fileInput.click());
+      fileInput.addEventListener('change', () => {
+        loadImage(fileInput.files?.[0]);
+        fileInput.value = '';
+      });
+      for (const key of keys) controls[key].addEventListener('input', schedule);
+      levels.addEventListener('change', schedule);
+      document.getElementById('reset').addEventListener('click', () => {
+        setValues({ grayscale: 100, brightness: 100, contrast: 100, blur: 0, levels: 0 });
+      });
+      const presets = {
+        original: { grayscale: 0, brightness: 100, contrast: 100, blur: 0, levels: 0 },
+        gray: { grayscale: 100, brightness: 100, contrast: 100, blur: 0, levels: 0 },
+        three: { grayscale: 100, brightness: 100, contrast: 125, blur: 1.5, levels: 3 },
+        five: { grayscale: 100, brightness: 100, contrast: 115, blur: 0.5, levels: 5 },
+        macro: { grayscale: 100, brightness: 100, contrast: 110, blur: 12, levels: 0 }
+      };
+      document.querySelectorAll('[data-preset]').forEach(btn => {
+        btn.addEventListener('click', () => setValues(presets[btn.dataset.preset]));
+      });
+      download.addEventListener('click', () => {
+        if (!ready) return;
+        render();
+        edited.toBlob(blob => {
+          if (!blob) { report('Could not export the image.'); return; }
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = imageName + '-value-study.png';
+          a.click();
+          setTimeout(() => URL.revokeObjectURL(url), 2000);
+        }, 'image/png');
+      });
+
+      let dragDepth = 0;
+      document.addEventListener('dragenter', event => {
+        event.preventDefault();
+        dragDepth++;
+        document.body.classList.add('drop-active');
+      });
+      document.addEventListener('dragover', event => event.preventDefault());
+      document.addEventListener('dragleave', event => {
+        event.preventDefault();
+        dragDepth = Math.max(0, dragDepth - 1);
+        if (!dragDepth) document.body.classList.remove('drop-active');
+      });
+      document.addEventListener('drop', event => {
+        event.preventDefault();
+        dragDepth = 0;
+        document.body.classList.remove('drop-active');
+        const file = Array.from(event.dataTransfer?.files || []).find(f => f.type.startsWith('image/'));
+        if (file) loadImage(file);
+      });
+      schedule();
+    })();
+  </script>
+</body>
+</html>
