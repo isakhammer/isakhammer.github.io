@@ -116,6 +116,7 @@
           <button id="toggle-original" class="btn" type="button" aria-pressed="false" disabled>Original</button>
           <button id="reset" class="btn" type="button">Reset adjustments</button>
           <button id="download" class="btn" type="button" disabled>Save PNG</button>
+          <button id="clear-image" class="btn" type="button" disabled title="Remove the current image and its browser-saved copy">Clear image</button>
         </div>
         <p id="status" role="status" aria-live="polite">Copy an image, then click Paste image or press Ctrl+V.</p>
       </div>
@@ -199,6 +200,7 @@
       const status = document.getElementById('status');
       const fileInput = document.getElementById('file');
       const download = document.getElementById('download');
+      const clearButton = document.getElementById('clear-image');
       const originalButton = document.getElementById('toggle-original');
       const previewLabel = document.getElementById('preview-label');
       const viewport = document.getElementById('edited-box');
@@ -213,6 +215,60 @@
       let ready = false;
       let queued = false;
       let imageName = 'drawing';
+      // IndexedDB stores only the most recently pasted/opened image in this browser.
+      // Saving the Blob preserves the original pixels without uploading it anywhere.
+      let loadSequence = 0;
+      let storageQueue = Promise.resolve();
+
+      function openImageDatabase() {
+        return new Promise((resolve, reject) => {
+          if (!('indexedDB' in window)) {
+            reject(new Error('Browser storage is not supported.'));
+            return;
+          }
+          const request = indexedDB.open('drawing-assistant', 1);
+          request.onupgradeneeded = () => {
+            if (!request.result.objectStoreNames.contains('photos')) {
+              request.result.createObjectStore('photos');
+            }
+          };
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+          request.onblocked = () => reject(new Error('Image storage is blocked by another tab.'));
+        });
+      }
+      const imageDatabase = openImageDatabase().catch(() => null);
+
+      async function readSavedImage() {
+        const db = await imageDatabase;
+        if (!db) return null;
+        return new Promise((resolve, reject) => {
+          const request = db.transaction('photos', 'readonly').objectStore('photos').get('last');
+          request.onsuccess = () => resolve(request.result || null);
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      function queueStorageChange(action, payload, token) {
+        storageQueue = storageQueue.catch(() => {}).then(async () => {
+          const db = await imageDatabase;
+          if (!db) throw new Error('Browser storage is unavailable.');
+          await new Promise((resolve, reject) => {
+            const tx = db.transaction('photos', 'readwrite');
+            const store = tx.objectStore('photos');
+            if (action === 'save') store.put(payload, 'last');
+            else store.delete('last');
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(tx.error);
+          });
+        });
+        storageQueue.catch(() => {
+          if (token === loadSequence) {
+            report('Image displayed, but your browser could not save it locally.');
+          }
+        });
+      }
 
       function report(message) { status.textContent = message; }
 
@@ -350,13 +406,18 @@
         ectx.drawImage(showOriginal ? source : processed, 0, 0);
       }
 
-      async function loadImage(file) {
+      async function loadImage(file, options = {}) {
         if (!file || !file.type.startsWith('image/')) {
           report('Please paste or choose an image file.');
           return;
         }
+        const token = ++loadSequence;
         try {
           const bitmap = await createImageBitmap(file);
+          if (token !== loadSequence) {
+            bitmap.close();
+            return;
+          }
           const maxSide = 2000;
           const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
           const w = Math.max(1, Math.round(bitmap.width * scale));
@@ -367,7 +428,7 @@
           sctx.drawImage(bitmap, 0, 0, w, h);
           bitmap.close();
           ready = true;
-          imageName = (file.name || 'image').replace(/\.[^.]+$/, '') || 'image';
+          imageName = (options.name || file.name || 'image').replace(/\.[^.]+$/, '') || 'image';
           viewport.classList.add('has-image');
           zoomInButton.disabled = false;
           zoomOutButton.disabled = false;
@@ -375,8 +436,12 @@
           fitZoom();
           originalButton.disabled = false;
           download.disabled = false;
-          report('Image ready · ' + w + ' × ' + h + ' pixels');
+          clearButton.disabled = false;
+          report((options.restored ? 'Restored last image' : 'Image ready') + ' · ' + w + ' × ' + h + ' pixels');
           schedule();
+          if (!options.restored) {
+            queueStorageChange('save', { blob: file, name: imageName }, token);
+          }
         } catch (error) {
           report('Could not open this image. Please try a PNG or JPEG.');
           console.error(error);
@@ -412,6 +477,24 @@
         } catch {
           report('Clipboard access was blocked. Try Ctrl+V instead.');
         }
+      });
+
+      clearButton.addEventListener('click', () => {
+        ++loadSequence;
+        ready = false;
+        showOriginal = false;
+        viewport.classList.remove('has-image', 'zoomed', 'panning');
+        edited.style.transform = '';
+        zoom = 1;
+        panX = panY = 0;
+        zoomLabel.textContent = '100%';
+        zoomInButton.disabled = zoomOutButton.disabled = zoomFitButton.disabled = true;
+        originalButton.disabled = download.disabled = clearButton.disabled = true;
+        originalButton.setAttribute('aria-pressed', 'false');
+        originalButton.classList.remove('dark');
+        previewLabel.textContent = 'Adjusted';
+        queueStorageChange('clear', null, loadSequence);
+        report('Image cleared from this browser.');
       });
 
       document.getElementById('upload').addEventListener('click', () => fileInput.click());
@@ -475,6 +558,14 @@
         if (file) loadImage(file);
       });
       schedule();
+      // Open the last picture automatically when the user revisits this page.
+      readSavedImage().then(saved => {
+        if (loadSequence === 0 && saved && saved.blob instanceof Blob) {
+          loadImage(saved.blob, { restored: true, name: saved.name });
+        }
+      }).catch(() => {
+        // In private browsing or restricted storage modes, paste still works.
+      });
     })();
   </script>
 </body>
