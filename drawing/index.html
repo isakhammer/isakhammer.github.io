@@ -195,6 +195,10 @@
           if (controls[key]) controls[key].value = value;
         }
         if (values.levels !== undefined) levels.value = values.levels;
+        showOriginal = false;
+        originalButton.setAttribute('aria-pressed', 'false');
+        originalButton.classList.remove('dark');
+        previewLabel.textContent = 'Adjusted';
         schedule();
       }
 
