@@ -85,3 +85,27 @@ punktkilder og avgrens bergflaten før eventuell modelltilpasning. En videre
 modell bør kunne vise hull og usikkerhet. Automatisk utfylling eller en enkelt
 høyde per XY-rute kan skjule relevant geometri i en så bratt vegg. Ingen slik
 flate er laget i denne arbeidsrunden.
+
+## Nummererte høydemerker og to-punktsmåling
+
+Høydebånd kan vises i alle fargemoduser, med 5, 10, 20 eller 50 m intervall.
+Tallene i den projiserte høydelinjalen er absolutte meter i NN2000, ikke meter
+fra en bekreftet veggfot. Båndene fargelegger målte punkter ved disse høydene;
+de er ikke sammenhengende høydekurver på en interpolert bergflate. Talltettheten
+tilpasses visningsskalaen. Linjalen skjules når høydeaksen nesten er sett ovenfra.
+
+«Mål mellom to punkter» gir forskjell i Z, horisontalavstand og euklidisk
+rettlinjeavstand mellom to valgte kildemålinger. Klasse 7 godtas ikke i målingen.
+Punktene er ikke dokumenterte innfestinger. Rutelengde langs berget, plassering
+av anker og tauoppsett inngår ikke; verktøyet beregner derfor ikke nødvendig
+taulengde. Ved vanlig topptau med sikrer på bakken går tauet både opp til
+toppunktet og ned igjen. Se [Mammut om rutelengde og tau](https://www.mammut.com/us/en/stories-guides/the-best-ropes-for-indoor-and-outdoor-climbing)
+og [Petzl om kontroll av taulengde](https://www.petzl.com/int/en/sport/tech-tips/basic-techniques/rope-too-short--warning---danger-/CORDES-Corde-trop-courte---attention-danger--_SPO_a77w0000000PCKGAA4.html).
+
+`wall_oblique_view.png` er et rent bilde av en valgt skråvisning av klasse 1+2,
+med parallellprojeksjon og lik skala i alle retninger. Høydebåndene har 10 m
+intervall og høydetallene 20 m. Klasse 7 er utelatt fra bildet. Eksporten har
+1400 × 1600 piksler. Bergformen er ikke bearbeidet, og hull i dataene er bevart.
+Bildet bruker den samme målte geometrien som den interaktive visningen.
+Kameravinkelen ble valgt i visningen: azimut ca. 13,75°, elevasjon ca. 15,73°.
+«Lagre portrettbilde» eksporterer valgt kameravinkel med høydelinjal og datakilde.
