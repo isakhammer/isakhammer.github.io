@@ -46,7 +46,7 @@
       "source_sha256": "11ae6a0ee2a204368ef2dc0da7d6e2aa661ac5867f70c3c850443d6b94580d5c",
       "max_float32_display_offset_error_m": 1.553698516291088e-05,
       "file": "cloud_wall.html",
-      "html_bytes": 4139330,
+      "html_bytes": 4145735,
       "method": "Original selected points, displayed with screen-space depth shading. No mesh, smoothing, regression or interpolation. Intensity display is an uncalibrated percentile stretch."
     },
     {
@@ -75,7 +75,7 @@
       "source_sha256": "11ae6a0ee2a204368ef2dc0da7d6e2aa661ac5867f70c3c850443d6b94580d5c",
       "max_float32_display_offset_error_m": 2.5372023517186554e-05,
       "file": "cloud_macro4.html",
-      "html_bytes": 3402295,
+      "html_bytes": 3408700,
       "method": "Original selected points, displayed with screen-space depth shading. No mesh, smoothing, regression or interpolation. Intensity display is an uncalibrated percentile stretch."
     },
     {
@@ -104,7 +104,7 @@
       "source_sha256": "11ae6a0ee2a204368ef2dc0da7d6e2aa661ac5867f70c3c850443d6b94580d5c",
       "max_float32_display_offset_error_m": 2.5372023517186554e-05,
       "file": "cloud_macro2.html",
-      "html_bytes": 13397421,
+      "html_bytes": 13403826,
       "method": "Original selected points, displayed with screen-space depth shading. No mesh, smoothing, regression or interpolation. Intensity display is an uncalibrated percentile stretch."
     }
   ],
