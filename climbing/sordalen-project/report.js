@@ -137,6 +137,13 @@
       iframe.setAttribute('allowfullscreen','');
       document.getElementById('terrain-view').replaceChildren(iframe);
     });
+    document.getElementById('load-lidar').addEventListener('click',()=>{
+      const iframe=document.createElement('iframe');
+      iframe.src='lidar/';
+      iframe.title='LiDAR: klippen og makrovisning av Sørdalsveggen';
+      iframe.setAttribute('allowfullscreen','');
+      document.getElementById('lidar-view').replaceChildren(iframe);
+    });
     function calculateWalkingTime() {
       const distance=Number(document.getElementById('walk-distance').value);
       const ascent=Number(document.getElementById('walk-ascent').value);

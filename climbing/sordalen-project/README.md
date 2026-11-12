@@ -127,14 +127,18 @@ Kartverkets metadatasøk ved punktet returnerer:
 - **Bilde Nordland Nord 2022 Del 1 av 6**, prosjekt-ID 6046, er **bildematching**,
   og skal ikke forveksles med LiDAR fra 2017.
 
-LAZ-eksport **1810966** er registrert for et kvadrat på 1 × 1 km rundt punktet,
-øst 432744–433744 og nord 7553288–7554288, i EPSG:25833. E-postmottakeren lagres
-ikke i Git. Status ved første analyse: registrert og deretter under produksjon.
-Eksportstatus og eventuelle laserfiler ligger lokalt og holdes utenfor Git.
-Se `metadata/lidar_export_status.json` for sist kontrollerte status.
+LAZ-eksport **1810966** er mottatt og kontrollert lokalt. Leveransen har
+**7 012 561 punkter** over omtrent 1 × 1 km, øst 432744–433744 og nord
+7553288–7554288 i EPSG:25833. Prosjektmetadata angir NN2000.
 
-**En eksportbestilling er ikke en fullført nedlasting.** Originale LAZ-punkter
-er først tilgjengelige lokalt når `data/` inneholder den faktiske leveransen.
+Den publiserte [LiDAR-visningen](lidar/) har et 150 × 150 m nærutsnitt med alle
+154 406 originalpunkter og to makronivåer med 126 767 eller 501 584 utvalgte
+målepunkter. Dybdeskygge er en visningseffekt; ingen bergflate er interpolert.
+Se [metode og kontrollfunn](lidar/README.md) og [publiserte metadata](lidar/metadata.json).
+
+Original ZIP, LAZ og analysearbeid ligger i den Git-ignorerte mappen
+`.lidar_analyse/`. De er ikke lagt i Git eller på nettsiden. Det publiseres
+bare utvalgte visningsprodukter, omtrent 3–13 MiB per 3D-fil, uten Git LFS.
 
 ## Kilder og vilkår
 

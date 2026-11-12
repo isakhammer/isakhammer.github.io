@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="nb"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sørdalsveggen · LiDAR</title>
+<meta name="robots" content="noindex, nofollow"><link rel="stylesheet" href="access.css"><script src="access.js" defer></script><style>
+:root{font:16px/1.5 system-ui,sans-serif;color:#203139;background:#f4f6f4}
+[hidden]{display:none!important}*{box-sizing:border-box}body{margin:0}header,main{max-width:1400px;margin:auto;padding:20px}
+header{padding-bottom:6px}h1{font-size:clamp(22px,3vw,32px);margin:4px 0}h2{font-size:20px}
+p{margin:8px 0}.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#53675e}
+nav{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}button,select,.link{font:inherit;border:1px solid #b5c3bb;border-radius:8px;padding:9px 14px;background:white;color:inherit}
+button{cursor:pointer}button[aria-pressed=true]{background:#254f43;color:white;border-color:#254f43}
+button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #c47b2c;outline-offset:3px}
+.controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}a{color:#215b48}
+.notice{max-width:950px;color:#4c6057;font-size:14px}.viewer{background:white;border:1px solid #d1dbd5;border-radius:10px;overflow:hidden;margin-top:12px}
+iframe{display:block;width:100%;height:850px;border:0}.meta{font-size:14px;color:#4c6057;margin-top:8px}
+details{margin:20px 0;background:white;padding:16px;border-radius:10px;border:1px solid #d1dbd5}summary{cursor:pointer;font-weight:600}
+figure{margin:24px 0}img{display:block;max-width:100%;height:auto}figcaption{font-size:14px;color:#4c6057;margin-top:6px}
+@media(max-width:600px){header,main{padding:14px}iframe{height:980px}select{max-width:100%}}
+</style><div id="lidar-gate"><div><a href="../#lidar">ISAK HAMMER / KLATRING</a><h1>3D-visning</h1><form id="lidar-access-form"><label for="lidar-password">Passord</label><div class="lidar-password-row"><input id="lidar-password" type="password" required autocomplete="current-password"><button type="submit">Åpne</button></div><p id="lidar-access-error" role="alert" hidden></p></form></div></div>
+<header><div class="eyebrow">LiDAR · Kartverket · 12. november 2026</div>
+<h1>Sørdalsveggen fra to avstander</h1>
+<p>Hele leveransen har <strong>7 012 561 originalpunkter</strong>. Velg området og detaljnivået du vil undersøke.</p>
+</header>
+<main>
+<nav aria-label="Område"><button id="macro" aria-pressed="false">Makro · hele området</button><button id="wall" aria-pressed="true">Klippen · alle punkter i utsnittet</button></nav>
+<div class="controls" id="detail-control"><label for="detail">Detaljgrad</label><select id="detail"><option value="4">Lett · 4 m utvalg · 126 767 punkter</option><option value="2">Finere · 2 m utvalg · 501 584 punkter</option></select></div>
+<p id="description" aria-live="polite"></p>
+<p class="notice" id="limits"></p>
+<div class="viewer"><iframe id="viewer" title="Alle råpunkter i klippeutsnittet" data-src="cloud_wall.html" allow="fullscreen"></iframe></div>
+<div class="meta"><a id="separate" href="cloud_wall.html" target="_blank" rel="noopener">Åpne valgt 3D-visning i egen fane</a> · Dra for å rotere, rull for å zoome. Velg gråtoner og dybdeskygge for form, eller høydefarger for terrengoversikt.</div>
+<details><summary>Snitt, punktdekning og sammenligning med DTM1</summary>
+<p>Dette er inspeksjon av målte punkter. Ingen ny overflate er interpolert eller tilpasset.</p>
+<figure><img data-src="raw_sections.png" loading="lazy" alt="Side- og frontprojeksjon av originale punkter ved veggen"><figcaption>Råpunktsnitt med lik skala på aksene. Det smale sidesnittet og den bredere frontprojeksjonen har ulike utvalg.</figcaption></figure>
+<figure><img data-src="raw_coverage.png" loading="lazy" alt="Antall målte punkter i frontprojeksjonens to ganger to meter store ruter"><figcaption>Hvitt betyr ingen observasjoner i det valgte dybdeintervallet. Det måler ikke andelen manglende bergflate.</figcaption></figure>
+<figure><img data-src="raw_vs_dtm.png" loading="lazy" alt="Råpunkter sammenholdt med eksisterende DTM1 i et profilsnitt"><figcaption>DTM1 er en terrengmodell med én høyde per rute. Sammenligningen er ikke en uavhengig kontroll av målenøyaktighet.</figcaption></figure>
+</details>
+<p class="notice">Terrengdata: Kartverket · NDH Lofoten 2pkt 2017 · EUREF89 UTM33 / NN2000. Original ZIP og LAZ beholdes lokalt. <a href="README.md">Metode og datagrunnlag</a> · <a href="../#lidar">Til prosjektrapporten</a> · <button id="lidar-lock" type="button">Lås visningen</button>.</p>
+</main>
+<script>window.addEventListener("lidar-access-granted", () => {
+
+const macro=document.querySelector('#macro'),wall=document.querySelector('#wall'),detail=document.querySelector('#detail'),frame=document.querySelector('#viewer');
+let area='wall';
+function show(){
+  const isMacro=area==='macro',fine=detail.value==='2';
+  macro.setAttribute('aria-pressed',String(isMacro));wall.setAttribute('aria-pressed',String(!isMacro));
+  document.querySelector('#detail-control').hidden=!isMacro;
+  const file=isMacro?(fine?'cloud_macro2.html':'cloud_macro4.html'):'cloud_wall.html';
+  if(frame.getAttribute('src')!==file)frame.src=file;
+  frame.title=isMacro?'Makrovisning av punktskyen':'Alle råpunkter i klippeutsnittet';
+  document.querySelector('#separate').href=file;
+  document.querySelector('#description').textContent=isMacro?
+    `Ca. 1 × 1 km · ${fine?'501 584':'126 767'} målte punkter · ett originalpunkt per opptatt ${fine?'2 × 2 × 2':'4 × 4 × 4'} m romrute. Ingen gjennomsnittspunkter eller utfylte flater.`:
+    '150 × 150 m · alle 154 406 originalpunkter i utsnittet, uten uttynning. Klasse 1, 2 og 7 er lastet inn. Kameraet starter ved selve veggen; zoom ut for å se mer. Rødt viser støymarkerte punkter.';
+  document.querySelector('#limits').textContent=isMacro?
+    'Klasse 1 og 2 vises; 10 224 punkter merket klasse 7 (støy) er utelatt her. Utvalget er til oversikt og kan skjule små detaljer. Rammen markerer klippeutsnittet skjematisk. Ørnheia ligger ved søndre kant; hele anmarsjen fra Kilan er utenfor leveransen. Ingen adkomstlinje er kartlagt.':
+    'Råpunktene viser en tydelig bratt flate. Klasse 1 betyr uklassifisert og må ikke automatisk kastes. Punkthull er bevart. Visningen dokumenterer ikke sikre ankerplasser eller en kontrollert nedstigning.';
+}
+macro.addEventListener('click',()=>{area='macro';show()});wall.addEventListener('click',()=>{area='wall';show()});detail.addEventListener('change',show);show();
+
+}, {once:true});</script></html>
