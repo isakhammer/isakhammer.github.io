@@ -96,6 +96,21 @@
     .photo-box.has-image.panning { cursor: grabbing; }
     .photo-box.has-image canvas { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center center; pointer-events: none; user-select: none; }
     @media (max-width: 640px) { .photo-box.has-image { height: min(65vh, 600px); } }
+    .group-tools { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .group-tools[hidden] { display: none; }
+    .group-title { color: var(--muted); font-size: 11px; font-weight: 700; margin-bottom: 12px; }
+    .group-adjustments { display: flex; gap: 16px 24px; align-items: flex-start; flex-wrap: wrap; }
+    .threshold-section { flex: 1 1 280px; }
+    .threshold-title { display: flex; gap: 8px; font-size: 12px; margin-bottom: 9px; align-items: baseline; }
+    .threshold-title span { color: var(--muted); font-size: 11px; }
+    .threshold-list { display: flex; flex-wrap: wrap; gap: 8px 18px; }
+    .threshold-item { flex: 1 1 100px; max-width: 150px; }
+    .threshold-item .control-head { margin-bottom: 5px; }
+    @media (max-width: 640px) {
+      .group-adjustments { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .group-adjustments .control { width: 100%; }
+      .threshold-section { grid-column: 1 / -1; }
+    }
   </style>
 </head>
 <body>
@@ -157,6 +172,7 @@
               <select id="style-mode">
                 <option value="tones">Tones</option>
                 <option value="flat">Flat shapes</option>
+                <option value="grouping">Value grouping</option>
                 <option value="triangles">Triangles</option>
                 <option value="facets">Irregular facets</option>
                 <option value="contours">Contours</option>
@@ -167,6 +183,23 @@
               <input id="detail" type="range" min="8" max="90" step="1" value="45">
             </div>
           </div>
+          <section class="group-tools" id="group-tools" aria-label="Value grouping controls" hidden>
+            <div class="group-title">Value grouping</div>
+            <div class="group-adjustments">
+              <div class="control">
+                <div class="control-head"><label for="group-smooth">Edge smoothing</label><output id="group-smooth-value" for="group-smooth">40%</output></div>
+                <input id="group-smooth" type="range" min="0" max="100" step="1" value="40">
+              </div>
+              <div class="control">
+                <div class="control-head"><label for="group-merge">Minimum region</label><output id="group-merge-value" for="group-merge">0.08%</output></div>
+                <input id="group-merge" type="range" min="0" max="100" step="1" value="8">
+              </div>
+              <div class="threshold-section">
+                <div class="threshold-title">Tone boundaries <span>Dark to light</span></div>
+                <div class="threshold-list" id="threshold-list"></div>
+              </div>
+            </div>
+          </section>
           <div class="presets-section">
             <span class="preset-label">Quick settings</span>
             <div class="presets">
@@ -175,6 +208,9 @@
               <button type="button" data-preset="two">2 values</button>
               <button type="button" data-preset="three">3 values</button>
               <button type="button" data-preset="five">5 values</button>
+              <button type="button" data-preset="group2">Group 2</button>
+              <button type="button" data-preset="group3">Group 3</button>
+              <button type="button" data-preset="group5">Group 5</button>
               <button type="button" data-preset="triangles">Triangles</button>
               <button type="button" data-preset="facets">Facets</button>
               <button type="button" data-preset="contours">Contours</button>
@@ -220,6 +256,18 @@
       const styleMode = document.getElementById('style-mode');
       const detail = document.getElementById('detail');
       const detailValue = document.getElementById('detail-value');
+      const groupTools = document.getElementById('group-tools');
+      const groupSmooth = document.getElementById('group-smooth');
+      const groupSmoothValue = document.getElementById('group-smooth-value');
+      const groupMerge = document.getElementById('group-merge');
+      const groupMergeValue = document.getElementById('group-merge-value');
+      const thresholdList = document.getElementById('threshold-list');
+      const groupInput = document.createElement('canvas');
+      const groupOutput = document.createElement('canvas');
+      const groupInputCtx = groupInput.getContext('2d', { willReadFrequently: true });
+      const groupOutputCtx = groupOutput.getContext('2d');
+      const thresholdSets = new Map();
+      let pendingGroupRender = 0;
       const status = document.getElementById('status');
       const fileInput = document.getElementById('file');
       const download = document.getElementById('download');
@@ -384,6 +432,9 @@
         if (values.levels !== undefined) levels.value = values.levels;
         if (values.style !== undefined) styleMode.value = values.style;
         if (values.detail !== undefined) detail.value = values.detail;
+        if (values.smooth !== undefined) groupSmooth.value = values.smooth;
+        if (values.merge !== undefined) groupMerge.value = values.merge;
+        updateGroupControls();
         showOriginal = false;
         originalButton.setAttribute('aria-pressed', 'false');
         originalButton.classList.remove('dark');
@@ -397,9 +448,78 @@
             controls[key].value + (key === 'blur' ? ' px' : '%');
         }
         detailValue.textContent = detail.value;
-        if (!ready || queued) return;
+        groupSmoothValue.textContent = groupSmooth.value + '%';
+        groupMergeValue.textContent = (Number(groupMerge.value) / 100).toFixed(2) + '%';
+        if (!ready) return;
+        if (styleMode.value === 'grouping') {
+          clearTimeout(pendingGroupRender);
+          pendingGroupRender = setTimeout(() => {
+            pendingGroupRender = 0;
+            if (!queued) {
+              queued = true;
+              requestAnimationFrame(() => { queued = false; render(); });
+            }
+          }, 75);
+          return;
+        }
+        clearTimeout(pendingGroupRender);
+        pendingGroupRender = 0;
+        if (queued) return;
         queued = true;
         requestAnimationFrame(() => { queued = false; render(); });
+      }
+
+      function groupingLevelCount() {
+        return Math.max(2, Number(levels.value) || 3);
+      }
+
+      function getThresholds(count) {
+        if (!thresholdSets.has(count)) {
+          const boundaries = [];
+          for (let i = 1; i < count; i++) boundaries.push(Math.round(255 * (i - 0.5) / (count - 1)));
+          thresholdSets.set(count, boundaries);
+        }
+        return thresholdSets.get(count);
+      }
+
+      function updateGroupControls() {
+        const active = styleMode.value === 'grouping';
+        groupTools.hidden = !active;
+        if (!active) return;
+        const count = groupingLevelCount();
+        if (thresholdList.dataset.count === String(count)) return;
+        thresholdList.dataset.count = String(count);
+        thresholdList.replaceChildren();
+        const values = getThresholds(count);
+        for (let i = 0; i < values.length; i++) {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'threshold-item';
+          const head = document.createElement('div');
+          head.className = 'control-head';
+          const label = document.createElement('label');
+          label.textContent = 'T' + (i + 1);
+          const output = document.createElement('output');
+          output.textContent = String(values[i]);
+          const slider = document.createElement('input');
+          slider.type = 'range';
+          slider.min = '0';
+          slider.max = '255';
+          slider.step = '1';
+          slider.value = String(values[i]);
+          slider.id = 'tone-threshold-' + i;
+          label.htmlFor = slider.id;
+          slider.addEventListener('input', () => {
+            const lower = i === 0 ? 1 : values[i - 1] + 1;
+            const upper = i === values.length - 1 ? 254 : values[i + 1] - 1;
+            values[i] = Math.max(lower, Math.min(upper, Number(slider.value)));
+            slider.value = String(values[i]);
+            output.textContent = String(values[i]);
+            schedule();
+          });
+          head.append(label, output);
+          wrapper.append(head, slider);
+          thresholdList.append(wrapper);
+        }
       }
 
       function quantize(value, count) {
@@ -518,6 +638,149 @@
         tctx.putImageData(out, 0, 0);
       }
 
+      // Bilateral smoothing preserves strong luminance boundaries while reducing texture.
+      // This runs on a bounded resolution to keep the editor responsive.
+      function bilateralSmooth(input, width, height, amount) {
+        if (amount <= 0) return input;
+        const output = new Float32Array(input.length);
+        const sigmaColor = 9 + amount * 0.6;
+        const falloff = -1 / (2 * sigmaColor * sigmaColor);
+        const spatial = [0.33, 0.61, 0.75, 0.61, 0.33];
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            const i = y * width + x;
+            const center = input[i];
+            let total = 0, weight = 0;
+            for (let dy = -2; dy <= 2; dy++) {
+              const yy = y + dy;
+              if (yy < 0 || yy >= height) continue;
+              const sy = spatial[dy + 2];
+              for (let dx = -2; dx <= 2; dx++) {
+                const xx = x + dx;
+                if (xx < 0 || xx >= width) continue;
+                const v = input[yy * width + xx];
+                const difference = v - center;
+                const w = sy * spatial[dx + 2] * Math.exp(difference * difference * falloff);
+                total += v * w;
+                weight += w;
+              }
+            }
+            output[i] = total / weight;
+          }
+        }
+        return output;
+      }
+
+      // 4-connected components. Tiny isolated components are absorbed into a
+      // neighboring tone using shared boundary length and tone proximity.
+      function mergeSmallComponents(labels, width, height, minPixels, toneCount) {
+        if (minPixels <= 1) return labels;
+        const total = width * height;
+        const queue = new Int32Array(total);
+        for (let pass = 0; pass < 3; pass++) {
+          const visited = new Uint8Array(total);
+          const next = labels.slice();
+          let changes = 0;
+          for (let start = 0; start < total; start++) {
+            if (visited[start]) continue;
+            const category = labels[start];
+            let head = 0, tail = 1;
+            queue[0] = start;
+            visited[start] = 1;
+            while (head < tail) {
+              const i = queue[head++];
+              const x = i % width;
+              const y = Math.floor(i / width);
+              const neighbors = [
+                x > 0 ? i - 1 : -1,
+                x + 1 < width ? i + 1 : -1,
+                y > 0 ? i - width : -1,
+                y + 1 < height ? i + width : -1
+              ];
+              for (let k = 0; k < 4; k++) {
+                const j = neighbors[k];
+                if (j >= 0 && !visited[j] && labels[j] === category) {
+                  visited[j] = 1;
+                  queue[tail++] = j;
+                }
+              }
+            }
+            if (tail >= minPixels) continue;
+            const border = new Uint32Array(toneCount);
+            for (let k = 0; k < tail; k++) {
+              const i = queue[k];
+              const x = i % width, y = Math.floor(i / width);
+              if (x > 0 && labels[i - 1] !== category) border[labels[i - 1]]++;
+              if (x + 1 < width && labels[i + 1] !== category) border[labels[i + 1]]++;
+              if (y > 0 && labels[i - width] !== category) border[labels[i - width]]++;
+              if (y + 1 < height && labels[i + width] !== category) border[labels[i + width]]++;
+            }
+            let best = -1, score = 0;
+            for (let k = 0; k < toneCount; k++) {
+              if (k === category) continue;
+              const candidate = border[k] / (1 + 0.35 * Math.abs(k - category));
+              if (candidate > score) { score = candidate; best = k; }
+            }
+            if (best >= 0) {
+              for (let k = 0; k < tail; k++) next[queue[k]] = best;
+              changes += tail;
+            }
+          }
+          labels = next;
+          if (!changes) break;
+        }
+        return labels;
+      }
+
+      function paintValueGrouping(width, height, count) {
+        const limit = 760;
+        const ratio = Math.min(1, limit / Math.max(width, height));
+        const gw = Math.max(1, Math.round(width * ratio));
+        const gh = Math.max(1, Math.round(height * ratio));
+        if (groupInput.width !== gw || groupInput.height !== gh) {
+          groupInput.width = groupOutput.width = gw;
+          groupInput.height = groupOutput.height = gh;
+        }
+        groupInputCtx.clearRect(0, 0, gw, gh);
+        groupInputCtx.imageSmoothingEnabled = true;
+        groupInputCtx.imageSmoothingQuality = 'high';
+        groupInputCtx.drawImage(processed, 0, 0, gw, gh);
+        const data = groupInputCtx.getImageData(0, 0, gw, gh).data;
+        const luminance = new Float32Array(gw * gh);
+        for (let i = 0, j = 0; i < data.length; i += 4, j++) {
+          luminance[j] = data[i] * 0.2126 + data[i + 1] * 0.7152 + data[i + 2] * 0.0722;
+        }
+
+        const amount = Number(groupSmooth.value);
+        let filtered = bilateralSmooth(luminance, gw, gh, amount);
+        if (amount > 65) filtered = bilateralSmooth(filtered, gw, gh, amount - 40);
+        const thresholds = getThresholds(count);
+        let labels = new Uint8Array(gw * gh);
+        for (let i = 0; i < labels.length; i++) {
+          let level = 0;
+          while (level < thresholds.length && filtered[i] >= thresholds[level]) level++;
+          labels[i] = level;
+        }
+
+        const areaPercent = Number(groupMerge.value) / 100;
+        const minPixels = Math.max(0, Math.round(labels.length * areaPercent / 100));
+        labels = mergeSmallComponents(labels, gw, gh, minPixels, count);
+
+        const values = groupOutputCtx.createImageData(gw, gh);
+        const dst = values.data;
+        for (let i = 0; i < labels.length; i++) {
+          const value = Math.round(labels[i] * 255 / (count - 1));
+          const k = i * 4;
+          dst[k] = dst[k + 1] = dst[k + 2] = value;
+          dst[k + 3] = 255;
+        }
+        groupOutputCtx.putImageData(values, 0, 0);
+        tctx.save();
+        tctx.imageSmoothingEnabled = false;
+        tctx.drawImage(groupOutput, 0, 0, width, height);
+        tctx.restore();
+      }
+
       function render() {
         const w = source.width, h = source.height;
         if (!w || !h) return;
@@ -542,7 +805,7 @@
         pctx.restore();
 
         // For polygon modes, tonal averaging happens inside each face, before palette reduction.
-        if (mode !== 'triangles' && mode !== 'facets' && mode !== 'contours' && colorCount >= 2) {
+        if (mode !== 'grouping' && mode !== 'triangles' && mode !== 'facets' && mode !== 'contours' && colorCount >= 2) {
           const pixels = pctx.getImageData(0, 0, w, h);
           const data = pixels.data;
           for (let i = 0; i < data.length; i += 4) {
@@ -552,7 +815,9 @@
         }
 
         tctx.clearRect(0, 0, w, h);
-        if (mode === 'triangles' || mode === 'facets') {
+        if (mode === 'grouping') {
+          paintValueGrouping(w, h, groupingLevelCount());
+        } else if (mode === 'triangles' || mode === 'facets') {
           paintTriangles(pctx.getImageData(0, 0, w, h), w, h, mode === 'facets', detailAmount, selectedCount);
         } else if (mode === 'contours') {
           paintContours(pctx.getImageData(0, 0, w, h), w, h, detailAmount);
@@ -661,9 +926,18 @@
         fileInput.value = '';
       });
       for (const key of keys) controls[key].addEventListener('input', schedule);
-      levels.addEventListener('change', schedule);
-      styleMode.addEventListener('change', schedule);
+      levels.addEventListener('change', () => {
+        updateGroupControls();
+        schedule();
+      });
+      styleMode.addEventListener('change', () => {
+        if (styleMode.value === 'grouping' && Number(levels.value) < 2) levels.value = '3';
+        updateGroupControls();
+        schedule();
+      });
       detail.addEventListener('input', schedule);
+      groupSmooth.addEventListener('input', schedule);
+      groupMerge.addEventListener('input', schedule);
       document.getElementById('reset').addEventListener('click', () => {
         setValues({ grayscale: 100, brightness: 100, contrast: 100, blur: 0, levels: 0, style: 'tones', detail: 45 });
       });
@@ -680,6 +954,9 @@
         two:       { grayscale: 100, brightness: 100, contrast: 115, blur: 0, levels: 2, style: 'flat', detail: 35 },
         three:     { grayscale: 100, brightness: 100, contrast: 115, blur: 0, levels: 3, style: 'flat', detail: 40 },
         five:      { grayscale: 100, brightness: 100, contrast: 110, blur: 0, levels: 5, style: 'flat', detail: 45 },
+        group2:    { grayscale: 100, brightness: 100, contrast: 110, blur: 0, levels: 2, style: 'grouping', smooth: 40, merge: 8 },
+        group3:    { grayscale: 100, brightness: 100, contrast: 110, blur: 0, levels: 3, style: 'grouping', smooth: 40, merge: 8 },
+        group5:    { grayscale: 100, brightness: 100, contrast: 110, blur: 0, levels: 5, style: 'grouping', smooth: 40, merge: 8 },
         triangles: { grayscale: 100, brightness: 100, contrast: 110, blur: 0, levels: 5, style: 'triangles', detail: 48 },
         facets:    { grayscale: 100, brightness: 100, contrast: 110, blur: 0, levels: 5, style: 'facets', detail: 25 },
         contours:  { grayscale: 100, brightness: 100, contrast: 125, blur: 0, levels: 0, style: 'contours', detail: 46 },
@@ -721,6 +998,7 @@
         const file = Array.from(event.dataTransfer?.files || []).find(f => f.type.startsWith('image/'));
         if (file) loadImage(file);
       });
+      updateGroupControls();
       schedule();
       // Open the last picture automatically when the user revisits this page.
       readSavedImage().then(saved => {
