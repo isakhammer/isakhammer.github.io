@@ -1,4 +1,9 @@
 # Original national tile and export packages stay available locally.
+.lidar_analyse/
+*.zip
+*.laz
+*.las
+*.part
 data/33-135-175.tif
 data/*.part
 data/*.zip

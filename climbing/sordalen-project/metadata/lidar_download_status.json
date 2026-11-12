@@ -1,10 +1,12 @@
 {
-  "Status": "processing",
-  "Finished": false,
-  "Started": "2026-11-05 18:02:23",
-  "Ended": "",
-  "ErrorMessage": null,
-  "checked_utc": "2026-11-05T17:56:25.700071+00:00",
   "job_id": 1810966,
-  "downloaded": false
+  "status": "received_and_verified_locally",
+  "downloaded": true,
+  "verified_date": "2026-11-12",
+  "source_project": "NDH Lofoten 2pkt 2017",
+  "format": "LAZ",
+  "point_count": 7012561,
+  "source_sha256": "11ae6a0ee2a204368ef2dc0da7d6e2aa661ac5867f70c3c850443d6b94580d5c",
+  "raw_files_published": false,
+  "display_views": "../lidar/"
 }

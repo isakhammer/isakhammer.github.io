@@ -1,0 +1,9 @@
+html:not(.lidar-unlocked) body > :not(#lidar-gate){display:none!important}
+html.lidar-unlocked #lidar-gate{display:none!important}
+#lidar-gate{box-sizing:border-box;min-height:100vh;display:grid;place-items:center;padding:32px 20px;background:#0b1119;color:#e0e9f0;font:16px/1.5 system-ui,sans-serif}
+#lidar-gate>div{width:100%;max-width:400px}#lidar-gate a{color:#a7bbc9;font-size:11px;letter-spacing:.12em;text-decoration:none}
+#lidar-gate h1{font-size:32px;margin:40px 0 24px}#lidar-gate label{display:block;margin-bottom:8px}
+.lidar-password-row{display:flex;gap:8px}.lidar-password-row input{min-width:0;width:100%;background:#14212d;color:#e9eff4;border:1px solid #526575;border-radius:4px;padding:12px;font:inherit}
+#lidar-gate button{border:1px solid #6b8495;background:#d5e5eb;color:#14212d;border-radius:4px;padding:12px 20px;font:inherit;cursor:pointer}
+#lidar-gate input:focus-visible,#lidar-gate button:focus-visible{outline:2px solid #8bd7ef;outline-offset:3px}
+#lidar-access-error{color:#ffb4b4!important;margin-top:12px}

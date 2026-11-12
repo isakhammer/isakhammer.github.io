@@ -25,3 +25,6 @@
 .gate-minimal .password-row .button{width:auto}
 .gate-minimal .password-row input{max-width:none}
 @media(max-width:680px){.gate-minimal .gate-copy{padding:28px 24px}.gate-minimal .password-row .button{width:100%}}
+
+/* The measured-point viewer is loaded only after report access and a click. */
+#lidar-view{background:#0b1119}#lidar-view>img{width:100%;display:block;object-fit:contain}#lidar-view iframe{height:1180px;background:#f4f6f4}.lidar-link-row{display:flex;flex-wrap:wrap;gap:24px;margin:22px 0 40px}.lidar-section .section-heading>p:last-child{max-width:760px}.lidar-section .method-grid{margin-top:36px}@media(max-width:600px){#lidar-view iframe{height:1550px}}
