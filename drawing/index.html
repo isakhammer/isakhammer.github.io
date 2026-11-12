@@ -642,30 +642,46 @@
       // This runs on a bounded resolution to keep the editor responsive.
       function bilateralSmooth(input, width, height, amount) {
         if (amount <= 0) return input;
-        const output = new Float32Array(input.length);
         const sigmaColor = 9 + amount * 0.6;
         const falloff = -1 / (2 * sigmaColor * sigmaColor);
         const rangeWeights = new Float32Array(256);
         for (let i = 0; i < rangeWeights.length; i++) rangeWeights[i] = Math.exp(i * i * falloff);
         const spatial = [0.33, 0.61, 0.75, 0.61, 0.33];
+        const intermediate = new Float32Array(input.length);
+        const output = new Float32Array(input.length);
+
+        // Separable approximation of the bilateral filter: horizontal then vertical.
+        // Unlike Gaussian blur, it gives little weight to samples across strong edges.
         for (let y = 0; y < height; y++) {
+          const row = y * width;
           for (let x = 0; x < width; x++) {
-            const i = y * width + x;
-            const center = input[i];
+            const i = row + x, center = input[i];
+            let total = 0, weight = 0;
+            for (let dx = -2; dx <= 2; dx++) {
+              const xx = x + dx;
+              if (xx < 0 || xx >= width) continue;
+              const value = input[row + xx];
+              const difference = Math.min(255, Math.round(Math.abs(value - center)));
+              const w = spatial[dx + 2] * rangeWeights[difference];
+              total += value * w;
+              weight += w;
+            }
+            intermediate[i] = total / weight;
+          }
+        }
+        for (let y = 0; y < height; y++) {
+          const row = y * width;
+          for (let x = 0; x < width; x++) {
+            const i = row + x, center = intermediate[i];
             let total = 0, weight = 0;
             for (let dy = -2; dy <= 2; dy++) {
               const yy = y + dy;
               if (yy < 0 || yy >= height) continue;
-              const sy = spatial[dy + 2];
-              for (let dx = -2; dx <= 2; dx++) {
-                const xx = x + dx;
-                if (xx < 0 || xx >= width) continue;
-                const v = input[yy * width + xx];
-                const difference = Math.min(255, Math.round(Math.abs(v - center)));
-                const w = sy * spatial[dx + 2] * rangeWeights[difference];
-                total += v * w;
-                weight += w;
-              }
+              const value = intermediate[yy * width + x];
+              const difference = Math.min(255, Math.round(Math.abs(value - center)));
+              const w = spatial[dy + 2] * rangeWeights[difference];
+              total += value * w;
+              weight += w;
             }
             output[i] = total / weight;
           }
