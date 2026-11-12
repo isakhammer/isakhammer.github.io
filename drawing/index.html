@@ -113,7 +113,6 @@
           <button id="paste" class="btn dark" type="button">Paste image</button>
           <button id="upload" class="btn" type="button">Choose file</button>
           <input id="file" type="file" accept="image/*" hidden>
-          <button id="toggle-original" class="btn" type="button" aria-pressed="false" disabled>Original</button>
           <button id="reset" class="btn" type="button">Reset adjustments</button>
           <button id="download" class="btn" type="button" disabled>Save PNG</button>
           <button id="clear-image" class="btn" type="button" disabled title="Remove the current image and its browser-saved copy">Clear image</button>
@@ -157,6 +156,7 @@
           <div class="presets-section">
             <span class="preset-label">Quick settings</span>
             <div class="presets">
+              <button id="toggle-original" class="btn" type="button" aria-pressed="false" disabled>Original</button>
               <button type="button" data-preset="gray">Grayscale</button>
               <button type="button" data-preset="three">3 values</button>
               <button type="button" data-preset="five">5 values</button>
