@@ -755,7 +755,7 @@
       }
 
       function paintValueGrouping(width, height, count) {
-        const limit = 760;
+        const limit = Math.round(480 + Number(detail.value) * 4);
         const ratio = Math.min(1, limit / Math.max(width, height));
         const gw = Math.max(1, Math.round(width * ratio));
         const gh = Math.max(1, Math.round(height * ratio));
