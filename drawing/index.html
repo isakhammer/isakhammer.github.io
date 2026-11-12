@@ -152,14 +152,32 @@
                 <option value="10">10 levels</option>
               </select>
             </div>
+            <div class="control values">
+              <div class="control-head"><label for="style-mode">Filter</label></div>
+              <select id="style-mode">
+                <option value="tones">Tones</option>
+                <option value="flat">Flat shapes</option>
+                <option value="triangles">Triangles</option>
+                <option value="facets">Irregular facets</option>
+                <option value="contours">Contours</option>
+              </select>
+            </div>
+            <div class="control">
+              <div class="control-head"><label for="detail">Detail</label><output id="detail-value" for="detail">45</output></div>
+              <input id="detail" type="range" min="8" max="90" step="1" value="45">
+            </div>
           </div>
           <div class="presets-section">
             <span class="preset-label">Quick settings</span>
             <div class="presets">
               <button id="toggle-original" class="btn" type="button" aria-pressed="false" disabled>Original</button>
               <button type="button" data-preset="gray">Grayscale</button>
+              <button type="button" data-preset="two">2 values</button>
               <button type="button" data-preset="three">3 values</button>
               <button type="button" data-preset="five">5 values</button>
+              <button type="button" data-preset="triangles">Triangles</button>
+              <button type="button" data-preset="facets">Facets</button>
+              <button type="button" data-preset="contours">Contours</button>
               <button type="button" data-preset="macro">Blurred</button>
             </div>
           </div>
@@ -190,13 +208,18 @@
       'use strict';
       const source = document.createElement('canvas');
       const processed = document.createElement('canvas');
+      const styled = document.createElement('canvas');
       const edited = document.getElementById('edited-canvas');
       const sctx = source.getContext('2d');
       const pctx = processed.getContext('2d', { willReadFrequently: true });
+      const tctx = styled.getContext('2d');
       const ectx = edited.getContext('2d');
       const keys = ['grayscale', 'brightness', 'contrast', 'blur'];
       const controls = Object.fromEntries(keys.map(k => [k, document.getElementById(k)]));
       const levels = document.getElementById('levels');
+      const styleMode = document.getElementById('style-mode');
+      const detail = document.getElementById('detail');
+      const detailValue = document.getElementById('detail-value');
       const status = document.getElementById('status');
       const fileInput = document.getElementById('file');
       const download = document.getElementById('download');
@@ -359,6 +382,8 @@
           if (controls[key]) controls[key].value = value;
         }
         if (values.levels !== undefined) levels.value = values.levels;
+        if (values.style !== undefined) styleMode.value = values.style;
+        if (values.detail !== undefined) detail.value = values.detail;
         showOriginal = false;
         originalButton.setAttribute('aria-pressed', 'false');
         originalButton.classList.remove('dark');
@@ -371,39 +396,172 @@
           document.getElementById(key + '-value').textContent =
             controls[key].value + (key === 'blur' ? ' px' : '%');
         }
+        detailValue.textContent = detail.value;
         if (!ready || queued) return;
         queued = true;
         requestAnimationFrame(() => { queued = false; render(); });
       }
 
+      function quantize(value, count) {
+        return count >= 2 ? Math.round(value * (count - 1) / 255) * (255 / (count - 1)) : value;
+      }
+
+      function hashGrid(row, column, seed) {
+        const x = Math.sin((row + 13.7) * 127.1 + (column + 9.3) * 311.7 + seed * 43.7) * 43758.5453;
+        return x - Math.floor(x);
+      }
+
+      // Mesh-based simplification, with stable vertices and a sampled flat tone for each triangle.
+      function paintTriangles(imageData, width, height, irregular, detailAmount, count) {
+        const pixels = imageData.data;
+        const minSide = Math.min(width, height);
+        const cell = Math.max(8, minSide / detailAmount);
+        const cols = Math.ceil(width / cell);
+        const rows = Math.ceil(height / cell);
+        const dx = width / cols, dy = height / rows;
+        const points = [];
+        const jitter = irregular ? 0.34 : 0.0;
+        for (let r = 0; r <= rows; r++) {
+          const row = [];
+          for (let c = 0; c <= cols; c++) {
+            row.push({
+              x: c * dx + (c === 0 || c === cols ? 0 : (hashGrid(r, c, 1) - 0.5) * 2 * jitter * dx),
+              y: r * dy + (r === 0 || r === rows ? 0 : (hashGrid(r, c, 2) - 0.5) * 2 * jitter * dy)
+            });
+          }
+          points.push(row);
+        }
+
+        function sample(x, y) {
+          const sx = Math.max(0, Math.min(width - 1, Math.floor(x)));
+          const sy = Math.max(0, Math.min(height - 1, Math.floor(y)));
+          const index = (sy * width + sx) * 4;
+          return [pixels[index], pixels[index + 1], pixels[index + 2]];
+        }
+
+        function triangle(a, b, c) {
+          const sites = [
+            { a: 1/3, b: 1/3, c: 1/3 },
+            { a: 0.60, b: 0.20, c: 0.20 },
+            { a: 0.20, b: 0.60, c: 0.20 },
+            { a: 0.20, b: 0.20, c: 0.60 }
+          ];
+          let red = 0, green = 0, blue = 0;
+          for (const site of sites) {
+            const x = a.x * site.a + b.x * site.b + c.x * site.c;
+            const y = a.y * site.a + b.y * site.b + c.y * site.c;
+            const rgb = sample(x, y);
+            red += rgb[0];
+            green += rgb[1];
+            blue += rgb[2];
+          }
+          // Quantize each entire face rather than individual pixels.
+          const r = Math.round(quantize(red / sites.length, count));
+          const g = Math.round(quantize(green / sites.length, count));
+          const bValue = Math.round(quantize(blue / sites.length, count));
+          const color = 'rgb(' + r + ',' + g + ',' + bValue + ')';
+          tctx.beginPath();
+          tctx.moveTo(a.x, a.y);
+          tctx.lineTo(b.x, b.y);
+          tctx.lineTo(c.x, c.y);
+          tctx.closePath();
+          tctx.fillStyle = color;
+          tctx.fill();
+          // Small same-color stroke removes hairline gaps caused by canvas antialiasing.
+          tctx.lineWidth = 0.85;
+          tctx.strokeStyle = color;
+          tctx.stroke();
+        }
+
+        tctx.fillStyle = '#fff';
+        tctx.fillRect(0, 0, width, height);
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const a = points[r][c];
+            const b = points[r][c + 1];
+            const d = points[r + 1][c];
+            const e = points[r + 1][c + 1];
+            if ((r + c) % 2 === 0) {
+              triangle(a, b, e);
+              triangle(a, e, d);
+            } else {
+              triangle(a, b, d);
+              triangle(b, e, d);
+            }
+          }
+        }
+      }
+
+      function paintContours(imageData, width, height, detailAmount) {
+        const src = imageData.data;
+        const out = tctx.createImageData(width, height);
+        const dst = out.data;
+        const lum = new Uint8Array(width * height);
+        for (let i = 0, j = 0; i < src.length; i += 4, j++) {
+          lum[j] = src[i] * 0.2126 + src[i + 1] * 0.7152 + src[i + 2] * 0.0722;
+        }
+        const threshold = 150 - detailAmount * 1.25;
+        for (let y = 0; y < height; y++) {
+          for (let x = 0; x < width; x++) {
+            const i = y * width + x;
+            let value = 255;
+            if (x > 0 && x + 1 < width && y > 0 && y + 1 < height) {
+              const gx = Math.abs(lum[i + 1] - lum[i - 1]);
+              const gy = Math.abs(lum[i + width] - lum[i - width]);
+              if (gx + gy > threshold) value = 35;
+            }
+            const k = i * 4;
+            dst[k] = dst[k + 1] = dst[k + 2] = value;
+            dst[k + 3] = 255;
+          }
+        }
+        tctx.putImageData(out, 0, 0);
+      }
+
       function render() {
         const w = source.width, h = source.height;
         if (!w || !h) return;
+
+        const mode = styleMode.value;
+        const detailAmount = Number(detail.value);
+        const selectedCount = Number(levels.value);
+        // When a style needs a palette, use a useful default unless the user picked a value count.
+        const colorCount = selectedCount || (mode === 'flat' ? 3 : 0);
+        const userBlur = Number(controls.blur.value);
+        const flatBlur = mode === 'flat' ? Math.max(2, Math.min(w, h) / (detailAmount * 3.4)) : 0;
+
         pctx.clearRect(0, 0, w, h);
         pctx.save();
         pctx.filter = [
           'grayscale(' + controls.grayscale.value + '%)',
           'brightness(' + controls.brightness.value + '%)',
           'contrast(' + controls.contrast.value + '%)',
-          'blur(' + controls.blur.value + 'px)'
+          'blur(' + (userBlur + flatBlur) + 'px)'
         ].join(' ');
         pctx.drawImage(source, 0, 0);
         pctx.restore();
 
-        const count = Number(levels.value);
-        if (count >= 2) {
+        // For polygon modes, tonal averaging happens inside each face, before palette reduction.
+        if (mode !== 'triangles' && mode !== 'facets' && mode !== 'contours' && colorCount >= 2) {
           const pixels = pctx.getImageData(0, 0, w, h);
           const data = pixels.data;
-          const scale = count - 1;
           for (let i = 0; i < data.length; i += 4) {
-            for (let c = 0; c < 3; c++) {
-              data[i + c] = Math.round((data[i + c] / 255) * scale) / scale * 255;
-            }
+            for (let c = 0; c < 3; c++) data[i + c] = quantize(data[i + c], colorCount);
           }
           pctx.putImageData(pixels, 0, 0);
         }
+
+        tctx.clearRect(0, 0, w, h);
+        if (mode === 'triangles' || mode === 'facets') {
+          paintTriangles(pctx.getImageData(0, 0, w, h), w, h, mode === 'facets', detailAmount, selectedCount);
+        } else if (mode === 'contours') {
+          paintContours(pctx.getImageData(0, 0, w, h), w, h, detailAmount);
+        } else {
+          tctx.drawImage(processed, 0, 0);
+        }
+
         ectx.clearRect(0, 0, w, h);
-        ectx.drawImage(showOriginal ? source : processed, 0, 0);
+        ectx.drawImage(showOriginal ? source : styled, 0, 0);
       }
 
       async function loadImage(file, options = {}) {
@@ -422,8 +580,8 @@
           const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
           const w = Math.max(1, Math.round(bitmap.width * scale));
           const h = Math.max(1, Math.round(bitmap.height * scale));
-          source.width = edited.width = processed.width = w;
-          source.height = edited.height = processed.height = h;
+          source.width = edited.width = processed.width = styled.width = w;
+          source.height = edited.height = processed.height = styled.height = h;
           sctx.clearRect(0, 0, w, h);
           sctx.drawImage(bitmap, 0, 0, w, h);
           bitmap.close();
@@ -504,8 +662,10 @@
       });
       for (const key of keys) controls[key].addEventListener('input', schedule);
       levels.addEventListener('change', schedule);
+      styleMode.addEventListener('change', schedule);
+      detail.addEventListener('input', schedule);
       document.getElementById('reset').addEventListener('click', () => {
-        setValues({ grayscale: 100, brightness: 100, contrast: 100, blur: 0, levels: 0 });
+        setValues({ grayscale: 100, brightness: 100, contrast: 100, blur: 0, levels: 0, style: 'tones', detail: 45 });
       });
       originalButton.addEventListener('click', () => {
         if (!ready) return;
@@ -516,10 +676,14 @@
         schedule();
       });
       const presets = {
-        gray: { grayscale: 100, brightness: 100, contrast: 100, blur: 0, levels: 0 },
-        three: { grayscale: 100, brightness: 100, contrast: 125, blur: 1.5, levels: 3 },
-        five: { grayscale: 100, brightness: 100, contrast: 115, blur: 0.5, levels: 5 },
-        macro: { grayscale: 100, brightness: 100, contrast: 110, blur: 12, levels: 0 }
+        gray:      { grayscale: 100, brightness: 100, contrast: 100, blur: 0, levels: 0, style: 'tones' },
+        two:       { grayscale: 100, brightness: 100, contrast: 115, blur: 0, levels: 2, style: 'flat', detail: 35 },
+        three:     { grayscale: 100, brightness: 100, contrast: 115, blur: 0, levels: 3, style: 'flat', detail: 40 },
+        five:      { grayscale: 100, brightness: 100, contrast: 110, blur: 0, levels: 5, style: 'flat', detail: 45 },
+        triangles: { grayscale: 100, brightness: 100, contrast: 110, blur: 0, levels: 5, style: 'triangles', detail: 48 },
+        facets:    { grayscale: 100, brightness: 100, contrast: 110, blur: 0, levels: 5, style: 'facets', detail: 25 },
+        contours:  { grayscale: 100, brightness: 100, contrast: 125, blur: 0, levels: 0, style: 'contours', detail: 46 },
+        macro:     { grayscale: 100, brightness: 100, contrast: 110, blur: 12, levels: 0, style: 'tones' }
       };
       document.querySelectorAll('[data-preset]').forEach(btn => {
         btn.addEventListener('click', () => setValues(presets[btn.dataset.preset]));
@@ -527,7 +691,7 @@
       download.addEventListener('click', () => {
         if (!ready) return;
         render();
-        processed.toBlob(blob => {
+        styled.toBlob(blob => {
           if (!blob) { report('Could not export the image.'); return; }
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
