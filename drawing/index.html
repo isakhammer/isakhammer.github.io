@@ -303,7 +303,7 @@
           backup.height = Math.max(1, Math.round(source.height * factor));
           backup.getContext('2d').drawImage(source, 0, 0, backup.width, backup.height);
           const dataUrl = backup.toDataURL('image/jpeg', 0.75);
-          localStorage.setItem(backupKey, JSON.stringify({ name, dataUrl }));
+          localStorage.setItem(backupKey, JSON.stringify({ name, dataUrl, savedAt: Date.now() }));
           return true;
         } catch (error) {
           console.warn('Local image backup was unavailable', error);
@@ -316,13 +316,15 @@
           const value = localStorage.getItem(backupKey);
           if (!value) return null;
           const saved = JSON.parse(value);
+          if (saved.cleared === true) return saved;
           if (typeof saved.dataUrl !== 'string' || !saved.dataUrl.startsWith('data:image/')) return null;
           return saved;
         } catch { return null; }
       }
 
       function deleteLocalBackup() {
-        try { localStorage.removeItem(backupKey); } catch {}
+        // A marker takes precedence over a stale IndexedDB photo if deletion fails.
+        try { localStorage.setItem(backupKey, JSON.stringify({ cleared: true, savedAt: Date.now() })); } catch {}
       }
 
       function decodeBackup(dataUrl) {
@@ -363,7 +365,7 @@
         });
       }
 
-      function queueStorageChange(action, payload, token) {
+      function queueStorageChange(action, payload, token, hasBackup = false) {
         storageQueue = storageQueue.catch(() => {}).then(async () => {
           const db = await imageDatabase;
           if (!db) throw new Error('Browser storage is unavailable.');
@@ -383,7 +385,9 @@
           }
         }).catch(() => {
           if (token === loadSequence && action === 'save') {
-            report('Image kept in a smaller browser backup. It will reopen automatically if local storage is available.');
+            report(hasBackup
+              ? 'Original-size storage failed, but a smaller backup was saved locally.'
+              : 'Browser storage is unavailable. This image may not survive a refresh.');
           }
         });
         return storageQueue;
@@ -933,7 +937,7 @@
           if (!options.restored) {
             const backedUp = saveLocalBackup(imageName);
             // Queue the original image immediately, before heavier filter rendering.
-            queueStorageChange('save', { blob: file, name: imageName }, token);
+            queueStorageChange('save', { blob: file, name: imageName, savedAt: Date.now() }, token, backedUp);
             report(backedUp ? 'Image ready · saved a local backup' : 'Image ready · attempting browser storage');
           } else {
             report('Last image restored from this browser · ' + w + ' × ' + h);
@@ -1077,29 +1081,49 @@
       });
       updateGroupControls();
       schedule();
-      // Restore the last picture from IndexedDB, or fall back to localStorage.
-      // A user paste always wins over an asynchronous restore.
+      // Restore the newest copy. LocalStorage doubles as a recovery mechanism
+      // if the full-resolution IndexedDB write failed on the previous visit.
       async function restorePreviousImage() {
         let previous = null;
         try { previous = await readSavedImage(); } catch (error) {
           console.warn('Could not read IndexedDB image', error);
         }
         if (loadSequence !== 0) return;
-        if (previous && previous.blob && typeof previous.blob.arrayBuffer === 'function') {
-          const ok = await loadImage(previous.blob, { restored: true, name: previous.name });
-          if (ok) return;
-        }
-        if (loadSequence !== 0 && ready) return;
+
         const backup = readLocalBackup();
-        if (!backup) {
-          if (!ready) report('Paste an image once. It will be saved automatically in this browser.');
+        const dbDate = Number(previous?.savedAt || 0);
+        const backupDate = Number(backup?.savedAt || 0);
+        if (backup?.cleared && backupDate >= dbDate) {
+          report('Paste an image. The last saved image was cleared.');
           return;
         }
-        try {
-          const blob = decodeBackup(backup.dataUrl);
-          if (!ready) await loadImage(blob, { restored: true, name: backup.name });
-        } catch (error) {
-          console.warn('Could not restore the image backup', error);
+        const tryBackupFirst = backup?.dataUrl && (backupDate > dbDate || !previous?.blob);
+
+        async function useBackup() {
+          if (!backup?.dataUrl) return false;
+          try {
+            return await loadImage(decodeBackup(backup.dataUrl), {
+              restored: true,
+              name: backup.name
+            });
+          } catch (error) {
+            console.warn('Could not restore backup image', error);
+            return false;
+          }
+        }
+
+        if (tryBackupFirst) {
+          await useBackup();
+          return;
+        }
+
+        if (previous?.blob && typeof previous.blob.arrayBuffer === 'function') {
+          const ok = await loadImage(previous.blob, { restored: true, name: previous.name });
+          if (ok || ready || loadSequence !== 1) return;
+        }
+        if (loadSequence === 0 || (loadSequence === 1 && !ready)) {
+          if (backup?.dataUrl) await useBackup();
+          else report('Paste an image once. It will be saved automatically in this browser.');
         }
       }
       restorePreviousImage();
