@@ -52,6 +52,9 @@
     const ns = 'http://www.w3.org/2000/svg';
     let scales = null, marker = null, guide = null;
     const number = value => value.toLocaleString('nb-NO', {maximumFractionDigits:1, minimumFractionDigits:1});
+    const relativeHeight = new Intl.NumberFormat('nb-NO', {
+      signDisplay: 'exceptZero', maximumFractionDigits: 1
+    });
     function el(tag, attrs = {}, text) {
       const element = document.createElementNS(ns, tag);
       Object.entries(attrs).forEach(([key, value]) => element.setAttribute(key, value));
@@ -61,13 +64,16 @@
     }
     function updateMarker(value, pointer = false) {
       distance = Math.max(scales.min, Math.min(scales.max, Math.round(value)));
-      const height = data.profiles[selected][distance + 500][1];
+      const profile = data.profiles[selected];
+      const height = profile[distance + 500][1];
+      const heightDifference = height - profile[500][1];
+      const differenceText = `${relativeHeight.format(heightDifference)} m fra startnivået`;
       marker.setAttribute('cx', scales.x(distance)); marker.setAttribute('cy', scales.y(height));
       guide.setAttribute('x1', scales.x(distance)); guide.setAttribute('x2', scales.x(distance));
       slider.value = distance;
-      readout.textContent = `${names[selected]} · ${distance === 0 ? 'punktet' : `${distance} m fra punktet`} · ${number(height)} m NN2000`;
+      readout.textContent = `${names[selected]} · ${distance === 0 ? 'punktet' : `${distance} m fra punktet`} · ${number(height)} m NN2000 · ${differenceText}`;
       if (pointer) {
-        tooltip.textContent = `${distance} m · ${number(height)} m NN2000`;
+        tooltip.textContent = `${distance} m · ${number(height)} m NN2000 · ${differenceText}`;
         tooltip.hidden = false;
         const tipX = Math.max(85, Math.min(scales.width - 85, scales.x(distance)));
         tooltip.style.left = `${tipX}px`;
@@ -112,7 +118,10 @@
       full=event.target.checked;slider.min=full?-500:-50;slider.max=full?500:100;
       distance=Math.max(Number(slider.min),Math.min(Number(slider.max),distance));tooltip.hidden=true;draw();
     });
-    slider.addEventListener('input',()=>updateMarker(Number(slider.value)));
+    slider.addEventListener('input',()=>{
+      tooltip.hidden=true;
+      updateMarker(Number(slider.value));
+    });
     svg.addEventListener('pointermove',event=>{
       const rect=svg.getBoundingClientRect(), coordinate=event.clientX-rect.left;
       const value=scales.min+(coordinate-48)/(scales.width-64)*(scales.max-scales.min);
