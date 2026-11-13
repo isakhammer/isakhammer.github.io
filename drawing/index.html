@@ -40,11 +40,13 @@
     .presets { display: flex; gap: 7px; flex-wrap: wrap; }
     .presets button { border: 1px solid var(--line); background: #fff; padding: 8px 10px; border-radius: 7px; font-size: 12px; }
     .presets button:hover { background: #ededeb; }
+    .presets button[aria-pressed="true"] { background: #e6eef9; border-color: #7698c3; color: #173f72; }
     .results { min-width: 0; }
     .canvases { display: grid; grid-template-columns: minmax(0, 1fr); }
     .photo-panel { overflow: hidden; }
-    .photo-label { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; font-size: 12px; font-weight: 650; border-bottom: 1px solid var(--line); }
+    .photo-label { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding: 14px 16px; font-size: 12px; font-weight: 650; border-bottom: 1px solid var(--line); }
     .photo-label span:last-child { color: var(--muted); font-weight: 400; }
+    #preview-label { display: inline-block; min-width: 8ch; }
     .photo-box { min-height: 340px; background: #eeefeb; display: flex; align-items: center; justify-content: center; position: relative; }
     canvas { display: block; max-width: 100%; width: auto; height: auto; max-height: min(70vh, 860px); }
     .empty { text-align: center; padding: 30px 18px; color: var(--muted); font-size: 13px; line-height: 1.7; }
@@ -86,6 +88,8 @@
       .control, .control.values { width: 100%; flex-basis: auto; }
       .photo-box { min-height: 38vh; }
     }
+    .photo-actions { display: flex; align-items: center; gap: 8px; }
+    .photo-actions > .btn { min-height: 32px; padding: 0 9px; font-size: 12px; }
     .zoom-controls { display: flex; align-items: center; gap: 5px; }
     .zoom-controls button { border: 1px solid var(--line); background: #fff; border-radius: 6px; min-width: 30px; height: 28px; padding: 0 8px; font-size: 13px; cursor: pointer; }
     .zoom-controls button:hover:not(:disabled) { background: #f1f1ee; }
@@ -127,6 +131,7 @@
         <div class="actions">
           <button id="paste" class="btn dark" type="button">Paste image</button>
           <button id="upload" class="btn" type="button">Choose file</button>
+          <button id="example" class="btn" type="button">Try example</button>
           <input id="file" type="file" accept="image/*" hidden>
           <button id="reset" class="btn" type="button">Reset adjustments</button>
           <button id="download" class="btn" type="button" disabled>Save PNG</button>
@@ -203,7 +208,6 @@
           <div class="presets-section">
             <span class="preset-label">Quick settings</span>
             <div class="presets">
-              <button id="toggle-original" class="btn" type="button" aria-pressed="false" disabled>Original</button>
               <button type="button" data-preset="gray">Grayscale</button>
               <button type="button" data-preset="two">2 values</button>
               <button type="button" data-preset="three">3 values</button>
@@ -222,11 +226,14 @@
           <div class="panel photo-panel">
             <div class="photo-label">
               <span>Image · <span id="preview-label">Adjusted</span></span>
-              <div class="zoom-controls" aria-label="Image zoom">
-                <button id="zoom-out" type="button" aria-label="Zoom out" title="Zoom out" disabled>−</button>
-                <output id="zoom-label" aria-live="off">100%</output>
-                <button id="zoom-in" type="button" aria-label="Zoom in" title="Zoom in" disabled>+</button>
-                <button id="zoom-fit" type="button" title="Fit image to window" disabled>Fit</button>
+              <div class="photo-actions">
+                <button id="toggle-original" class="btn" type="button" aria-pressed="false" disabled>Show original</button>
+                <div class="zoom-controls" aria-label="Image zoom">
+                  <button id="zoom-out" type="button" aria-label="Zoom out" title="Zoom out" disabled>−</button>
+                  <output id="zoom-label" aria-live="off">100%</output>
+                  <button id="zoom-in" type="button" aria-label="Zoom in" title="Zoom in" disabled>+</button>
+                  <button id="zoom-fit" type="button" title="Fit image to window" disabled>Fit</button>
+                </div>
               </div>
             </div>
             <div class="photo-box" id="edited-box">
@@ -239,6 +246,7 @@
       </div>
     </main>
   </div>
+  <script src="example-image.js"></script>
   <script>
     (() => {
       'use strict';
@@ -285,7 +293,9 @@
       let showOriginal = false;
       let ready = false;
       let queued = false;
+      let adjustmentsDirty = false;
       let imageName = 'drawing';
+      let showingExample = false;
       // IndexedDB stores only the most recently pasted/opened image in this browser.
       // Saving the Blob preserves the original pixels without uploading it anywhere.
       let loadSequence = 0;
@@ -487,14 +497,34 @@
         if (values.smooth !== undefined) groupSmooth.value = values.smooth;
         if (values.merge !== undefined) groupMerge.value = values.merge;
         updateGroupControls();
-        showOriginal = false;
-        originalButton.setAttribute('aria-pressed', 'false');
-        originalButton.classList.remove('dark');
-        previewLabel.textContent = 'Adjusted';
+        setOriginalPreview(false);
         schedule();
       }
 
+      function setOriginalPreview(original) {
+        showOriginal = original;
+        originalButton.setAttribute('aria-pressed', String(original));
+        originalButton.classList.toggle('dark', original);
+        previewLabel.textContent = original ? 'Original' : 'Adjusted';
+      }
+
       function schedule() {
+        const values = {
+          grayscale: Number(controls.grayscale.value),
+          brightness: Number(controls.brightness.value),
+          contrast: Number(controls.contrast.value),
+          blur: Number(controls.blur.value),
+          levels: Number(levels.value),
+          style: styleMode.value,
+          detail: Number(detail.value),
+          smooth: Number(groupSmooth.value),
+          merge: Number(groupMerge.value)
+        };
+        for (const button of presetButtons) {
+          const active = Object.entries(presets[button.dataset.preset])
+            .every(([key, value]) => values[key] === value);
+          button.setAttribute('aria-pressed', String(active));
+        }
         for (const key of keys) {
           document.getElementById(key + '-value').textContent =
             controls[key].value + (key === 'blur' ? ' px' : '%');
@@ -503,6 +533,7 @@
         groupSmoothValue.textContent = groupSmooth.value + '%';
         groupMergeValue.textContent = (Number(groupMerge.value) / 100).toFixed(2) + '%';
         if (!ready) return;
+        adjustmentsDirty = true;
         if (styleMode.value === 'grouping') {
           clearTimeout(pendingGroupRender);
           pendingGroupRender = setTimeout(() => {
@@ -856,8 +887,8 @@
       }
 
       function render() {
+        if (!ready || !adjustmentsDirty) return;
         const w = source.width, h = source.height;
-        if (!w || !h) return;
 
         const mode = styleMode.value;
         const detailAmount = Number(detail.value);
@@ -899,7 +930,12 @@
           tctx.drawImage(processed, 0, 0);
         }
 
-        ectx.clearRect(0, 0, w, h);
+        adjustmentsDirty = false;
+        drawPreview();
+      }
+
+      function drawPreview() {
+        ectx.clearRect(0, 0, edited.width, edited.height);
         ectx.drawImage(showOriginal ? source : styled, 0, 0);
       }
 
@@ -925,6 +961,8 @@
           sctx.drawImage(bitmap, 0, 0, w, h);
           bitmap.close();
           ready = true;
+          showingExample = Boolean(options.example);
+          clearButton.title = showingExample ? 'Remove the example image' : 'Remove the current image and its browser-saved copy';
           imageName = (options.name || file.name || 'image').replace(/\.[^.]+$/, '') || 'image';
           viewport.classList.add('has-image');
           zoomInButton.disabled = false;
@@ -934,7 +972,9 @@
           originalButton.disabled = false;
           download.disabled = false;
           clearButton.disabled = false;
-          if (!options.restored) {
+          if (showingExample) {
+            report('Example image ready');
+          } else if (!options.restored) {
             const backedUp = saveLocalBackup(imageName);
             // Queue the original image immediately, before heavier filter rendering.
             queueStorageChange('save', { blob: file, name: imageName, savedAt: Date.now() }, token, backedUp);
@@ -945,7 +985,9 @@
           schedule();
           return true;
         } catch (error) {
-          report('Could not open this image. Please try a PNG or JPEG.');
+          if (token === loadSequence) {
+            report(options.example ? 'Could not open the example image.' : 'Could not open this image. Please try a PNG or JPEG.');
+          }
           console.error(error);
           return false;
         }
@@ -985,7 +1027,7 @@
       clearButton.addEventListener('click', () => {
         ++loadSequence;
         ready = false;
-        showOriginal = false;
+        setOriginalPreview(false);
         viewport.classList.remove('has-image', 'zoomed', 'panning');
         edited.style.transform = '';
         zoom = 1;
@@ -993,15 +1035,20 @@
         zoomLabel.textContent = '100%';
         zoomInButton.disabled = zoomOutButton.disabled = zoomFitButton.disabled = true;
         originalButton.disabled = download.disabled = clearButton.disabled = true;
-        originalButton.setAttribute('aria-pressed', 'false');
-        originalButton.classList.remove('dark');
-        previewLabel.textContent = 'Adjusted';
-        deleteLocalBackup();
-        queueStorageChange('clear', null, loadSequence);
-        report('Image cleared from this browser.');
+        if (showingExample) {
+          showingExample = false;
+          report('Example image cleared.');
+        } else {
+          deleteLocalBackup();
+          queueStorageChange('clear', null, loadSequence);
+          report('Image cleared from this browser.');
+        }
       });
 
       document.getElementById('upload').addEventListener('click', () => fileInput.click());
+      document.getElementById('example').addEventListener('click', () => {
+        loadImage(decodeBackup(exampleImageDataUrl), { example: true, name: 'example' });
+      });
       fileInput.addEventListener('change', () => {
         loadImage(fileInput.files?.[0]);
         fileInput.value = '';
@@ -1024,11 +1071,9 @@
       });
       originalButton.addEventListener('click', () => {
         if (!ready) return;
-        showOriginal = !showOriginal;
-        originalButton.setAttribute('aria-pressed', String(showOriginal));
-        originalButton.classList.toggle('dark', showOriginal);
-        previewLabel.textContent = showOriginal ? 'Original' : 'Adjusted';
-        schedule();
+        setOriginalPreview(!showOriginal);
+        if (!showOriginal && adjustmentsDirty) render();
+        else drawPreview();
       });
       const presets = {
         gray:      { grayscale: 100, brightness: 100, contrast: 100, blur: 0, levels: 0, style: 'tones' },
@@ -1043,7 +1088,8 @@
         contours:  { grayscale: 100, brightness: 100, contrast: 125, blur: 0, levels: 0, style: 'contours', detail: 46 },
         macro:     { grayscale: 100, brightness: 100, contrast: 110, blur: 12, levels: 0, style: 'tones' }
       };
-      document.querySelectorAll('[data-preset]').forEach(btn => {
+      const presetButtons = document.querySelectorAll('[data-preset]');
+      presetButtons.forEach(btn => {
         btn.addEventListener('click', () => setValues(presets[btn.dataset.preset]));
       });
       download.addEventListener('click', () => {
