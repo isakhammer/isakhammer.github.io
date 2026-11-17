@@ -41,6 +41,23 @@
     .presets button { border: 1px solid var(--line); background: #fff; padding: 8px 10px; border-radius: 7px; font-size: 12px; }
     .presets button:hover { background: #ededeb; }
     .presets button[aria-pressed="true"] { background: #e6eef9; border-color: #7698c3; color: #173f72; }
+    .actions { position: relative; }
+    .history-menu { position: relative; }
+    .history-menu > summary { list-style: none; cursor: pointer; }
+    .history-menu > summary::-webkit-details-marker { display: none; }
+    .history-menu > summary::after { content: '⌄'; margin-left: 8px; }
+    .history-menu[open] > summary { background: #e6eef9; border-color: #7698c3; color: #173f72; }
+    .history { position: absolute; top: calc(100% + 6px); left: 0; z-index: 10; width: min(280px, calc(100vw - 28px)); padding: 10px; box-shadow: 0 8px 24px #0002; }
+    .history .hint { margin: 0 0 8px; font-size: 11px; }
+    .history-list { display: flex; flex-direction: column; gap: 6px; max-height: 300px; overflow-y: auto; padding: 3px; }
+    .history-list:empty { display: none; }
+    .history-item { display: grid; grid-template-columns: 56px minmax(0, 1fr); column-gap: 10px; align-items: center; padding: 5px; border: 1px solid var(--line); border-radius: 7px; background: #fff; text-align: left; color: var(--ink); }
+    .history-item:hover { background: #f1f1ee; }
+    .history-item[aria-pressed="true"] { background: #e6eef9; border-color: #7698c3; }
+    .history-item img { display: block; grid-row: 1 / 3; width: 56px; height: 44px; object-fit: contain; border-radius: 4px; background: #f1f1ee; }
+    .history-item span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; }
+    .history-item time { display: block; color: var(--muted); font-size: 10px; }
+    @media (max-width: 640px) { .history-menu { position: static; } }
     .results { min-width: 0; }
     .canvases { display: grid; grid-template-columns: minmax(0, 1fr); }
     .photo-panel { overflow: hidden; }
@@ -132,10 +149,17 @@
           <button id="paste" class="btn dark" type="button">Paste image</button>
           <button id="upload" class="btn" type="button">Choose file</button>
           <button id="example" class="btn" type="button">Try example</button>
+          <details class="history-menu" id="history-menu">
+            <summary class="btn">History</summary>
+            <div class="history panel">
+              <p class="hint" id="history-status">Pictures saved in this browser.</p>
+              <div class="history-list" id="history-list"></div>
+            </div>
+          </details>
           <input id="file" type="file" accept="image/*" hidden>
           <button id="reset" class="btn" type="button">Reset adjustments</button>
           <button id="download" class="btn" type="button" disabled>Save PNG</button>
-          <button id="clear-image" class="btn" type="button" disabled title="Remove the current image and its browser-saved copy">Clear image</button>
+          <button id="clear-image" class="btn" type="button" disabled title="Clear the preview. Saved pictures stay in your history.">Clear image</button>
         </div>
         <p id="status" role="status" aria-live="polite">Copy an image, then click Paste image or press Ctrl+V.</p>
       </div>
@@ -280,6 +304,12 @@
       const fileInput = document.getElementById('file');
       const download = document.getElementById('download');
       const clearButton = document.getElementById('clear-image');
+      const historyList = document.getElementById('history-list');
+      const historyMenu = document.getElementById('history-menu');
+      const historyStatus = document.getElementById('history-status');
+      let currentPictureId = null;
+      let historyVersion = 0;
+      let historyUrls = [];
       const originalButton = document.getElementById('toggle-original');
       const previewLabel = document.getElementById('preview-label');
       const viewport = document.getElementById('edited-box');
@@ -296,7 +326,7 @@
       let adjustmentsDirty = false;
       let imageName = 'drawing';
       let showingExample = false;
-      // IndexedDB stores only the most recently pasted/opened image in this browser.
+      // IndexedDB stores uploaded pictures and the last open picture in this browser.
       // Saving the Blob preserves the original pixels without uploading it anywhere.
       let loadSequence = 0;
       let storageQueue = Promise.resolve();
@@ -304,7 +334,7 @@
 
       // A smaller browser-local backup lets the last picture survive even when
       // IndexedDB is blocked or a transaction cannot finish.
-      function saveLocalBackup(name) {
+      function saveLocalBackup(name, id, savedAt) {
         try {
           const maxSide = 1200;
           const factor = Math.min(1, maxSide / Math.max(source.width, source.height));
@@ -313,7 +343,7 @@
           backup.height = Math.max(1, Math.round(source.height * factor));
           backup.getContext('2d').drawImage(source, 0, 0, backup.width, backup.height);
           const dataUrl = backup.toDataURL('image/jpeg', 0.75);
-          localStorage.setItem(backupKey, JSON.stringify({ name, dataUrl, savedAt: Date.now() }));
+          localStorage.setItem(backupKey, JSON.stringify({ name, id, dataUrl, savedAt }));
           return true;
         } catch (error) {
           console.warn('Local image backup was unavailable', error);
@@ -352,18 +382,87 @@
             reject(new Error('Browser storage is not supported.'));
             return;
           }
-          const request = indexedDB.open('drawing-assistant', 1);
+          const request = indexedDB.open('drawing-assistant', 2);
           request.onupgradeneeded = () => {
             if (!request.result.objectStoreNames.contains('photos')) {
               request.result.createObjectStore('photos');
             }
+            if (!request.result.objectStoreNames.contains('history')) {
+              const history = request.result.createObjectStore('history', { keyPath: 'id' });
+              const photos = request.transaction.objectStore('photos');
+              const previous = photos.get('last');
+              previous.onsuccess = () => {
+                if (!previous.result?.blob) return;
+                const record = { ...previous.result, id: 'previous-image' };
+                history.put(record);
+                photos.put(record, 'last');
+              };
+            }
           };
-          request.onsuccess = () => resolve(request.result);
+          request.onsuccess = () => {
+            request.result.onversionchange = () => request.result.close();
+            resolve(request.result);
+          };
           request.onerror = () => reject(request.error);
           request.onblocked = () => reject(new Error('Image storage is blocked by another tab.'));
         });
       }
       const imageDatabase = openImageDatabase().catch(() => null);
+
+      function highlightHistory() {
+        for (const button of historyList.children) {
+          button.setAttribute('aria-pressed', String(button.dataset.id === currentPictureId));
+        }
+      }
+
+      async function refreshHistory() {
+        const version = ++historyVersion;
+        try {
+          const db = await imageDatabase;
+          if (!db) throw new Error('Image storage is unavailable.');
+          const pictures = await new Promise((resolve, reject) => {
+            const request = db.transaction('history', 'readonly').objectStore('history').getAll();
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+          });
+          if (version !== historyVersion) return;
+          for (const url of historyUrls) URL.revokeObjectURL(url);
+          historyUrls = [];
+          historyList.replaceChildren();
+          pictures.sort((a, b) => b.savedAt - a.savedAt);
+          for (const picture of pictures) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'history-item';
+            button.dataset.id = picture.id;
+            const image = document.createElement('img');
+            image.src = picture.thumbnail || URL.createObjectURL(picture.blob);
+            if (!picture.thumbnail) historyUrls.push(image.src);
+            image.alt = '';
+            image.loading = 'lazy';
+            const name = document.createElement('span');
+            name.textContent = picture.name || 'Image';
+            button.title = 'Open ' + name.textContent;
+            const date = document.createElement('time');
+            date.dateTime = new Date(picture.savedAt).toISOString();
+            date.textContent = new Date(picture.savedAt).toLocaleDateString();
+            button.append(image, name, date);
+            button.addEventListener('click', async () => {
+              if (await loadImage(picture.blob, { picture })) {
+                historyMenu.open = false;
+                historyMenu.querySelector('summary').focus();
+              }
+            });
+            historyList.append(button);
+          }
+          highlightHistory();
+          historyStatus.textContent = pictures.length
+            ? 'Saved in this browser. Click a picture to reopen it.'
+            : 'Upload or paste a picture to start your history. Pictures are saved in this browser.';
+        } catch {
+          if (version === historyVersion) historyStatus.textContent = 'Picture history is unavailable because browser storage could not be opened.';
+        }
+      }
 
       async function readSavedImage() {
         const db = await imageDatabase;
@@ -380,9 +479,12 @@
           const db = await imageDatabase;
           if (!db) throw new Error('Browser storage is unavailable.');
           await new Promise((resolve, reject) => {
-            const tx = db.transaction('photos', 'readwrite');
+            const tx = db.transaction(['photos', 'history'], 'readwrite');
             const store = tx.objectStore('photos');
-            if (action === 'save') store.put(payload, 'last');
+            if (action === 'save') {
+              store.put(payload, 'last');
+              tx.objectStore('history').put(payload);
+            }
             else store.delete('last');
             tx.oncomplete = () => resolve();
             tx.onerror = () => reject(tx.error);
@@ -390,11 +492,13 @@
           });
         });
         storageQueue.then(() => {
+          refreshHistory();
           if (token === loadSequence && action === 'save') {
-            report('Image saved in this browser. It will reopen automatically.');
+            report('Image saved in picture history in this browser.');
           }
         }).catch(() => {
           if (token === loadSequence && action === 'save') {
+            historyStatus.textContent = 'This picture could not be added to history. Browser storage may be full or unavailable.';
             report(hasBackup
               ? 'Original-size storage failed, but a smaller backup was saved locally.'
               : 'Browser storage is unavailable. This image may not survive a refresh.');
@@ -962,8 +1066,9 @@
           bitmap.close();
           ready = true;
           showingExample = Boolean(options.example);
-          clearButton.title = showingExample ? 'Remove the example image' : 'Remove the current image and its browser-saved copy';
-          imageName = (options.name || file.name || 'image').replace(/\.[^.]+$/, '') || 'image';
+          currentPictureId = showingExample ? null : options.picture?.id || options.id || crypto.randomUUID();
+          highlightHistory();
+          imageName = (options.picture?.name || options.name || file.name || 'image').replace(/\.[^.]+$/, '') || 'image';
           viewport.classList.add('has-image');
           zoomInButton.disabled = false;
           zoomOutButton.disabled = false;
@@ -975,9 +1080,22 @@
           if (showingExample) {
             report('Example image ready');
           } else if (!options.restored) {
-            const backedUp = saveLocalBackup(imageName);
+            const savedAt = options.picture?.savedAt || options.savedAt || Date.now();
+            const backedUp = saveLocalBackup(imageName, currentPictureId, savedAt);
             // Queue the original image immediately, before heavier filter rendering.
-            queueStorageChange('save', { blob: file, name: imageName, savedAt: Date.now() }, token, backedUp);
+            const thumbnail = document.createElement('canvas');
+            const thumbnailScale = Math.min(1, 160 / Math.max(w, h));
+            thumbnail.width = Math.max(1, Math.round(w * thumbnailScale));
+            thumbnail.height = Math.max(1, Math.round(h * thumbnailScale));
+            thumbnail.getContext('2d').drawImage(source, 0, 0, thumbnail.width, thumbnail.height);
+            queueStorageChange('save', {
+              ...options.picture,
+              id: currentPictureId,
+              blob: file,
+              name: imageName,
+              savedAt,
+              thumbnail: thumbnail.toDataURL('image/jpeg', 0.7)
+            }, token, backedUp);
             report(backedUp ? 'Image ready · saved a local backup' : 'Image ready · attempting browser storage');
           } else {
             report('Last image restored from this browser · ' + w + ' × ' + h);
@@ -1027,6 +1145,8 @@
       clearButton.addEventListener('click', () => {
         ++loadSequence;
         ready = false;
+        currentPictureId = null;
+        highlightHistory();
         setOriginalPreview(false);
         viewport.classList.remove('has-image', 'zoomed', 'panning');
         edited.style.transform = '';
@@ -1041,11 +1161,20 @@
         } else {
           deleteLocalBackup();
           queueStorageChange('clear', null, loadSequence);
-          report('Image cleared from this browser.');
+          report('Preview cleared. Saved pictures are in your history.');
         }
       });
 
       document.getElementById('upload').addEventListener('click', () => fileInput.click());
+      document.addEventListener('click', event => {
+        if (!historyMenu.contains(event.target)) historyMenu.open = false;
+      });
+      historyMenu.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          historyMenu.open = false;
+          historyMenu.querySelector('summary').focus();
+        }
+      });
       document.getElementById('example').addEventListener('click', () => {
         loadImage(decodeBackup(exampleImageDataUrl), { example: true, name: 'example' });
       });
@@ -1149,8 +1278,9 @@
           if (!backup?.dataUrl) return false;
           try {
             return await loadImage(decodeBackup(backup.dataUrl), {
-              restored: true,
-              name: backup.name
+              name: backup.name,
+              id: backup.id,
+              savedAt: backup.savedAt
             });
           } catch (error) {
             console.warn('Could not restore backup image', error);
@@ -1164,7 +1294,7 @@
         }
 
         if (previous?.blob && typeof previous.blob.arrayBuffer === 'function') {
-          const ok = await loadImage(previous.blob, { restored: true, name: previous.name });
+          const ok = await loadImage(previous.blob, { restored: true, name: previous.name, id: previous.id });
           if (ok || ready || loadSequence !== 1) return;
         }
         if (loadSequence === 0 || (loadSequence === 1 && !ready)) {
@@ -1173,6 +1303,7 @@
         }
       }
       restorePreviousImage();
+      refreshHistory();
     })();
   </script>
 </body>
