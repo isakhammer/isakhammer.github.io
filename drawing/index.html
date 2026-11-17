@@ -310,6 +310,8 @@
       let currentPictureId = null;
       let historyVersion = 0;
       let historyUrls = [];
+      let pendingSettings = null;
+      let settingsTimer = 0;
       const originalButton = document.getElementById('toggle-original');
       const previewLabel = document.getElementById('preview-label');
       const viewport = document.getElementById('edited-box');
@@ -334,7 +336,7 @@
 
       // A smaller browser-local backup lets the last picture survive even when
       // IndexedDB is blocked or a transaction cannot finish.
-      function saveLocalBackup(name, id, savedAt) {
+      function saveLocalBackup(name, id, savedAt, settings, settingsUpdatedAt) {
         try {
           const maxSide = 1200;
           const factor = Math.min(1, maxSide / Math.max(source.width, source.height));
@@ -343,7 +345,7 @@
           backup.height = Math.max(1, Math.round(source.height * factor));
           backup.getContext('2d').drawImage(source, 0, 0, backup.width, backup.height);
           const dataUrl = backup.toDataURL('image/jpeg', 0.75);
-          localStorage.setItem(backupKey, JSON.stringify({ name, id, dataUrl, savedAt }));
+          localStorage.setItem(backupKey, JSON.stringify({ name, id, dataUrl, savedAt, settings, settingsUpdatedAt }));
           return true;
         } catch (error) {
           console.warn('Local image backup was unavailable', error);
@@ -464,11 +466,12 @@
         }
       }
 
-      async function readSavedImage() {
+      async function readSavedImage(id) {
         const db = await imageDatabase;
         if (!db) return null;
         return new Promise((resolve, reject) => {
-          const request = db.transaction('photos', 'readonly').objectStore('photos').get('last');
+          const store = id ? 'history' : 'photos';
+          const request = db.transaction(store, 'readonly').objectStore(store).get(id || 'last');
           request.onsuccess = () => resolve(request.result || null);
           request.onerror = () => reject(request.error);
         });
@@ -484,19 +487,31 @@
             if (action === 'save') {
               store.put(payload, 'last');
               tx.objectStore('history').put(payload);
-            }
-            else store.delete('last');
+            } else if (action === 'settings') {
+              const history = tx.objectStore('history');
+              const picture = history.get(payload.id);
+              picture.onsuccess = () => {
+                if (picture.result) history.put({ ...picture.result, ...payload });
+              };
+              const last = store.get('last');
+              last.onsuccess = () => {
+                if (last.result?.id === payload.id) store.put({ ...last.result, ...payload }, 'last');
+              };
+            } else store.delete('last');
             tx.oncomplete = () => resolve();
             tx.onerror = () => reject(tx.error);
             tx.onabort = () => reject(tx.error);
           });
         });
         storageQueue.then(() => {
-          refreshHistory();
+          if (action !== 'settings') refreshHistory();
           if (token === loadSequence && action === 'save') {
             report('Image saved in picture history in this browser.');
           }
         }).catch(() => {
+          if (action === 'settings' && payload.id === currentPictureId) {
+            report('Could not save the latest adjustments in picture history.');
+          }
           if (token === loadSequence && action === 'save') {
             historyStatus.textContent = 'This picture could not be added to history. Browser storage may be full or unavailable.';
             report(hasBackup
@@ -506,6 +521,27 @@
         });
         return storageQueue;
       }
+
+      function flushSettings() {
+        clearTimeout(settingsTimer);
+        settingsTimer = 0;
+        if (!pendingSettings) return;
+        const payload = pendingSettings;
+        pendingSettings = null;
+        const backup = readLocalBackup();
+        if (backup?.id === payload.id) {
+          try {
+            localStorage.setItem(backupKey, JSON.stringify({ ...backup, ...payload }));
+          } catch {}
+        }
+        queueStorageChange('settings', payload, loadSequence);
+      }
+
+      window.addEventListener('pagehide', flushSettings);
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden') flushSettings();
+      });
+      document.addEventListener('change', flushSettings);
 
       function report(message) { status.textContent = message; }
 
@@ -612,8 +648,8 @@
         previewLabel.textContent = original ? 'Original' : 'Adjusted';
       }
 
-      function schedule() {
-        const values = {
+      function getSettings() {
+        return {
           grayscale: Number(controls.grayscale.value),
           brightness: Number(controls.brightness.value),
           contrast: Number(controls.contrast.value),
@@ -622,8 +658,13 @@
           style: styleMode.value,
           detail: Number(detail.value),
           smooth: Number(groupSmooth.value),
-          merge: Number(groupMerge.value)
+          merge: Number(groupMerge.value),
+          thresholds: Array.from(thresholdSets, ([count, values]) => [count, [...values]])
         };
+      }
+
+      function schedule() {
+        const values = getSettings();
         for (const button of presetButtons) {
           const active = Object.entries(presets[button.dataset.preset])
             .every(([key, value]) => values[key] === value);
@@ -637,6 +678,11 @@
         groupSmoothValue.textContent = groupSmooth.value + '%';
         groupMergeValue.textContent = (Number(groupMerge.value) / 100).toFixed(2) + '%';
         if (!ready) return;
+        if (currentPictureId) {
+          pendingSettings = { id: currentPictureId, settings: values, settingsUpdatedAt: Date.now() };
+          clearTimeout(settingsTimer);
+          settingsTimer = setTimeout(flushSettings, 250);
+        }
         adjustmentsDirty = true;
         if (styleMode.value === 'grouping') {
           clearTimeout(pendingGroupRender);
@@ -1048,13 +1094,19 @@
           report('Please paste or choose an image file.');
           return;
         }
+        flushSettings();
         const token = ++loadSequence;
         try {
+          if (options.picture && !options.restored) {
+            await storageQueue.catch(() => {});
+            options.picture = await readSavedImage(options.picture.id) || options.picture;
+          }
           const bitmap = await createImageBitmap(file);
           if (token !== loadSequence) {
             bitmap.close();
             return;
           }
+          flushSettings();
           const maxSide = 2000;
           const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
           const w = Math.max(1, Math.round(bitmap.width * scale));
@@ -1069,6 +1121,13 @@
           currentPictureId = showingExample ? null : options.picture?.id || options.id || crypto.randomUUID();
           highlightHistory();
           imageName = (options.picture?.name || options.name || file.name || 'image').replace(/\.[^.]+$/, '') || 'image';
+          const settings = options.picture?.settings || options.settings;
+          if (settings) {
+            thresholdSets.clear();
+            for (const [count, values] of settings.thresholds || []) thresholdSets.set(count, [...values]);
+            thresholdList.dataset.count = '';
+            setValues(settings);
+          }
           viewport.classList.add('has-image');
           zoomInButton.disabled = false;
           zoomOutButton.disabled = false;
@@ -1081,7 +1140,9 @@
             report('Example image ready');
           } else if (!options.restored) {
             const savedAt = options.picture?.savedAt || options.savedAt || Date.now();
-            const backedUp = saveLocalBackup(imageName, currentPictureId, savedAt);
+            const settings = getSettings();
+            const settingsUpdatedAt = Date.now();
+            const backedUp = saveLocalBackup(imageName, currentPictureId, savedAt, settings, settingsUpdatedAt);
             // Queue the original image immediately, before heavier filter rendering.
             const thumbnail = document.createElement('canvas');
             const thumbnailScale = Math.min(1, 160 / Math.max(w, h));
@@ -1094,6 +1155,8 @@
               blob: file,
               name: imageName,
               savedAt,
+              settings,
+              settingsUpdatedAt,
               thumbnail: thumbnail.toDataURL('image/jpeg', 0.7)
             }, token, backedUp);
             report(backedUp ? 'Image ready · saved a local backup' : 'Image ready · attempting browser storage');
@@ -1143,6 +1206,7 @@
       });
 
       clearButton.addEventListener('click', () => {
+        flushSettings();
         ++loadSequence;
         ready = false;
         currentPictureId = null;
@@ -1280,7 +1344,8 @@
             return await loadImage(decodeBackup(backup.dataUrl), {
               name: backup.name,
               id: backup.id,
-              savedAt: backup.savedAt
+              savedAt: backup.savedAt,
+              settings: backup.settings
             });
           } catch (error) {
             console.warn('Could not restore backup image', error);
@@ -1294,7 +1359,10 @@
         }
 
         if (previous?.blob && typeof previous.blob.arrayBuffer === 'function') {
-          const ok = await loadImage(previous.blob, { restored: true, name: previous.name, id: previous.id });
+          if (backup?.id === previous.id && backup.settingsUpdatedAt > (previous.settingsUpdatedAt || 0)) {
+            previous.settings = backup.settings;
+          }
+          const ok = await loadImage(previous.blob, { restored: true, picture: previous });
           if (ok || ready || loadSequence !== 1) return;
         }
         if (loadSequence === 0 || (loadSequence === 1 && !ready)) {
