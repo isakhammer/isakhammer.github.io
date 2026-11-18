@@ -84,6 +84,7 @@
     .workspace { display: flex; flex-direction: column; gap: 14px; }
     .controls { width: 100%; padding: 15px 18px 12px; }
     .adjustments { display: flex; flex-wrap: wrap; align-items: end; gap: 12px 22px; }
+    #invert[aria-pressed="true"] { background: #e6eef9; border-color: #7698c3; color: #173f72; }
     .control { width: 132px; max-width: 100%; flex: 0 1 132px; margin: 0; }
     .control.values { width: 145px; flex-basis: 145px; }
     .control-head { margin-bottom: 6px; font-size: 12px; }
@@ -106,7 +107,9 @@
       .photo-box { min-height: 38vh; }
     }
     .photo-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
-    .photo-actions > .btn { min-height: 32px; padding: 0 9px; font-size: 12px; }
+    .photo-actions .btn { min-height: 32px; padding: 0 9px; font-size: 12px; }
+    .preview-toggles { display: flex; align-items: center; gap: 8px; }
+    .preview-toggles .btn { white-space: nowrap; }
     #split-view[aria-pressed="true"] { background: #e6eef9; border-color: #7698c3; color: #173f72; }
     .zoom-controls { display: flex; align-items: center; gap: 5px; }
     .zoom-controls button { border: 1px solid var(--line); background: #fff; border-radius: 6px; min-width: 30px; height: 28px; padding: 0 8px; font-size: 13px; cursor: pointer; }
@@ -285,9 +288,11 @@
             <div class="photo-label">
               <span>Image · <span id="preview-label">Adjusted</span></span>
               <div class="photo-actions">
-                <button id="duplicate-pane" class="btn" type="button" title="Duplicate selected pane" disabled>Duplicate</button>
                 <button id="split-view" class="btn" type="button" aria-pressed="false" disabled>Split view</button>
-                <button id="toggle-original" class="btn" type="button" aria-pressed="false" disabled>Show original</button>
+                <div class="preview-toggles">
+                  <button id="toggle-original" class="btn" type="button" aria-pressed="false" disabled>Show original</button>
+                  <button id="invert" class="btn" type="button" aria-label="Invert colors" aria-pressed="false" disabled>Invert</button>
+                </div>
                 <div class="zoom-controls" aria-label="Image zoom">
                   <button id="zoom-out" type="button" aria-label="Zoom out" title="Zoom out" disabled>−</button>
                   <output id="zoom-label" aria-live="off">100%</output>
@@ -305,6 +310,10 @@
               <section class="image-pane" aria-label="Pane 1">
                 <div class="pane-head">
                   <button class="pane-select" type="button" aria-pressed="true">Pane 1</button>
+                  <div class="zoom-controls view-controls" role="group" aria-label="Pane view">
+                    <button class="pane-wide" type="button" aria-label="Open Pane 1 in wide view" title="Wide view for Pane 1"><span class="wide-icon" aria-hidden="true"></span></button>
+                    <button class="pane-fullscreen" type="button" aria-label="Open Pane 1 in fullscreen" title="Fullscreen for Pane 1"><span class="fullscreen-icon" aria-hidden="true"></span></button>
+                  </div>
                   <button class="pane-close" type="button" aria-label="Close Pane 1" title="Close pane" disabled>×</button>
                 </div>
                 <div class="photo-box" id="edited-box">
@@ -673,6 +682,7 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
       let pendingSettings = null;
       let settingsTimer = 0;
       const originalButton = document.getElementById('toggle-original');
+      const invertButton = document.getElementById('invert');
       const previewLabel = document.getElementById('preview-label');
       const photoPanel = document.querySelector('.photo-panel');
       const paneGrid = photoPanel.querySelector('.pane-grid');
@@ -680,7 +690,6 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
       const paneTabs = document.querySelector('.controls .pane-tabs');
       const previewTabs = photoPanel.querySelector('.preview-tabs');
       const splitButton = document.getElementById('split-view');
-      const duplicateButton = document.getElementById('duplicate-pane');
       const panes = [];
       let activePane;
       const results = photoPanel.closest('.results');
@@ -691,6 +700,7 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
       const zoomFitButton = document.getElementById('zoom-fit');
       const zoomLabel = document.getElementById('zoom-label');
       const maxZoom = 12;
+      let zoom = 1, panX = 0, panY = 0;
       let dragging = false, dragPoint = null;
       let ready = false;
       let queued = false;
@@ -922,10 +932,22 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
           element, canvas, adjusted, settings,
           viewport: element.querySelector('.photo-box'),
           context: canvas.getContext('2d'),
-          original: false, dirty: true, zoom: 1, panX: 0, panY: 0
+          original: false, dirty: true
         };
         element.querySelector('.pane-select').addEventListener('click', () => selectPane(pane));
         element.querySelector('.pane-close').addEventListener('click', () => closePane(pane));
+        const paneWide = element.querySelector('.pane-wide');
+        paneWide.disabled = document.fullscreenElement === photoPanel;
+        paneWide.addEventListener('click', () => {
+          focusPane(pane);
+          setWideView(true);
+        });
+        const paneFullscreen = element.querySelector('.pane-fullscreen');
+        paneFullscreen.disabled = !document.fullscreenEnabled;
+        paneFullscreen.addEventListener('click', () => {
+          focusPane(pane);
+          if (document.fullscreenElement !== photoPanel) toggleFullscreen();
+        });
         pane.viewport.classList.toggle('has-image', ready);
         element.querySelector('.pane-close').disabled = !ready;
         panes.push(pane);
@@ -943,7 +965,6 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
         paneGrid.classList.toggle('split', split);
         splitButton.setAttribute('aria-pressed', String(split));
         splitButton.title = split ? 'Switch to tabs' : 'Show panes side by side';
-        duplicateButton.disabled = !ready || panes.length > 1;
         paneTabs.hidden = !ready || panes.length < 2;
         previewTabs.hidden = paneTabs.hidden || split;
         paneTabs.replaceChildren();
@@ -954,6 +975,12 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
           const button = pane.element.querySelector('.pane-select');
           button.textContent = name;
           button.setAttribute('aria-pressed', String(pane === activePane));
+          const paneWide = pane.element.querySelector('.pane-wide');
+          paneWide.setAttribute('aria-label', 'Open ' + name + ' in wide view');
+          paneWide.title = 'Wide view for ' + name;
+          const paneFullscreen = pane.element.querySelector('.pane-fullscreen');
+          paneFullscreen.setAttribute('aria-label', 'Open ' + name + ' in fullscreen');
+          paneFullscreen.title = 'Fullscreen for ' + name;
           pane.element.querySelector('.pane-close').setAttribute('aria-label', 'Close ' + name);
           for (const tabs of [paneTabs, previewTabs]) {
             const tab = document.createElement('div');
@@ -986,7 +1013,7 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
       function selectPane(pane, force = false) {
         if (pane === activePane && !force) return;
         flushSettings();
-        if (activePane) activePane.viewport.classList.remove('panning');
+        if (dragPoint) dragPoint.pane.viewport.classList.remove('panning');
         dragging = false;
         dragPoint = null;
         activePane = pane;
@@ -1005,7 +1032,16 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
         pane.element.remove();
         updatePaneLayout(false);
         schedule();
-        duplicateButton.focus();
+        applyZoom();
+        splitButton.focus();
+      }
+
+      function focusPane(pane) {
+        selectPane(pane);
+        updatePaneLayout(false);
+        schedule();
+        applyZoom();
+        previewTabs.querySelectorAll('.pane-select')[panes.indexOf(pane)].focus();
       }
 
       function getPictureSettings() {
@@ -1020,117 +1056,126 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
 
       splitButton.addEventListener('click', () => {
         const split = !paneGrid.classList.contains('split');
-        if (split && panes.length === 1) addPane({ ...getSettings(), ...presets.four });
+        if (split && panes.length === 1) {
+          const copy = addPane(getSettings());
+          copy.original = activePane.original;
+          updatePaneLayout(true);
+          selectPane(copy);
+          return;
+        }
         updatePaneLayout(split);
         schedule();
+        applyZoom();
       });
 
-      duplicateButton.addEventListener('click', () => {
-        if (!ready || panes.length > 1) return;
-        const settings = getSettings();
-        const copy = panes[1] || addPane(settings);
-        copy.settings = settings;
-        copy.original = activePane.original;
-        copy.zoom = activePane.zoom;
-        copy.panX = activePane.panX;
-        copy.panY = activePane.panY;
-        copy.dirty = true;
-        updatePaneLayout(true);
-        selectPane(copy);
-      });
-
-      // Zoom and pan belong to each view, and only affect its on-screen canvas.
-      function applyZoom(pane = activePane) {
-        if (!ready || pane.element.hidden) return;
-        const view = pane.viewport.getBoundingClientRect();
-        const limitX = Math.max(0, (pane.canvas.offsetWidth * pane.zoom - view.width) / 2);
-        const limitY = Math.max(0, (pane.canvas.offsetHeight * pane.zoom - view.height) / 2);
-        pane.panX = Math.max(-limitX, Math.min(limitX, pane.panX));
-        pane.panY = Math.max(-limitY, Math.min(limitY, pane.panY));
-        pane.canvas.style.transform = 'translate(' + pane.panX + 'px, ' + pane.panY + 'px) scale(' + pane.zoom + ')';
-        pane.viewport.classList.toggle('zoomed', pane.zoom > 1);
-        if (pane === activePane) {
-          zoomLabel.textContent = Math.round(pane.zoom * 100) + '%';
-          zoomInButton.disabled = pane.zoom >= maxZoom;
-          zoomOutButton.disabled = pane.zoom <= 1;
-          zoomFitButton.disabled = pane.zoom <= 1 && pane.panX === 0 && pane.panY === 0;
+      // Normalized offsets keep the same part of the picture visible in every pane.
+      function applyZoom() {
+        if (!ready) return;
+        const bounds = panes.filter(pane => !pane.element.hidden).map(pane => {
+          const view = pane.viewport.getBoundingClientRect();
+          const width = pane.canvas.offsetWidth;
+          const height = pane.canvas.offsetHeight;
+          return {
+            pane, width, height,
+            limitX: Math.max(0, (width * zoom - view.width) / (2 * width)),
+            limitY: Math.max(0, (height * zoom - view.height) / (2 * height))
+          };
+        });
+        const limitX = Math.min(...bounds.map(view => view.limitX));
+        const limitY = Math.min(...bounds.map(view => view.limitY));
+        panX = Math.max(-limitX, Math.min(limitX, panX));
+        panY = Math.max(-limitY, Math.min(limitY, panY));
+        for (const { pane, width, height } of bounds) {
+          pane.canvas.style.transform = 'translate(' + panX * width + 'px, ' + panY * height + 'px) scale(' + zoom + ')';
+          pane.viewport.classList.toggle('zoomed', zoom > 1);
         }
+        zoomLabel.textContent = Math.round(zoom * 100) + '%';
+        zoomInButton.disabled = zoom >= maxZoom;
+        zoomOutButton.disabled = zoom <= 1;
+        zoomFitButton.disabled = zoom <= 1 && panX === 0 && panY === 0;
       }
 
       function fitZoom() {
-        activePane.zoom = 1;
-        activePane.panX = activePane.panY = 0;
+        zoom = 1;
+        panX = panY = 0;
         applyZoom();
       }
 
-      function zoomTo(nextZoom, clientX, clientY) {
+      function zoomTo(nextZoom, clientX, clientY, pane = activePane) {
         if (!ready) return;
         const target = Math.min(maxZoom, Math.max(1, nextZoom));
-        if (target === activePane.zoom) return;
-        const rect = activePane.viewport.getBoundingClientRect();
-        const x = clientX == null ? 0 : clientX - rect.left - rect.width / 2;
-        const y = clientY == null ? 0 : clientY - rect.top - rect.height / 2;
-        const ratio = target / activePane.zoom;
-        activePane.panX = x - (x - activePane.panX) * ratio;
-        activePane.panY = y - (y - activePane.panY) * ratio;
-        activePane.zoom = target;
+        if (target === zoom) return;
+        const rect = pane.viewport.getBoundingClientRect();
+        const x = clientX == null ? 0 : (clientX - rect.left - rect.width / 2) / pane.canvas.offsetWidth;
+        const y = clientY == null ? 0 : (clientY - rect.top - rect.height / 2) / pane.canvas.offsetHeight;
+        const ratio = target / zoom;
+        panX = x - (x - panX) * ratio;
+        panY = y - (y - panY) * ratio;
+        zoom = target;
         applyZoom();
       }
 
-      zoomInButton.addEventListener('click', () => zoomTo(activePane.zoom * 1.3));
-      zoomOutButton.addEventListener('click', () => zoomTo(activePane.zoom / 1.3));
+      zoomInButton.addEventListener('click', () => zoomTo(zoom * 1.3));
+      zoomOutButton.addEventListener('click', () => zoomTo(zoom / 1.3));
       zoomFitButton.addEventListener('click', fitZoom);
 
-      wideButton.addEventListener('click', () => {
-        const wide = results.classList.toggle('wide');
+      function setWideView(wide) {
+        results.classList.toggle('wide', wide);
         wideButton.setAttribute('aria-pressed', String(wide));
         wideButton.setAttribute('aria-label', wide ? 'Standard view' : 'Wide view');
         wideButton.title = wide ? 'Standard view' : 'Wide view';
         photoPanel.scrollIntoView({ block: 'start' });
-      });
+        applyZoom();
+      }
+      wideButton.addEventListener('click', () => setWideView(!results.classList.contains('wide')));
 
       fullscreenButton.disabled = !document.fullscreenEnabled;
-      fullscreenButton.addEventListener('click', async () => {
+      async function toggleFullscreen() {
         try {
           if (document.fullscreenElement === photoPanel) await document.exitFullscreen();
           else await photoPanel.requestFullscreen();
         } catch {
           report('Fullscreen could not be opened in this browser.');
         }
-      });
+      }
+      fullscreenButton.addEventListener('click', toggleFullscreen);
       document.addEventListener('fullscreenchange', () => {
         const fullscreen = document.fullscreenElement === photoPanel;
         fullscreenButton.setAttribute('aria-pressed', String(fullscreen));
         fullscreenButton.setAttribute('aria-label', fullscreen ? 'Exit fullscreen' : 'Enter fullscreen');
         fullscreenButton.title = fullscreen ? 'Exit fullscreen' : 'Enter fullscreen';
         wideButton.disabled = fullscreen;
+        for (const pane of panes) pane.element.querySelector('.pane-wide').disabled = fullscreen;
       });
 
-      function selectEventPane(event) {
+      function getEventPane(event) {
         const element = event.target.closest('.image-pane');
-        const pane = panes.find(item => item.element === element);
-        if (pane) selectPane(pane);
-        return pane;
+        return panes.find(item => item.element === element);
       }
 
       paneGrid.addEventListener('wheel', event => {
-        if (!ready || !event.target.closest('.photo-box') || !selectEventPane(event)) return;
+        const pane = getEventPane(event);
+        if (!ready || !event.target.closest('.photo-box') || !pane) return;
         event.preventDefault();
-        zoomTo(activePane.zoom * Math.exp(-event.deltaY * 0.0015), event.clientX, event.clientY);
+        zoomTo(zoom * Math.exp(-event.deltaY * 0.0015), event.clientX, event.clientY, pane);
       }, { passive: false });
 
       paneGrid.addEventListener('pointerdown', event => {
-        if (!ready || !event.target.closest('.photo-box') || !selectEventPane(event)) return;
-        if (activePane.zoom <= 1 || event.button !== 0) return;
+        const pane = getEventPane(event);
+        if (!ready || !event.target.closest('.photo-box') || !pane || event.button !== 0) return;
+        if (zoom <= 1) {
+          selectPane(pane);
+          return;
+        }
         dragging = true;
-        dragPoint = { id: event.pointerId, x: event.clientX, y: event.clientY };
-        activePane.viewport.classList.add('panning');
-        activePane.viewport.setPointerCapture(event.pointerId);
+        dragPoint = { id: event.pointerId, x: event.clientX, y: event.clientY, pane };
+        pane.viewport.classList.add('panning');
+        pane.viewport.setPointerCapture(event.pointerId);
       });
       paneGrid.addEventListener('pointermove', event => {
         if (!dragging || !dragPoint || event.pointerId !== dragPoint.id) return;
-        activePane.panX += event.clientX - dragPoint.x;
-        activePane.panY += event.clientY - dragPoint.y;
+        panX += (event.clientX - dragPoint.x) / dragPoint.pane.canvas.offsetWidth;
+        panY += (event.clientY - dragPoint.y) / dragPoint.pane.canvas.offsetHeight;
         dragPoint.x = event.clientX;
         dragPoint.y = event.clientY;
         applyZoom();
@@ -1138,17 +1183,17 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
       function stopPan(event) {
         if (!dragPoint || event.pointerId !== dragPoint.id) return;
         dragging = false;
+        dragPoint.pane.viewport.classList.remove('panning');
         dragPoint = null;
-        activePane.viewport.classList.remove('panning');
       }
       paneGrid.addEventListener('pointerup', stopPan);
       paneGrid.addEventListener('pointercancel', stopPan);
       paneGrid.addEventListener('lostpointercapture', stopPan);
       paneGrid.addEventListener('dblclick', event => {
-        if (ready && event.target.closest('.photo-box') && selectEventPane(event)) fitZoom();
+        if (ready && event.target.closest('.photo-box')) fitZoom();
       });
       if ('ResizeObserver' in window) new ResizeObserver(() => {
-        for (const pane of panes) applyZoom(pane);
+        applyZoom();
       }).observe(paneGrid);
 
       function setValues(values, original = false) {
@@ -1165,6 +1210,7 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
         if (values.detail !== undefined) detail.value = values.detail;
         if (values.smooth !== undefined) groupSmooth.value = values.smooth;
         if (values.merge !== undefined) groupMerge.value = values.merge;
+        if (values.invert !== undefined) invertButton.setAttribute('aria-pressed', String(Boolean(values.invert)));
         updateGroupControls();
         setOriginalPreview(original);
         schedule();
@@ -1188,6 +1234,7 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
           detail: Number(detail.value),
           smooth: Number(groupSmooth.value),
           merge: Number(groupMerge.value),
+          invert: invertButton.getAttribute('aria-pressed') === 'true',
           thresholds: Array.from(thresholdSets, ([count, values]) => [count, [...values]])
         };
       }
@@ -1618,7 +1665,10 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
 
         const context = pane.adjusted.getContext('2d');
         context.clearRect(0, 0, w, h);
+        context.save();
+        context.filter = settings.invert ? 'invert(1)' : 'none';
         context.drawImage(styled, 0, 0);
+        context.restore();
         pane.dirty = false;
         drawPreview(pane);
       }
@@ -1665,7 +1715,9 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
             const views = settings.views || [settings];
             while (panes.length < views.length) addPane(views[panes.length]);
             while (panes.length > views.length) panes.pop().element.remove();
-            panes.forEach((pane, index) => { pane.settings = views[index]; });
+            panes.forEach((pane, index) => {
+              pane.settings = { ...views[index], invert: Boolean(views[index].invert) };
+            });
             activePane = panes[settings.activeView || 0] || panes[0];
             updatePaneLayout(Boolean(settings.split) && panes.length > 1);
           }
@@ -1675,14 +1727,15 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
             pane.viewport.classList.add('has-image');
             pane.element.querySelector('.pane-close').disabled = false;
             pane.dirty = true;
-            pane.zoom = 1;
-            pane.panX = pane.panY = 0;
             pane.original = false;
           }
+          zoom = 1;
+          panX = panY = 0;
           selectPane(activePane, true);
           updatePaneLayout(paneGrid.classList.contains('split'));
           splitButton.disabled = false;
           originalButton.disabled = false;
+          invertButton.disabled = false;
           download.disabled = false;
           clearButton.disabled = false;
           if (showingExample) {
@@ -1764,16 +1817,18 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
         for (const pane of panes) {
           pane.viewport.classList.remove('has-image', 'zoomed', 'panning');
           pane.canvas.style.transform = '';
-          pane.zoom = 1;
-          pane.panX = pane.panY = 0;
           pane.element.querySelector('.pane-close').disabled = true;
         }
         while (panes.length > 1) panes.pop().element.remove();
         activePane = panes[0];
+        zoom = 1;
+        panX = panY = 0;
+        dragging = false;
+        dragPoint = null;
         updatePaneLayout(false);
         zoomLabel.textContent = '100%';
         zoomInButton.disabled = zoomOutButton.disabled = zoomFitButton.disabled = true;
-        originalButton.disabled = download.disabled = clearButton.disabled = splitButton.disabled = duplicateButton.disabled = true;
+        originalButton.disabled = invertButton.disabled = download.disabled = clearButton.disabled = splitButton.disabled = true;
         if (showingExample) {
           showingExample = false;
           report('Example image cleared.');
@@ -1815,8 +1870,12 @@ const exampleImageDataUrl = 'data:image/jpeg;base64,' +
       detail.addEventListener('input', schedule);
       groupSmooth.addEventListener('input', schedule);
       groupMerge.addEventListener('input', schedule);
+      invertButton.addEventListener('click', () => {
+        invertButton.setAttribute('aria-pressed', String(invertButton.getAttribute('aria-pressed') !== 'true'));
+        schedule();
+      });
       document.getElementById('reset').addEventListener('click', () => {
-        setValues({ grayscale: 100, brightness: 100, contrast: 100, blur: 0, levels: 0, style: 'tones', detail: 45 });
+        setValues({ grayscale: 100, brightness: 100, contrast: 100, blur: 0, levels: 0, style: 'tones', detail: 45, invert: false });
       });
       originalButton.addEventListener('click', () => {
         if (!ready) return;
