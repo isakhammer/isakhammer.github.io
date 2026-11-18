@@ -58,7 +58,7 @@
     .history-item span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; }
     .history-item time { display: block; color: var(--muted); font-size: 10px; }
     @media (max-width: 640px) { .history-menu { position: static; } }
-    .results { min-width: 0; }
+    .results { min-width: 0; width: 100%; }
     .canvases { display: grid; grid-template-columns: minmax(0, 1fr); }
     .photo-panel { overflow: hidden; }
     .photo-label { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; padding: 14px 16px; font-size: 12px; font-weight: 650; border-bottom: 1px solid var(--line); }
@@ -105,18 +105,32 @@
       .control, .control.values { width: 100%; flex-basis: auto; }
       .photo-box { min-height: 38vh; }
     }
-    .photo-actions { display: flex; align-items: center; gap: 8px; }
+    .photo-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
     .photo-actions > .btn { min-height: 32px; padding: 0 9px; font-size: 12px; }
     .zoom-controls { display: flex; align-items: center; gap: 5px; }
     .zoom-controls button { border: 1px solid var(--line); background: #fff; border-radius: 6px; min-width: 30px; height: 28px; padding: 0 8px; font-size: 13px; cursor: pointer; }
     .zoom-controls button:hover:not(:disabled) { background: #f1f1ee; }
     .zoom-controls button:disabled { opacity: .35; cursor: default; }
+    .zoom-controls button[aria-pressed="true"] { background: #e6eef9; border-color: #7698c3; color: #173f72; }
+    .zoom-controls button:focus-visible { outline: 2px solid #477bb5; outline-offset: 3px; }
+    .view-controls button { display: grid; place-items: center; }
+    .wide-icon { width: 18px; height: 11px; border: 2px solid currentColor; border-radius: 1px; }
+    .fullscreen-icon { width: 16px; height: 16px; border: 2px solid currentColor; mask: linear-gradient(#000 0 0) top left / 6px 6px no-repeat, linear-gradient(#000 0 0) top right / 6px 6px no-repeat, linear-gradient(#000 0 0) bottom left / 6px 6px no-repeat, linear-gradient(#000 0 0) bottom right / 6px 6px no-repeat; }
+    .photo-label .view-controls span { color: inherit; }
     .zoom-controls output { min-width: 43px; text-align: center; font-size: 11px; font-variant-numeric: tabular-nums; color: var(--muted); }
     .photo-box.has-image { height: min(72vh, 800px); overflow: hidden; cursor: zoom-in; touch-action: none; }
     .photo-box.has-image.zoomed { cursor: grab; }
     .photo-box.has-image.panning { cursor: grabbing; }
     .photo-box.has-image canvas { max-width: 100%; max-height: 100%; object-fit: contain; transform-origin: center center; pointer-events: none; user-select: none; }
     @media (max-width: 640px) { .photo-box.has-image { height: min(65vh, 600px); } }
+    .wrap:has(.results.wide) { width: 100%; }
+    .wrap:has(.results.wide) header, .wrap:has(.results.wide) .topline, .wrap:has(.results.wide) .controls { width: min(1440px, calc(100% - 28px)); margin-inline: auto; }
+    .results.wide .photo-panel { border-radius: 0; }
+    .results.wide .photo-box.has-image { height: 88vh; height: 88dvh; min-height: 0; }
+    .results.wide .bottom-note { padding: 0 16px; }
+    .photo-panel:fullscreen { display: flex; flex-direction: column; width: 100%; height: 100%; border: 0; border-radius: 0; background: var(--bg); }
+    .photo-panel:fullscreen .photo-label { flex: 0 0 auto; }
+    .photo-panel:fullscreen .photo-box { flex: 1; min-height: 0; height: auto; }
     .group-tools { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
     .group-tools[hidden] { display: none; }
     .group-title { color: var(--muted); font-size: 11px; font-weight: 700; margin-bottom: 12px; }
@@ -258,6 +272,10 @@
                   <button id="zoom-in" type="button" aria-label="Zoom in" title="Zoom in" disabled>+</button>
                   <button id="zoom-fit" type="button" title="Fit image to window" disabled>Fit</button>
                 </div>
+                <div class="zoom-controls view-controls" role="group" aria-label="Image view">
+                  <button id="wide-view" type="button" aria-label="Wide view" title="Wide view" aria-pressed="false"><span class="wide-icon" aria-hidden="true"></span></button>
+                  <button id="fullscreen-view" type="button" aria-label="Enter fullscreen" title="Enter fullscreen" aria-pressed="false"><span class="fullscreen-icon" aria-hidden="true"></span></button>
+                </div>
               </div>
             </div>
             <div class="photo-box" id="edited-box">
@@ -315,6 +333,10 @@
       const originalButton = document.getElementById('toggle-original');
       const previewLabel = document.getElementById('preview-label');
       const viewport = document.getElementById('edited-box');
+      const photoPanel = viewport.closest('.photo-panel');
+      const results = photoPanel.closest('.results');
+      const wideButton = document.getElementById('wide-view');
+      const fullscreenButton = document.getElementById('fullscreen-view');
       const zoomInButton = document.getElementById('zoom-in');
       const zoomOutButton = document.getElementById('zoom-out');
       const zoomFitButton = document.getElementById('zoom-fit');
@@ -590,6 +612,31 @@
       zoomInButton.addEventListener('click', () => zoomTo(zoom * 1.3));
       zoomOutButton.addEventListener('click', () => zoomTo(zoom / 1.3));
       zoomFitButton.addEventListener('click', fitZoom);
+
+      wideButton.addEventListener('click', () => {
+        const wide = results.classList.toggle('wide');
+        wideButton.setAttribute('aria-pressed', String(wide));
+        wideButton.setAttribute('aria-label', wide ? 'Standard view' : 'Wide view');
+        wideButton.title = wide ? 'Standard view' : 'Wide view';
+        photoPanel.scrollIntoView({ block: 'start' });
+      });
+
+      fullscreenButton.disabled = !document.fullscreenEnabled;
+      fullscreenButton.addEventListener('click', async () => {
+        try {
+          if (document.fullscreenElement === photoPanel) await document.exitFullscreen();
+          else await photoPanel.requestFullscreen();
+        } catch {
+          report('Fullscreen could not be opened in this browser.');
+        }
+      });
+      document.addEventListener('fullscreenchange', () => {
+        const fullscreen = document.fullscreenElement === photoPanel;
+        fullscreenButton.setAttribute('aria-pressed', String(fullscreen));
+        fullscreenButton.setAttribute('aria-label', fullscreen ? 'Exit fullscreen' : 'Enter fullscreen');
+        fullscreenButton.title = fullscreen ? 'Exit fullscreen' : 'Enter fullscreen';
+        wideButton.disabled = fullscreen;
+      });
 
       viewport.addEventListener('wheel', event => {
         if (!ready) return;
